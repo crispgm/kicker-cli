@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -47,6 +48,9 @@ func parseTournament(fn string) (*model.Tournament, error) {
 func playerStats(tournaments []model.Tournament) {
 	var data = make(map[string]model.EntityPlayer)
 	for _, t := range tournaments {
+		if t.Mode != model.ModeMonsterDYP {
+			panic(errors.New("Only support Monster DYP mode"))
+		}
 		var teams = make(map[string]model.Team)
 		var players = make(map[string]model.Player)
 		for _, p := range t.Players {

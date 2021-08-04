@@ -1,5 +1,10 @@
 package model
 
+// Modes
+const (
+	ModeMonsterDYP = "monster_dyp"
+)
+
 // Tournament .
 type Tournament struct {
 	Name      string   `json:"name"`
@@ -37,10 +42,10 @@ type Round struct {
 
 // Play .
 type Play struct {
-	Valid bool `json:"valid"`
-	TimeStart   int    `json:"timeStart"`
-	TimeEnd     int    `json:"timeEnd"`
-	Team1 struct {
+	Valid     bool `json:"valid"`
+	TimeStart int  `json:"timeStart"`
+	TimeEnd   int  `json:"timeEnd"`
+	Team1     struct {
 		ID string `json:"_id"`
 	}
 	Team2 struct {
