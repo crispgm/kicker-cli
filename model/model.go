@@ -30,8 +30,6 @@ type Player struct {
 // Round .
 type Round struct {
 	Name        string `json:"name"`
-	TimeStart   int    `json:"timeStart"`
-	TimeEnd     int    `json:"timeEnd"`
 	Deactivated bool   `json:"deactivated"`
 	Skipped     bool   `json:"skipped"`
 	Plays       []Play `json:"plays,omitempty"`
@@ -40,6 +38,8 @@ type Round struct {
 // Play .
 type Play struct {
 	Valid bool `json:"valid"`
+	TimeStart   int    `json:"timeStart"`
+	TimeEnd     int    `json:"timeEnd"`
 	Team1 struct {
 		ID string `json:"_id"`
 	}

@@ -88,6 +88,11 @@ func playerStats(tournaments []model.Tournament) {
 					t1p2Data := data[t1p2.Name]
 					t2p1Data := data[t2p1.Name]
 					t2p2Data := data[t2p2.Name]
+					timePlayed := p.TimeEnd - p.TimeStart
+					t1p1Data.TimePlayed += timePlayed
+					t1p2Data.TimePlayed += timePlayed
+					t2p1Data.TimePlayed += timePlayed
+					t2p2Data.TimePlayed += timePlayed
 					for _, d := range p.Disciplines {
 						for _, s := range d.Sets {
 							t1p1Data.Played++
@@ -135,6 +140,7 @@ func playerStats(tournaments []model.Tournament) {
 		if d.Played != 0 {
 			d.WinRate = float32(d.Won) / float32(d.Played) * 100.0
 			d.PointsPerGame = float32(d.Goals) / float32(d.Played)
+			d.TimePerGame = d.TimePlayed / d.Played / 1000
 		}
 		sliceData = append(sliceData, d)
 	}
@@ -150,15 +156,18 @@ func playerStats(tournaments []model.Tournament) {
 		}
 		return false
 	})
-	fmt.Println("Name\t\tNum\tWon\tLost\tG+\tG-\tG±\tPPG\tWR")
+	fmt.Println("Name\t\tNum\tWon\tLost\tG+\tG-\tG±\tWR\tPPG\tTPG")
 	for _, d := range sliceData {
 		if len(d.Name) < 8 {
 			d.Name = d.Name + "        "
 		}
-		fmt.Printf("%s\t%d\t%d\t%d\t%d\t%d\t%d\t%.2f\t%.0f%%\n",
+		var tpg = ""
+		tpg = fmt.Sprintf("%02d:%02d", d.TimePerGame/60, d.TimePerGame%60)
+		fmt.Printf("%s\t%d\t%d\t%d\t%d\t%d\t%d\t%.0f%%\t%.2f\t%s\n",
 			d.Name,
 			d.Played, d.Won, d.Lost,
 			d.Goals, d.GoalsIn, d.GoalDiff,
-			d.PointsPerGame, d.WinRate)
+			d.WinRate,
+			d.PointsPerGame, tpg)
 	}
 }

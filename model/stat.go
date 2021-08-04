@@ -8,6 +8,7 @@ type EntityPlayer struct {
 	Aliases []string
 
 	Played        int
+	TimePlayed    int
 	Won           int
 	Lost          int
 	Draws         int
@@ -16,6 +17,7 @@ type EntityPlayer struct {
 	GoalDiff      int
 	WinRate       float32
 	PointsPerGame float32
+	TimePerGame   int
 }
 
 // IsPlayer .
