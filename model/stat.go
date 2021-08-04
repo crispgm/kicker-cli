@@ -16,8 +16,12 @@ type EntityPlayer struct {
 	GoalsIn       int
 	GoalDiff      int
 	WinRate       float32
-	PointsPerGame float32
 	TimePerGame   int
+	PointsPerGame float32
+	GoalsWon      int
+	DiffPerWon    float32
+	GoalsInLost   int
+	DiffPerLost   float32
 }
 
 // IsPlayer .

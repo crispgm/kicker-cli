@@ -93,11 +93,19 @@ func (m *MultipleTournamentStats) Output() []model.EntityPlayer {
 								t1p2Data.Won++
 								t2p1Data.Lost++
 								t2p2Data.Lost++
+								t1p1Data.GoalsWon += (s.Team1 - s.Team2)
+								t1p2Data.GoalsWon += (s.Team1 - s.Team2)
+								t2p1Data.GoalsInLost += (s.Team1 - s.Team2)
+								t2p2Data.GoalsInLost += (s.Team1 - s.Team2)
 							} else if s.Team2 > s.Team1 {
 								t1p1Data.Lost++
 								t1p2Data.Lost++
 								t2p1Data.Won++
 								t2p2Data.Won++
+								t2p1Data.GoalsWon += (s.Team2 - s.Team1)
+								t2p2Data.GoalsWon += (s.Team2 - s.Team1)
+								t1p1Data.GoalsInLost += (s.Team2 - s.Team1)
+								t1p2Data.GoalsInLost += (s.Team2 - s.Team1)
 							} else {
 								t1p1Data.Draws++
 								t1p2Data.Draws++
@@ -130,6 +138,8 @@ func (m *MultipleTournamentStats) Output() []model.EntityPlayer {
 			d.WinRate = float32(d.Won) / float32(d.Played) * 100.0
 			d.PointsPerGame = float32(d.Goals) / float32(d.Played)
 			d.TimePerGame = d.TimePlayed / d.Played / 1000
+			d.DiffPerWon = float32(d.GoalsWon) / float32(d.Won)
+			d.DiffPerLost = float32(d.GoalsInLost) / float32(d.Lost)
 		}
 		sliceData = append(sliceData, d)
 	}
