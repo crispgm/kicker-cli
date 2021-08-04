@@ -9,6 +9,7 @@ import (
 	"sort"
 
 	"github.com/crispgm/kickertool-analyzer/model"
+	"github.com/olekukonko/tablewriter"
 )
 
 func main() {
@@ -160,18 +161,26 @@ func playerStats(tournaments []model.Tournament) {
 		}
 		return false
 	})
-	fmt.Println("Name\t\tNum\tWon\tLost\tG+\tG-\tG±\tWR\tPPG\tTPG")
-	for _, d := range sliceData {
-		if len(d.Name) < 8 {
-			d.Name = d.Name + "        "
-		}
-		var tpg = ""
-		tpg = fmt.Sprintf("%02d:%02d", d.TimePerGame/60, d.TimePerGame%60)
-		fmt.Printf("%s\t%d\t%d\t%d\t%d\t%d\t%d\t%.0f%%\t%.2f\t%s\n",
+	outputTable(sliceData)
+}
+
+func outputTable(data []model.EntityPlayer) {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "PPG", "TPG"})
+	for _, d := range data {
+		table.Append([]string{
 			d.Name,
-			d.Played, d.Won, d.Lost,
-			d.Goals, d.GoalsIn, d.GoalDiff,
-			d.WinRate,
-			d.PointsPerGame, tpg)
+			fmt.Sprintf("%d", d.Played),
+			fmt.Sprintf("%d", d.Won),
+			fmt.Sprintf("%d", d.Lost),
+			fmt.Sprintf("%d", d.Goals),
+			fmt.Sprintf("%d", d.GoalsIn),
+			fmt.Sprintf("%d", d.GoalDiff),
+			fmt.Sprintf("%.0f%%", d.WinRate),
+			fmt.Sprintf("%.2f", d.PointsPerGame),
+			fmt.Sprintf("%02d:%02d", d.TimePerGame/60, d.TimePerGame%60),
+		})
 	}
+
+	table.Render()
 }
