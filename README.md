@@ -4,6 +4,12 @@ Data analyzer of Kickertool.
 
 It currently only output statistics data of multiple kickertool tournaments, so that it only supports Monster DYP mode.
 
+## Install
+
+```bash
+go install github.com/crispgm/kickertool-analyzer/cmd/kicker-cli
+```
+
 ## Usage
 
 1. Download `.ktool` files

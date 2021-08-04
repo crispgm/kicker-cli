@@ -1,7 +1,6 @@
 package monsterdyb
 
 import (
-	"errors"
 	"fmt"
 	"sort"
 
@@ -9,18 +8,40 @@ import (
 )
 
 // MultipleTournamentStats generate statistics data of multiple monster DYP tournaments
-func MultipleTournamentStats(tournaments []model.Tournament) []model.EntityPlayer {
-	var data = make(map[string]model.EntityPlayer)
-	for _, t := range tournaments {
+type MultipleTournamentStats struct {
+	tournaments []model.Tournament
+	players     []model.EntityPlayer
+}
+
+// NewMultipleTournamentStats .
+func NewMultipleTournamentStats(tournaments []model.Tournament, players []model.EntityPlayer) *MultipleTournamentStats {
+	return &MultipleTournamentStats{
+		tournaments: tournaments,
+		players:     players,
+	}
+}
+
+// ValidMode .
+func (m MultipleTournamentStats) ValidMode() bool {
+	for _, t := range m.tournaments {
 		if t.Mode != model.ModeMonsterDYP {
-			panic(errors.New("Only support Monster DYP mode"))
+			return false
 		}
+	}
+
+	return true
+}
+
+// Output .
+func (m *MultipleTournamentStats) Output() []model.EntityPlayer {
+	var data = make(map[string]model.EntityPlayer)
+	for _, t := range m.tournaments {
 		var teams = make(map[string]model.Team)
 		var players = make(map[string]model.Player)
 		for _, p := range t.Players {
 			if !p.Removed {
 				var found bool
-				for _, ep := range model.AllPlayers {
+				for _, ep := range m.players {
 					if ep.IsPlayer(p.Name) {
 						found = true
 						if _, ok := data[ep.Name]; !ok {
