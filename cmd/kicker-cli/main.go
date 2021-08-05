@@ -122,6 +122,8 @@ func outputTable(data []model.EntityPlayer) {
 		tablewriter.ALIGN_RIGHT,
 		tablewriter.ALIGN_DEFAULT,
 		tablewriter.ALIGN_DEFAULT,
+		tablewriter.ALIGN_DEFAULT,
+		tablewriter.ALIGN_DEFAULT,
 	})
 	for _, d := range data {
 		goalDiff := fmt.Sprintf("%d", d.GoalDiff)
