@@ -51,7 +51,7 @@ func main() {
 	}
 
 	// load tournaments
-	files := flag.Args()
+	files = flag.Args()
 	if len(files) == 0 {
 		fmt.Println("No given files")
 		os.Exit(1)
