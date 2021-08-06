@@ -110,8 +110,9 @@ func parsePlayer(fn string) ([]model.EntityPlayer, error) {
 
 func outputTable(data []model.EntityPlayer) {
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "TPG", "PPG", "DPW", "DPL"})
+	table.SetHeader([]string{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "TPG", "PPG", "DPW", "DPL"})
 	table.SetColumnAlignment([]int{
+		tablewriter.ALIGN_RIGHT,
 		tablewriter.ALIGN_DEFAULT,
 		tablewriter.ALIGN_DEFAULT,
 		tablewriter.ALIGN_DEFAULT,
@@ -125,7 +126,7 @@ func outputTable(data []model.EntityPlayer) {
 		tablewriter.ALIGN_DEFAULT,
 		tablewriter.ALIGN_DEFAULT,
 	})
-	for _, d := range data {
+	for i, d := range data {
 		goalDiff := fmt.Sprintf("%d", d.GoalDiff)
 		winRate := fmt.Sprintf("%.0f%%", d.WinRate)
 		if d.GoalDiff > 0 {
@@ -146,6 +147,7 @@ func outputTable(data []model.EntityPlayer) {
 			winRate = color.YellowString(winRate)
 		}
 		table.Append([]string{
+			fmt.Sprintf("%d", i+1),
 			d.Name,
 			fmt.Sprintf("%d", d.Played),
 			fmt.Sprintf("%d", d.Won),
