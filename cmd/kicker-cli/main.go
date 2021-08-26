@@ -9,7 +9,7 @@ import (
 
 	"github.com/crispgm/kickertool-analyzer/model"
 	"github.com/crispgm/kickertool-analyzer/stat"
-	monsterdyb "github.com/crispgm/kickertool-analyzer/stat/monster_dyb"
+	monsterdyp "github.com/crispgm/kickertool-analyzer/stat/monster_dyp"
 	"github.com/fatih/color"
 	"github.com/olekukonko/tablewriter"
 )
@@ -72,7 +72,7 @@ func main() {
 
 	// calculating
 	var statInfo stat.BaseStat
-	statInfo = monsterdyb.NewMultipleTournamentStats(tournaments, players)
+	statInfo = monsterdyp.NewMultipleTournamentStats(tournaments, players)
 	fmt.Println("Outputing ...")
 	if statInfo.ValidMode() {
 		data := statInfo.Output()

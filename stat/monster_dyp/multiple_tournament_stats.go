@@ -1,4 +1,4 @@
-package monsterdyb
+package monsterdyp
 
 import (
 	"fmt"
@@ -34,10 +34,10 @@ func (m MultipleTournamentStats) ValidMode() bool {
 
 // Output .
 func (m *MultipleTournamentStats) Output() []model.EntityPlayer {
-	var data = make(map[string]model.EntityPlayer)
+	data := make(map[string]model.EntityPlayer)
 	for _, t := range m.tournaments {
-		var teams = make(map[string]model.Team)
-		var players = make(map[string]model.Player)
+		teams := make(map[string]model.Team)
+		players := make(map[string]model.Player)
 		for _, p := range t.Players {
 			if !p.Removed {
 				var found bool
