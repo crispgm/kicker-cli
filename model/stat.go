@@ -7,21 +7,23 @@ type EntityPlayer struct {
 	Name    string
 	Aliases []string
 
-	Played        int
-	TimePlayed    int
-	Won           int
-	Lost          int
-	Draws         int
-	Goals         int
-	GoalsIn       int
-	GoalDiff      int
-	WinRate       float32
-	TimePerGame   int
-	PointsPerGame float32
-	GoalsWon      int
-	DiffPerWon    float32
-	GoalsInLost   int
-	DiffPerLost   float32
+	Played           int
+	TimePlayed       int
+	Won              int
+	Lost             int
+	Draws            int
+	Goals            int
+	GoalsIn          int
+	GoalDiff         int
+	WinRate          float32
+	TimePerGame      int
+	PointsPerGame    float32
+	GoalsWon         int
+	DiffPerWon       float32
+	GoalsInLost      int
+	DiffPerLost      float32
+	LongestGameTime  int
+	ShortestGameTime int
 }
 
 // IsPlayer .

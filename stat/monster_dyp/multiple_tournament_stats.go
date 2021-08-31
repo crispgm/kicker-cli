@@ -82,6 +82,30 @@ func (m *MultipleTournamentStats) Output() []model.EntityPlayer {
 					t1p2Data.TimePlayed += timePlayed
 					t2p1Data.TimePlayed += timePlayed
 					t2p2Data.TimePlayed += timePlayed
+					if t1p1Data.LongestGameTime < timePlayed || t1p1Data.LongestGameTime == 0 {
+						t1p1Data.LongestGameTime = timePlayed
+					}
+					if t1p1Data.ShortestGameTime > timePlayed || t1p1Data.ShortestGameTime == 0 {
+						t1p1Data.ShortestGameTime = timePlayed
+					}
+					if t1p2Data.LongestGameTime < timePlayed || t1p2Data.LongestGameTime == 0 {
+						t1p2Data.LongestGameTime = timePlayed
+					}
+					if t1p2Data.ShortestGameTime > timePlayed || t1p2Data.ShortestGameTime == 0 {
+						t1p2Data.ShortestGameTime = timePlayed
+					}
+					if t2p1Data.LongestGameTime < timePlayed || t2p1Data.LongestGameTime == 0 {
+						t2p1Data.LongestGameTime = timePlayed
+					}
+					if t2p1Data.ShortestGameTime > timePlayed || t2p1Data.ShortestGameTime == 0 {
+						t2p1Data.ShortestGameTime = timePlayed
+					}
+					if t2p2Data.LongestGameTime < timePlayed || t2p2Data.LongestGameTime == 0 {
+						t2p2Data.LongestGameTime = timePlayed
+					}
+					if t2p2Data.ShortestGameTime > timePlayed || t2p2Data.ShortestGameTime == 0 {
+						t2p2Data.ShortestGameTime = timePlayed
+					}
 					for _, d := range p.Disciplines {
 						for _, s := range d.Sets {
 							t1p1Data.Played++
@@ -138,6 +162,8 @@ func (m *MultipleTournamentStats) Output() []model.EntityPlayer {
 			d.WinRate = float32(d.Won) / float32(d.Played) * 100.0
 			d.PointsPerGame = float32(d.Goals) / float32(d.Played)
 			d.TimePerGame = d.TimePlayed / d.Played / 1000
+			d.LongestGameTime /= 1000
+			d.ShortestGameTime /= 1000
 			d.DiffPerWon = float32(d.GoalsWon) / float32(d.Won)
 			d.DiffPerLost = float32(d.GoalsInLost) / float32(d.Lost)
 		}
