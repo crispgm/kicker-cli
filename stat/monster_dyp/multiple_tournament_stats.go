@@ -62,95 +62,73 @@ func (m *MultipleTournamentStats) Output() []model.EntityPlayer {
 		}
 
 		for _, r := range t.Rounds {
-			if !r.Deactivated && !r.Skipped {
-				for _, p := range r.Plays {
-					if !p.Valid {
-						continue
-					}
-					team1 := teams[p.Team1.ID]
-					team2 := teams[p.Team2.ID]
-					t1p1 := players[team1.Players[0].ID]
-					t1p2 := players[team1.Players[1].ID]
-					t2p1 := players[team2.Players[0].ID]
-					t2p2 := players[team2.Players[1].ID]
-					t1p1Data := data[t1p1.Name]
-					t1p2Data := data[t1p2.Name]
-					t2p1Data := data[t2p1.Name]
-					t2p2Data := data[t2p2.Name]
-					timePlayed := p.TimeEnd - p.TimeStart
-					t1p1Data.TimePlayed += timePlayed
-					t1p2Data.TimePlayed += timePlayed
-					t2p1Data.TimePlayed += timePlayed
-					t2p2Data.TimePlayed += timePlayed
-					if t1p1Data.LongestGameTime < timePlayed || t1p1Data.LongestGameTime == 0 {
-						t1p1Data.LongestGameTime = timePlayed
-					}
-					if t1p1Data.ShortestGameTime > timePlayed || t1p1Data.ShortestGameTime == 0 {
-						t1p1Data.ShortestGameTime = timePlayed
-					}
-					if t1p2Data.LongestGameTime < timePlayed || t1p2Data.LongestGameTime == 0 {
-						t1p2Data.LongestGameTime = timePlayed
-					}
-					if t1p2Data.ShortestGameTime > timePlayed || t1p2Data.ShortestGameTime == 0 {
-						t1p2Data.ShortestGameTime = timePlayed
-					}
-					if t2p1Data.LongestGameTime < timePlayed || t2p1Data.LongestGameTime == 0 {
-						t2p1Data.LongestGameTime = timePlayed
-					}
-					if t2p1Data.ShortestGameTime > timePlayed || t2p1Data.ShortestGameTime == 0 {
-						t2p1Data.ShortestGameTime = timePlayed
-					}
-					if t2p2Data.LongestGameTime < timePlayed || t2p2Data.LongestGameTime == 0 {
-						t2p2Data.LongestGameTime = timePlayed
-					}
-					if t2p2Data.ShortestGameTime > timePlayed || t2p2Data.ShortestGameTime == 0 {
-						t2p2Data.ShortestGameTime = timePlayed
-					}
-					for _, d := range p.Disciplines {
-						for _, s := range d.Sets {
-							t1p1Data.Played++
-							t1p2Data.Played++
-							t2p1Data.Played++
-							t2p2Data.Played++
-							if s.Team1 > s.Team2 {
-								t1p1Data.Won++
-								t1p2Data.Won++
-								t2p1Data.Lost++
-								t2p2Data.Lost++
-								t1p1Data.GoalsWon += (s.Team1 - s.Team2)
-								t1p2Data.GoalsWon += (s.Team1 - s.Team2)
-								t2p1Data.GoalsInLost += (s.Team1 - s.Team2)
-								t2p2Data.GoalsInLost += (s.Team1 - s.Team2)
-							} else if s.Team2 > s.Team1 {
-								t1p1Data.Lost++
-								t1p2Data.Lost++
-								t2p1Data.Won++
-								t2p2Data.Won++
-								t2p1Data.GoalsWon += (s.Team2 - s.Team1)
-								t2p2Data.GoalsWon += (s.Team2 - s.Team1)
-								t1p1Data.GoalsInLost += (s.Team2 - s.Team1)
-								t1p2Data.GoalsInLost += (s.Team2 - s.Team1)
-							} else {
-								t1p1Data.Draws++
-								t1p2Data.Draws++
-								t2p1Data.Draws++
-								t2p2Data.Draws++
-							}
-							t1p1Data.Goals += s.Team1
-							t1p2Data.Goals += s.Team1
-							t2p1Data.Goals += s.Team2
-							t2p2Data.Goals += s.Team2
-							t1p1Data.GoalsIn += s.Team2
-							t1p2Data.GoalsIn += s.Team2
-							t2p1Data.GoalsIn += s.Team1
-							t2p2Data.GoalsIn += s.Team1
-						}
-					}
-					data[t1p1.Name] = t1p1Data
-					data[t1p2.Name] = t1p2Data
-					data[t2p1.Name] = t2p1Data
-					data[t2p2.Name] = t2p2Data
+			for _, p := range r.Plays {
+				if !p.Valid || p.Deactivated || p.Skipped {
+					continue
 				}
+				team1 := teams[p.Team1.ID]
+				team2 := teams[p.Team2.ID]
+				t1p1 := players[team1.Players[0].ID]
+				t1p2 := players[team1.Players[1].ID]
+				t2p1 := players[team2.Players[0].ID]
+				t2p2 := players[team2.Players[1].ID]
+				t1p1Data := data[t1p1.Name]
+				t1p2Data := data[t1p2.Name]
+				t2p1Data := data[t2p1.Name]
+				t2p2Data := data[t2p2.Name]
+				timePlayed := p.TimeEnd - p.TimeStart
+				t1p1Data.TimePlayed += timePlayed
+				t1p2Data.TimePlayed += timePlayed
+				t2p1Data.TimePlayed += timePlayed
+				t2p2Data.TimePlayed += timePlayed
+				m.playedTimeStats(&t1p1Data, timePlayed)
+				m.playedTimeStats(&t1p2Data, timePlayed)
+				m.playedTimeStats(&t2p1Data, timePlayed)
+				m.playedTimeStats(&t2p2Data, timePlayed)
+				for _, d := range p.Disciplines {
+					for _, s := range d.Sets {
+						t1p1Data.Played++
+						t1p2Data.Played++
+						t2p1Data.Played++
+						t2p2Data.Played++
+						if s.Team1 > s.Team2 {
+							t1p1Data.Won++
+							t1p2Data.Won++
+							t2p1Data.Lost++
+							t2p2Data.Lost++
+							t1p1Data.GoalsWon += (s.Team1 - s.Team2)
+							t1p2Data.GoalsWon += (s.Team1 - s.Team2)
+							t2p1Data.GoalsInLost += (s.Team1 - s.Team2)
+							t2p2Data.GoalsInLost += (s.Team1 - s.Team2)
+						} else if s.Team2 > s.Team1 {
+							t1p1Data.Lost++
+							t1p2Data.Lost++
+							t2p1Data.Won++
+							t2p2Data.Won++
+							t2p1Data.GoalsWon += (s.Team2 - s.Team1)
+							t2p2Data.GoalsWon += (s.Team2 - s.Team1)
+							t1p1Data.GoalsInLost += (s.Team2 - s.Team1)
+							t1p2Data.GoalsInLost += (s.Team2 - s.Team1)
+						} else {
+							t1p1Data.Draws++
+							t1p2Data.Draws++
+							t2p1Data.Draws++
+							t2p2Data.Draws++
+						}
+						t1p1Data.Goals += s.Team1
+						t1p2Data.Goals += s.Team1
+						t2p1Data.Goals += s.Team2
+						t2p2Data.Goals += s.Team2
+						t1p1Data.GoalsIn += s.Team2
+						t1p2Data.GoalsIn += s.Team2
+						t2p1Data.GoalsIn += s.Team1
+						t2p2Data.GoalsIn += s.Team1
+					}
+				}
+				data[t1p1.Name] = t1p1Data
+				data[t1p2.Name] = t1p2Data
+				data[t2p1.Name] = t2p1Data
+				data[t2p2.Name] = t2p2Data
 			}
 		}
 	}
@@ -182,4 +160,17 @@ func (m *MultipleTournamentStats) Output() []model.EntityPlayer {
 		return false
 	})
 	return sliceData
+}
+
+func (MultipleTournamentStats) playedTimeStats(data *model.EntityPlayer, timePlayed int) {
+	if timePlayed < 0 || timePlayed > 1000*60*15 {
+		// consider illegal
+		return
+	}
+	if data.LongestGameTime < timePlayed || data.LongestGameTime == 0 {
+		data.LongestGameTime = timePlayed
+	}
+	if data.ShortestGameTime > timePlayed || data.ShortestGameTime == 0 {
+		data.ShortestGameTime = timePlayed
+	}
 }
