@@ -2,6 +2,16 @@ package model
 
 import "strings"
 
+// EntityGame is stat for single games
+type EntityGame struct {
+	Team1 []string
+	Team2 []string
+
+	TimePlayed int
+	Point1     int
+	Point2     int
+}
+
 // EntityPlayer .
 type EntityPlayer struct {
 	Name    string
@@ -18,6 +28,7 @@ type EntityPlayer struct {
 	WinRate          float32
 	TimePerGame      int
 	PointsPerGame    float32
+	PointsInPerGame  float32
 	GoalsWon         int
 	DiffPerWon       float32
 	GoalsInLost      int

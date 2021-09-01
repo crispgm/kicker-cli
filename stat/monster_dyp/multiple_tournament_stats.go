@@ -139,6 +139,7 @@ func (m *MultipleTournamentStats) Output() []model.EntityPlayer {
 		if d.Played != 0 {
 			d.WinRate = float32(d.Won) / float32(d.Played) * 100.0
 			d.PointsPerGame = float32(d.Goals) / float32(d.Played)
+			d.PointsInPerGame = float32(d.GoalsIn) / float32(d.Played)
 			d.TimePerGame = d.TimePlayed / d.Played / 1000
 			d.LongestGameTime /= 1000
 			d.ShortestGameTime /= 1000

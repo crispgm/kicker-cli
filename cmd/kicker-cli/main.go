@@ -110,7 +110,7 @@ func parsePlayer(fn string) ([]model.EntityPlayer, error) {
 
 func outputTable(data []model.EntityPlayer) {
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "TPG", "LGP", "SGP", "PPG", "DPW", "DPL"})
+	table.SetHeader([]string{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "TPG", "LGP", "SGP", "PPG", "LPG", "DPW", "DPL"})
 	table.SetColumnAlignment([]int{
 		tablewriter.ALIGN_RIGHT,
 		tablewriter.ALIGN_DEFAULT,
@@ -121,6 +121,7 @@ func outputTable(data []model.EntityPlayer) {
 		tablewriter.ALIGN_DEFAULT,
 		tablewriter.ALIGN_RIGHT,
 		tablewriter.ALIGN_RIGHT,
+		tablewriter.ALIGN_DEFAULT,
 		tablewriter.ALIGN_DEFAULT,
 		tablewriter.ALIGN_DEFAULT,
 		tablewriter.ALIGN_DEFAULT,
@@ -162,6 +163,7 @@ func outputTable(data []model.EntityPlayer) {
 			fmt.Sprintf("%02d:%02d", d.LongestGameTime/60, d.LongestGameTime%60),
 			fmt.Sprintf("%02d:%02d", d.ShortestGameTime/60, d.ShortestGameTime%60),
 			fmt.Sprintf("%.2f", d.PointsPerGame),
+			fmt.Sprintf("%.2f", d.PointsInPerGame),
 			fmt.Sprintf("%.2f", d.DiffPerWon),
 			fmt.Sprintf("%.2f", d.DiffPerLost),
 		})
