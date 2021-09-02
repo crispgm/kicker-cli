@@ -1,14 +1,13 @@
 package stat
 
-import "github.com/crispgm/kickertool-analyzer/model"
-
 // BaseStat .
 type BaseStat interface {
 	ValidMode() bool
-	Output() []model.EntityPlayer
+	Output() interface{}
 }
 
 // SupportedStat .
 var SupportedStat = map[string]bool{
 	"mts": true,
+	"mtt": true,
 }

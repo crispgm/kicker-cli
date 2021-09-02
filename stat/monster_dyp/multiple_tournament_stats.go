@@ -33,7 +33,7 @@ func (m MultipleTournamentStats) ValidMode() bool {
 }
 
 // Output .
-func (m *MultipleTournamentStats) Output() []model.EntityPlayer {
+func (m *MultipleTournamentStats) Output() interface{} {
 	data := make(map[string]model.EntityPlayer)
 	for _, t := range m.tournaments {
 		teams := make(map[string]model.Team)

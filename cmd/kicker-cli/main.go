@@ -23,7 +23,7 @@ var (
 )
 
 func main() {
-	flag.StringVar(&mode, "mode", "", "Stat mode. Supported: mts")
+	flag.StringVar(&mode, "mode", "", "Stat mode. Supported: mts, mtt")
 	flag.BoolVar(&nocolor, "nocolor", false, "Disable colors")
 	flag.StringVar(&player, "player", "", "Players' data file")
 	flag.Parse()
@@ -72,11 +72,18 @@ func main() {
 
 	// calculating
 	var statInfo stat.BaseStat
-	statInfo = monsterdyp.NewMultipleTournamentStats(tournaments, players)
-	fmt.Println("Outputing ...")
+	if mode == "mts" {
+		statInfo = monsterdyp.NewMultipleTournamentStats(tournaments, players)
+	} else if mode == "mtt" {
+		statInfo = monsterdyp.NewMultipleTournamentTeamStats(tournaments, players)
+	}
 	if statInfo.ValidMode() {
 		data := statInfo.Output()
-		outputTable(data)
+		if mode == "mts" {
+			outputPlayerStats(data.([]model.EntityPlayer))
+		} else {
+			outputTeamStats(data.([]model.EntityTeam))
+		}
 	}
 }
 
@@ -108,7 +115,71 @@ func parsePlayer(fn string) ([]model.EntityPlayer, error) {
 	return players, err
 }
 
-func outputTable(data []model.EntityPlayer) {
+func outputTeamStats(data []model.EntityTeam) {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "TPG", "LGP", "SGP", "PPG", "LPG", "DPW", "DPL"})
+	table.SetColumnAlignment([]int{
+		tablewriter.ALIGN_RIGHT,
+		tablewriter.ALIGN_DEFAULT,
+		tablewriter.ALIGN_DEFAULT,
+		tablewriter.ALIGN_DEFAULT,
+		tablewriter.ALIGN_DEFAULT,
+		tablewriter.ALIGN_DEFAULT,
+		tablewriter.ALIGN_DEFAULT,
+		tablewriter.ALIGN_RIGHT,
+		tablewriter.ALIGN_RIGHT,
+		tablewriter.ALIGN_DEFAULT,
+		tablewriter.ALIGN_DEFAULT,
+		tablewriter.ALIGN_DEFAULT,
+		tablewriter.ALIGN_DEFAULT,
+		tablewriter.ALIGN_DEFAULT,
+		tablewriter.ALIGN_DEFAULT,
+		tablewriter.ALIGN_DEFAULT,
+	})
+	for i, d := range data {
+		goalDiff := fmt.Sprintf("%d", d.GoalDiff)
+		winRate := fmt.Sprintf("%.0f%%", d.WinRate)
+		if d.GoalDiff > 0 {
+			goalDiff = color.GreenString(goalDiff)
+		} else if d.GoalDiff < 0 {
+			goalDiff = color.RedString(goalDiff)
+		} else {
+			goalDiff = color.YellowString(goalDiff)
+		}
+
+		if d.WinRate >= 80.0 {
+			winRate = color.RedString(winRate)
+		} else if d.WinRate >= 70.0 {
+			winRate = color.MagentaString(winRate)
+		} else if d.WinRate >= 60.0 {
+			winRate = color.GreenString(winRate)
+		} else if d.WinRate >= 50.0 {
+			winRate = color.YellowString(winRate)
+		}
+		table.Append([]string{
+			fmt.Sprintf("%d", i+1),
+			fmt.Sprintf("%s/%s", d.Player1, d.Player2),
+			fmt.Sprintf("%d", d.Played),
+			fmt.Sprintf("%d", d.Won),
+			fmt.Sprintf("%d", d.Lost),
+			fmt.Sprintf("%d", d.Goals),
+			fmt.Sprintf("%d", d.GoalsIn),
+			goalDiff,
+			winRate,
+			fmt.Sprintf("%02d:%02d", d.TimePerGame/60, d.TimePerGame%60),
+			fmt.Sprintf("%02d:%02d", d.LongestGameTime/60, d.LongestGameTime%60),
+			fmt.Sprintf("%02d:%02d", d.ShortestGameTime/60, d.ShortestGameTime%60),
+			fmt.Sprintf("%.2f", d.PointsPerGame),
+			fmt.Sprintf("%.2f", d.PointsInPerGame),
+			fmt.Sprintf("%.2f", d.DiffPerWon),
+			fmt.Sprintf("%.2f", d.DiffPerLost),
+		})
+	}
+
+	table.Render()
+}
+
+func outputPlayerStats(data []model.EntityPlayer) {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "TPG", "LGP", "SGP", "PPG", "LPG", "DPW", "DPL"})
 	table.SetColumnAlignment([]int{
