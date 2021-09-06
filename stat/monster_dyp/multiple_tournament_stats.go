@@ -96,6 +96,10 @@ func (m *MultipleTournamentStats) Output() interface{} {
 							t1p2Data.Won++
 							t2p1Data.Lost++
 							t2p2Data.Lost++
+							t1p1Data.HomeWon++
+							t1p2Data.HomeWon++
+							t2p1Data.AwayLost++
+							t2p2Data.AwayLost++
 							t1p1Data.GoalsWon += (s.Team1 - s.Team2)
 							t1p2Data.GoalsWon += (s.Team1 - s.Team2)
 							t2p1Data.GoalsInLost += (s.Team1 - s.Team2)
@@ -105,11 +109,16 @@ func (m *MultipleTournamentStats) Output() interface{} {
 							t1p2Data.Lost++
 							t2p1Data.Won++
 							t2p2Data.Won++
+							t1p1Data.HomeLost++
+							t1p2Data.HomeLost++
+							t2p1Data.AwayWon++
+							t2p2Data.AwayWon++
 							t2p1Data.GoalsWon += (s.Team2 - s.Team1)
 							t2p2Data.GoalsWon += (s.Team2 - s.Team1)
 							t1p1Data.GoalsInLost += (s.Team2 - s.Team1)
 							t1p2Data.GoalsInLost += (s.Team2 - s.Team1)
 						} else {
+							// basically not approachable
 							t1p1Data.Draws++
 							t1p2Data.Draws++
 							t2p1Data.Draws++

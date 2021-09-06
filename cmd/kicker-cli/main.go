@@ -181,7 +181,7 @@ func outputTeamStats(data []model.EntityTeam) {
 
 func outputPlayerStats(data []model.EntityPlayer) {
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "TPG", "LGP", "SGP", "PPG", "LPG", "DPW", "DPL"})
+	table.SetHeader([]string{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "HWON", "HLOST", "AWON", "ALOST", "TPG", "LGP", "SGP", "PPG", "LPG", "DPW", "DPL"})
 	table.SetColumnAlignment([]int{
 		tablewriter.ALIGN_RIGHT,
 		tablewriter.ALIGN_DEFAULT,
@@ -192,6 +192,10 @@ func outputPlayerStats(data []model.EntityPlayer) {
 		tablewriter.ALIGN_DEFAULT,
 		tablewriter.ALIGN_RIGHT,
 		tablewriter.ALIGN_RIGHT,
+		tablewriter.ALIGN_DEFAULT,
+		tablewriter.ALIGN_DEFAULT,
+		tablewriter.ALIGN_DEFAULT,
+		tablewriter.ALIGN_DEFAULT,
 		tablewriter.ALIGN_DEFAULT,
 		tablewriter.ALIGN_DEFAULT,
 		tablewriter.ALIGN_DEFAULT,
@@ -230,6 +234,10 @@ func outputPlayerStats(data []model.EntityPlayer) {
 			fmt.Sprintf("%d", d.GoalsIn),
 			goalDiff,
 			winRate,
+			fmt.Sprintf("%d", d.HomeWon),
+			fmt.Sprintf("%d", d.HomeLost),
+			fmt.Sprintf("%d", d.AwayWon),
+			fmt.Sprintf("%d", d.AwayLost),
 			fmt.Sprintf("%02d:%02d", d.TimePerGame/60, d.TimePerGame%60),
 			fmt.Sprintf("%02d:%02d", d.LongestGameTime/60, d.LongestGameTime%60),
 			fmt.Sprintf("%02d:%02d", d.ShortestGameTime/60, d.ShortestGameTime%60),
