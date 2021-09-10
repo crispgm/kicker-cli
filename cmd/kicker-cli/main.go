@@ -16,15 +16,17 @@ import (
 
 // flags
 var (
-	mode    string
-	nocolor bool
-	player  string
-	files   []string
+	mode             string
+	nocolor          bool
+	rankMinThreshold int
+	player           string
+	files            []string
 )
 
 func main() {
 	flag.StringVar(&mode, "mode", "", "Stat mode. Supported: mts, mtt")
 	flag.BoolVar(&nocolor, "nocolor", false, "Disable colors")
+	flag.IntVar(&rankMinThreshold, "rmt", 0, "Rank Minimum Threshold")
 	flag.StringVar(&player, "player", "", "Players' data file")
 	flag.Parse()
 
@@ -72,10 +74,12 @@ func main() {
 
 	// calculating
 	var statInfo stat.BaseStat
+	var option stat.Option
+	option.RankMinThreshold = rankMinThreshold
 	if mode == "mts" {
-		statInfo = monsterdyp.NewMultipleTournamentStats(tournaments, players)
+		statInfo = monsterdyp.NewMultipleTournamentStats(tournaments, players, option)
 	} else if mode == "mtt" {
-		statInfo = monsterdyp.NewMultipleTournamentTeamStats(tournaments, players)
+		statInfo = monsterdyp.NewMultipleTournamentTeamStats(tournaments, players, option)
 	}
 	if statInfo.ValidMode() {
 		data := statInfo.Output()

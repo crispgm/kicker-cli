@@ -5,17 +5,20 @@ import (
 	"sort"
 
 	"github.com/crispgm/kickertool-analyzer/model"
+	"github.com/crispgm/kickertool-analyzer/stat"
 )
 
 // MultipleTournamentTeamStats generate statistics data of multiple monster DYP tournaments by team
 type MultipleTournamentTeamStats struct {
+	option      stat.Option
 	tournaments []model.Tournament
 	players     []model.EntityPlayer
 }
 
 // NewMultipleTournamentTeamStats .
-func NewMultipleTournamentTeamStats(tournaments []model.Tournament, players []model.EntityPlayer) *MultipleTournamentTeamStats {
+func NewMultipleTournamentTeamStats(tournaments []model.Tournament, players []model.EntityPlayer, option stat.Option) *MultipleTournamentTeamStats {
 	return &MultipleTournamentTeamStats{
+		option:      option,
 		tournaments: tournaments,
 		players:     players,
 	}
@@ -145,10 +148,10 @@ func (m *MultipleTournamentTeamStats) Output() interface{} {
 		sliceData = append(sliceData, d)
 	}
 	sort.SliceStable(sliceData, func(i, j int) bool {
-		if sliceData[i].Played >= rankThreshold && sliceData[j].Played < rankThreshold {
+		if sliceData[i].Played >= m.option.RankMinThreshold && sliceData[j].Played < m.option.RankMinThreshold {
 			return true
 		}
-		if sliceData[i].Played < rankThreshold && sliceData[j].Played >= rankThreshold {
+		if sliceData[i].Played < m.option.RankMinThreshold && sliceData[j].Played >= m.option.RankMinThreshold {
 			return false
 		}
 
