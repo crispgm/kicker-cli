@@ -145,12 +145,13 @@ func (m *MultipleTournamentTeamStats) Output() interface{} {
 		sliceData = append(sliceData, d)
 	}
 	sort.SliceStable(sliceData, func(i, j int) bool {
-		if sliceData[i].Played >= 5 && sliceData[j].Played < 5 {
+		if sliceData[i].Played >= rankThreshold && sliceData[j].Played < rankThreshold {
 			return true
 		}
-		if sliceData[i].Played < 5 && sliceData[j].Played >= 5 {
+		if sliceData[i].Played < rankThreshold && sliceData[j].Played >= rankThreshold {
 			return false
 		}
+
 		if sliceData[i].WinRate > sliceData[j].WinRate {
 			return true
 		} else if sliceData[i].WinRate == sliceData[j].WinRate {
