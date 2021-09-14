@@ -185,7 +185,7 @@ func (m *MultipleTournamentStats) Output() [][]string {
 	header := []string{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "PPG", "LPG", "DPW", "DPL"}
 	haHeader := []string{"HW", "HL", "HW%", "AW", "AL", "AW%"}
 	timeHeader := []string{"TPG", "LGP", "SGP"}
-	if m.option.WithHostAway {
+	if m.option.WithHomeAway {
 		header = append(header, haHeader...)
 	}
 	if m.option.WithTime {
@@ -208,7 +208,7 @@ func (m *MultipleTournamentStats) Output() [][]string {
 			fmt.Sprintf("%.2f", d.DiffPerWon),
 			fmt.Sprintf("%.2f", d.DiffPerLost),
 		}
-		if m.option.WithHostAway {
+		if m.option.WithHomeAway {
 			item = append(item, []string{
 				fmt.Sprintf("%d", d.HomeWon),
 				fmt.Sprintf("%d", d.HomeLost),

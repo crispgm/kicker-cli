@@ -25,7 +25,7 @@ var (
 	// Options
 	rankMinThreshold int
 	withTime         bool
-	withHostAway     bool
+	withHomeAway     bool
 )
 
 func main() {
@@ -34,7 +34,7 @@ func main() {
 	flag.StringVar(&player, "player", "", "Players' data file")
 	flag.IntVar(&rankMinThreshold, "rmt", 0, "Rank Minimum Threshold")
 	flag.BoolVar(&withTime, "with-time", false, "With Time Analysis")
-	flag.BoolVar(&withHostAway, "with-host-away", false, "With Host/Away Analysis")
+	flag.BoolVar(&withHomeAway, "with-home-away", false, "With Home/Away Analysis")
 	flag.Parse()
 
 	// check mode
@@ -83,7 +83,7 @@ func main() {
 	option := stat.Option{
 		RankMinThreshold: rankMinThreshold,
 		WithTime:         withTime,
-		WithHostAway:     withHostAway,
+		WithHomeAway:     withHomeAway,
 	}
 	if mode == "mts" {
 		statInfo = monsterdyp.NewMultipleTournamentStats(tournaments, players, option)
