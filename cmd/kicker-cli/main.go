@@ -65,7 +65,7 @@ func main() {
 	var tournaments []model.Tournament
 
 	// parsing
-	p, _ := pterm.DefaultProgressbar.WithTotal(len(files)).WithTitle("Processing tournaments data").Start()
+	p, _ := pterm.DefaultProgressbar.WithTotal(len(files)).WithRemoveWhenDone().WithTitle("Processing tournaments data").Start()
 	for _, fn := range files {
 		pterm.Success.Println("Parsing", fn)
 		t, err := parseTournament(fn)
