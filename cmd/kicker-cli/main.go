@@ -16,16 +16,25 @@ import (
 
 // flags
 var (
-	mode             string
+	mode   string
+	player string
+	files  []string
+
+	dryRun bool
+
+	// Options
 	rankMinThreshold int
-	player           string
-	files            []string
+	withTime         bool
+	withHostAway     bool
 )
 
 func main() {
+	flag.BoolVar(&dryRun, "dry-run", false, "Dry Run")
 	flag.StringVar(&mode, "mode", "", "Stat mode. Supported: mts, mtt")
-	flag.IntVar(&rankMinThreshold, "rmt", 0, "Rank Minimum Threshold")
 	flag.StringVar(&player, "player", "", "Players' data file")
+	flag.IntVar(&rankMinThreshold, "rmt", 0, "Rank Minimum Threshold")
+	flag.BoolVar(&withTime, "with-time", false, "With Time Analysis")
+	flag.BoolVar(&withHostAway, "with-host-away", false, "With Host/Away Analysis")
 	flag.Parse()
 
 	// check mode
@@ -71,8 +80,11 @@ func main() {
 
 	// calculating
 	var statInfo stat.BaseStat
-	var option stat.Option
-	option.RankMinThreshold = rankMinThreshold
+	option := stat.Option{
+		RankMinThreshold: rankMinThreshold,
+		WithTime:         withTime,
+		WithHostAway:     withHostAway,
+	}
 	if mode == "mts" {
 		statInfo = monsterdyp.NewMultipleTournamentStats(tournaments, players, option)
 	} else if mode == "mtt" {
@@ -80,7 +92,9 @@ func main() {
 	}
 	if statInfo.ValidMode() {
 		table := statInfo.Output()
-		pterm.DefaultTable.WithHasHeader().WithData(table).WithBoxed(true).Render()
+		if !dryRun {
+			pterm.DefaultTable.WithHasHeader().WithData(table).WithBoxed(true).Render()
+		}
 	}
 }
 

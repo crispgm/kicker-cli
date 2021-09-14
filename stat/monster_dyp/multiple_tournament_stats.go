@@ -180,11 +180,20 @@ func (m *MultipleTournamentStats) Output() [][]string {
 		return false
 	})
 
-	table := [][]string{{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "HW", "HL", "AW", "AL", "TPG", "LGP", "SGP", "PPG", "LPG", "DPW", "DPL"}}
+	header := []string{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "PPG", "LPG", "DPW", "DPL"}
+	haHeader := []string{"HW", "HL", "AW", "AL"}
+	timeHeader := []string{"TPG", "LGP", "SGP"}
+	if m.option.WithHostAway {
+		header = append(header, haHeader...)
+	}
+	if m.option.WithTime {
+		header = append(header, timeHeader...)
+	}
+	table := [][]string{header}
 	for i, d := range sliceData {
 		goalDiff := fmt.Sprintf("%d", d.GoalDiff)
 		winRate := fmt.Sprintf("%.0f%%", d.WinRate)
-		table = append(table, []string{
+		item := []string{
 			fmt.Sprintf("%d", i+1),
 			d.Name,
 			fmt.Sprintf("%d", d.Played),
@@ -194,18 +203,27 @@ func (m *MultipleTournamentStats) Output() [][]string {
 			fmt.Sprintf("%d", d.GoalsIn),
 			goalDiff,
 			winRate,
-			fmt.Sprintf("%d", d.HomeWon),
-			fmt.Sprintf("%d", d.HomeLost),
-			fmt.Sprintf("%d", d.AwayWon),
-			fmt.Sprintf("%d", d.AwayLost),
-			fmt.Sprintf("%02d:%02d", d.TimePerGame/60, d.TimePerGame%60),
-			fmt.Sprintf("%02d:%02d", d.LongestGameTime/60, d.LongestGameTime%60),
-			fmt.Sprintf("%02d:%02d", d.ShortestGameTime/60, d.ShortestGameTime%60),
 			fmt.Sprintf("%.2f", d.PointsPerGame),
 			fmt.Sprintf("%.2f", d.PointsInPerGame),
 			fmt.Sprintf("%.2f", d.DiffPerWon),
 			fmt.Sprintf("%.2f", d.DiffPerLost),
-		})
+		}
+		if m.option.WithHostAway {
+			item = append(item, []string{
+				fmt.Sprintf("%d", d.HomeWon),
+				fmt.Sprintf("%d", d.HomeLost),
+				fmt.Sprintf("%d", d.AwayWon),
+				fmt.Sprintf("%d", d.AwayLost),
+			}...)
+		}
+		if m.option.WithTime {
+			item = append(item, []string{
+				fmt.Sprintf("%02d:%02d", d.TimePerGame/60, d.TimePerGame%60),
+				fmt.Sprintf("%02d:%02d", d.LongestGameTime/60, d.LongestGameTime%60),
+				fmt.Sprintf("%02d:%02d", d.ShortestGameTime/60, d.ShortestGameTime%60),
+			}...)
+		}
+		table = append(table, item)
 	}
 	return table
 }

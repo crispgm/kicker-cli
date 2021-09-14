@@ -15,4 +15,6 @@ var SupportedStat = map[string]bool{
 // Option .
 type Option struct {
 	RankMinThreshold int
+	WithTime         bool
+	WithHostAway     bool
 }

@@ -169,11 +169,16 @@ func (m *MultipleTournamentTeamStats) Output() [][]string {
 		return false
 	})
 
-	table := [][]string{{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "TPG", "LGP", "SGP", "PPG", "LPG", "DPW", "DPL"}}
+	header := []string{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "PPG", "LPG", "DPW", "DPL"}
+	timeHeader := []string{"TPG", "LGP", "SGP"}
+	if m.option.WithTime {
+		header = append(header, timeHeader...)
+	}
+	table := [][]string{header}
 	for i, d := range sliceData {
 		goalDiff := fmt.Sprintf("%d", d.GoalDiff)
 		winRate := fmt.Sprintf("%.0f%%", d.WinRate)
-		table = append(table, []string{
+		item := []string{
 			fmt.Sprintf("%d", i+1),
 			fmt.Sprintf("%s/%s", d.Player1, d.Player2),
 			fmt.Sprintf("%d", d.Played),
@@ -183,14 +188,19 @@ func (m *MultipleTournamentTeamStats) Output() [][]string {
 			fmt.Sprintf("%d", d.GoalsIn),
 			goalDiff,
 			winRate,
-			fmt.Sprintf("%02d:%02d", d.TimePerGame/60, d.TimePerGame%60),
-			fmt.Sprintf("%02d:%02d", d.LongestGameTime/60, d.LongestGameTime%60),
-			fmt.Sprintf("%02d:%02d", d.ShortestGameTime/60, d.ShortestGameTime%60),
 			fmt.Sprintf("%.2f", d.PointsPerGame),
 			fmt.Sprintf("%.2f", d.PointsInPerGame),
 			fmt.Sprintf("%.2f", d.DiffPerWon),
 			fmt.Sprintf("%.2f", d.DiffPerLost),
-		})
+		}
+		if m.option.WithTime {
+			item = append(item, []string{
+				fmt.Sprintf("%02d:%02d", d.TimePerGame/60, d.TimePerGame%60),
+				fmt.Sprintf("%02d:%02d", d.LongestGameTime/60, d.LongestGameTime%60),
+				fmt.Sprintf("%02d:%02d", d.ShortestGameTime/60, d.ShortestGameTime%60),
+			}...)
+		}
+		table = append(table, item)
 	}
 	return table
 }
