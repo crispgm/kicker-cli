@@ -180,7 +180,7 @@ func (m *MultipleTournamentStats) Output() [][]string {
 		return false
 	})
 
-	table := [][]string{{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "HWON", "HLOST", "AWON", "ALOST", "TPG", "LGP", "SGP", "PPG", "LPG", "DPW", "DPL"}}
+	table := [][]string{{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "HW", "HL", "AW", "AL", "TPG", "LGP", "SGP", "PPG", "LPG", "DPW", "DPL"}}
 	for i, d := range sliceData {
 		goalDiff := fmt.Sprintf("%d", d.GoalDiff)
 		winRate := fmt.Sprintf("%.0f%%", d.WinRate)
