@@ -48,14 +48,16 @@ type EntityPlayer struct {
 	ShortestGameTime int
 	TimePerGame      int
 
-	Won      int
-	Lost     int
-	Draws    int
-	HomeWon  int
-	HomeLost int
-	AwayWon  int
-	AwayLost int
-	WinRate  float32
+	Won         int
+	Lost        int
+	Draws       int
+	HomeWon     int
+	HomeLost    int
+	HomeWonRate float32
+	AwayWon     int
+	AwayLost    int
+	AwayWonRate float32
+	WinRate     float32
 
 	Goals           int
 	GoalsIn         int

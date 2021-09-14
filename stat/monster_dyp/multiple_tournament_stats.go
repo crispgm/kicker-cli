@@ -150,6 +150,8 @@ func (m *MultipleTournamentStats) Output() [][]string {
 		d.GoalDiff = d.Goals - d.GoalsIn
 		if d.Played != 0 {
 			d.WinRate = float32(d.Won) / float32(d.Played) * 100.0
+			d.HomeWonRate = float32(d.HomeWon) / float32(d.HomeWon+d.HomeLost) * 100.0
+			d.AwayWonRate = float32(d.AwayWon) / float32(d.AwayWon+d.AwayLost) * 100.0
 			d.PointsPerGame = float32(d.Goals) / float32(d.Played)
 			d.PointsInPerGame = float32(d.GoalsIn) / float32(d.Played)
 			d.TimePerGame = d.TimePlayed / d.Played / 1000
@@ -181,7 +183,7 @@ func (m *MultipleTournamentStats) Output() [][]string {
 	})
 
 	header := []string{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "PPG", "LPG", "DPW", "DPL"}
-	haHeader := []string{"HW", "HL", "AW", "AL"}
+	haHeader := []string{"HW", "HL", "HW%", "AW", "AL", "AW%"}
 	timeHeader := []string{"TPG", "LGP", "SGP"}
 	if m.option.WithHostAway {
 		header = append(header, haHeader...)
@@ -191,8 +193,6 @@ func (m *MultipleTournamentStats) Output() [][]string {
 	}
 	table := [][]string{header}
 	for i, d := range sliceData {
-		goalDiff := fmt.Sprintf("%d", d.GoalDiff)
-		winRate := fmt.Sprintf("%.0f%%", d.WinRate)
 		item := []string{
 			fmt.Sprintf("%d", i+1),
 			d.Name,
@@ -201,8 +201,8 @@ func (m *MultipleTournamentStats) Output() [][]string {
 			fmt.Sprintf("%d", d.Lost),
 			fmt.Sprintf("%d", d.Goals),
 			fmt.Sprintf("%d", d.GoalsIn),
-			goalDiff,
-			winRate,
+			fmt.Sprintf("%d", d.GoalDiff),
+			fmt.Sprintf("%.0f%%", d.WinRate),
 			fmt.Sprintf("%.2f", d.PointsPerGame),
 			fmt.Sprintf("%.2f", d.PointsInPerGame),
 			fmt.Sprintf("%.2f", d.DiffPerWon),
@@ -212,8 +212,10 @@ func (m *MultipleTournamentStats) Output() [][]string {
 			item = append(item, []string{
 				fmt.Sprintf("%d", d.HomeWon),
 				fmt.Sprintf("%d", d.HomeLost),
+				fmt.Sprintf("%.0f%%", d.HomeWonRate),
 				fmt.Sprintf("%d", d.AwayWon),
-				fmt.Sprintf("%d", d.AwayLost),
+				fmt.Sprintf("%d", d.HomeLost),
+				fmt.Sprintf("%.0f%%", d.AwayWonRate),
 			}...)
 		}
 		if m.option.WithTime {
