@@ -36,7 +36,7 @@ func (m MultipleTournamentTeamStats) ValidMode() bool {
 }
 
 // Output .
-func (m *MultipleTournamentTeamStats) Output() interface{} {
+func (m *MultipleTournamentTeamStats) Output() [][]string {
 	data := make(map[string]model.EntityTeam)
 	players := make(map[string]model.Player)
 	for _, t := range m.tournaments {
@@ -168,7 +168,31 @@ func (m *MultipleTournamentTeamStats) Output() interface{} {
 		}
 		return false
 	})
-	return sliceData
+
+	table := [][]string{{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "TPG", "LGP", "SGP", "PPG", "LPG", "DPW", "DPL"}}
+	for i, d := range sliceData {
+		goalDiff := fmt.Sprintf("%d", d.GoalDiff)
+		winRate := fmt.Sprintf("%.0f%%", d.WinRate)
+		table = append(table, []string{
+			fmt.Sprintf("%d", i+1),
+			fmt.Sprintf("%s/%s", d.Player1, d.Player2),
+			fmt.Sprintf("%d", d.Played),
+			fmt.Sprintf("%d", d.Won),
+			fmt.Sprintf("%d", d.Lost),
+			fmt.Sprintf("%d", d.Goals),
+			fmt.Sprintf("%d", d.GoalsIn),
+			goalDiff,
+			winRate,
+			fmt.Sprintf("%02d:%02d", d.TimePerGame/60, d.TimePerGame%60),
+			fmt.Sprintf("%02d:%02d", d.LongestGameTime/60, d.LongestGameTime%60),
+			fmt.Sprintf("%02d:%02d", d.ShortestGameTime/60, d.ShortestGameTime%60),
+			fmt.Sprintf("%.2f", d.PointsPerGame),
+			fmt.Sprintf("%.2f", d.PointsInPerGame),
+			fmt.Sprintf("%.2f", d.DiffPerWon),
+			fmt.Sprintf("%.2f", d.DiffPerLost),
+		})
+	}
+	return table
 }
 
 func (MultipleTournamentTeamStats) playedTimeStats(data *model.EntityTeam, timePlayed int) {

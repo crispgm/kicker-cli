@@ -3,7 +3,7 @@ package stat
 // BaseStat .
 type BaseStat interface {
 	ValidMode() bool
-	Output() interface{}
+	Output() [][]string
 }
 
 // SupportedStat .
