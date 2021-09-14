@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"time"
@@ -39,26 +38,27 @@ func main() {
 
 	// check mode
 	if supported, ok := stat.SupportedStat[mode]; !ok || !supported {
-		fmt.Println("Invalid mode", mode)
+		pterm.Error.Println("Invalid mode", mode)
 		os.Exit(1)
 	}
 	pterm.Info.Println("Statistics mode:", mode)
 
 	// load players
 	if len(player) == 0 {
-		fmt.Println("No given player file")
+		pterm.Error.Println("No given player file")
 		os.Exit(1)
 	}
 	pterm.Info.Println("Loading players ...")
 	players, err := parsePlayer(player)
 	if err != nil {
 		pterm.Error.Println("Load players failed:", err)
+		os.Exit(1)
 	}
 
 	// load tournaments
 	files = flag.Args()
 	if len(files) == 0 {
-		fmt.Println("No given files")
+		pterm.Error.Println("No given files")
 		os.Exit(1)
 	}
 	pterm.Info.Println("Loading tournaments ...")
@@ -70,7 +70,7 @@ func main() {
 		pterm.Success.Println("Parsing", fn)
 		t, err := parseTournament(fn)
 		if err != nil {
-			fmt.Println(err)
+			pterm.Error.Println(err)
 			os.Exit(1)
 		}
 		tournaments = append(tournaments, *t)
