@@ -66,7 +66,7 @@ func main() {
 	// parsing
 	p, _ := pterm.DefaultProgressbar.WithTotal(len(files)).WithRemoveWhenDone().WithTitle("Processing tournaments data").Start()
 	for _, fn := range files {
-		pterm.Success.Println("Parsing", fn)
+		pterm.Info.Println("Parsing", fn)
 		t, err := parser.ParseTournament(fn)
 		if err != nil {
 			pterm.Error.Println(err)
@@ -103,6 +103,7 @@ func main() {
 		}
 	}
 	if valid {
+		pterm.Info.Println("Briefing:", c.Briefing())
 		table := statOperator.Output()
 		if !dryRun {
 			pterm.DefaultTable.WithHasHeader().WithData(table).WithBoxed(true).Render()

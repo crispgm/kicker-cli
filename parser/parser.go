@@ -41,7 +41,8 @@ func ParsePlayer(fn string) ([]model.EntityPlayer, error) {
 
 // Converter .
 type Converter struct {
-	eGames []model.EntityGame
+	eGames   []model.EntityGame
+	briefing string
 
 	mu *sync.RWMutex
 }
@@ -108,4 +109,17 @@ func (c *Converter) Normalize(tournaments []model.Tournament, ePlayers []model.E
 		}
 	}
 	return c.eGames, nil
+}
+
+// Briefing .
+func (c *Converter) Briefing() string {
+	players := make(map[string]bool)
+	for _, g := range c.eGames {
+		players[g.Team1[0]] = true
+		players[g.Team1[1]] = true
+		players[g.Team2[0]] = true
+		players[g.Team2[1]] = true
+	}
+	c.briefing = fmt.Sprintf("%d player(s) played %d game(s)", len(c.eGames), len(players))
+	return c.briefing
 }
