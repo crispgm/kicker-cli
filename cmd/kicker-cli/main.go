@@ -24,6 +24,7 @@ var (
 	rankMinThreshold int
 	withTime         bool
 	withHomeAway     bool
+	withPoint        bool
 )
 
 func main() {
@@ -33,6 +34,7 @@ func main() {
 	flag.IntVar(&rankMinThreshold, "rmt", 0, "Rank Minimum Threshold")
 	flag.BoolVar(&withTime, "with-time", false, "With Time Analysis")
 	flag.BoolVar(&withHomeAway, "with-home-away", false, "With Home/Away Analysis")
+	flag.BoolVar(&withPoint, "with-point", false, "With Point Analysis")
 	flag.Parse()
 
 	// check mode
@@ -89,6 +91,7 @@ func main() {
 		RankMinThreshold: rankMinThreshold,
 		WithTime:         withTime,
 		WithHomeAway:     withHomeAway,
+		WithPoint:        withPoint,
 	}
 	if mode == model.ModeMonsterDYPPlayerStats {
 		statOperator = monsterdyp.NewPlayerStats(games, option)

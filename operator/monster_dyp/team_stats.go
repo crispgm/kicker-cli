@@ -132,10 +132,14 @@ func (t *TeamStats) Output() [][]string {
 		return false
 	})
 
-	header := []string{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "PPG", "LPG", "DPW", "DPL"}
+	header := []string{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%"}
 	timeHeader := []string{"TPG", "LGP", "SGP"}
+	pointHeader := []string{"PPG", "LPG", "DPW", "DPL"}
 	if t.option.WithTime {
 		header = append(header, timeHeader...)
+	}
+	if t.option.WithPoint {
+		header = append(header, pointHeader...)
 	}
 	table := [][]string{header}
 	for i, d := range sliceData {
@@ -154,16 +158,20 @@ func (t *TeamStats) Output() [][]string {
 			fmt.Sprintf("%d", d.GoalsIn),
 			goalDiff,
 			winRate,
-			fmt.Sprintf("%.2f", d.PointsPerGame),
-			fmt.Sprintf("%.2f", d.PointsInPerGame),
-			fmt.Sprintf("%.2f", d.DiffPerWon),
-			fmt.Sprintf("%.2f", d.DiffPerLost),
 		}
 		if t.option.WithTime {
 			item = append(item, []string{
 				fmt.Sprintf("%02d:%02d", d.TimePerGame/60, d.TimePerGame%60),
 				fmt.Sprintf("%02d:%02d", d.LongestGameTime/60, d.LongestGameTime%60),
 				fmt.Sprintf("%02d:%02d", d.ShortestGameTime/60, d.ShortestGameTime%60),
+			}...)
+		}
+		if t.option.WithPoint {
+			item = append(item, []string{
+				fmt.Sprintf("%.2f", d.PointsPerGame),
+				fmt.Sprintf("%.2f", d.PointsInPerGame),
+				fmt.Sprintf("%.2f", d.DiffPerWon),
+				fmt.Sprintf("%.2f", d.DiffPerLost),
 			}...)
 		}
 		table = append(table, item)

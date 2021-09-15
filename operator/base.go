@@ -19,4 +19,5 @@ type Option struct {
 	RankMinThreshold int
 	WithTime         bool
 	WithHomeAway     bool
+	WithPoint        bool
 }
