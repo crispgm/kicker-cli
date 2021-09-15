@@ -120,6 +120,6 @@ func (c *Converter) Briefing() string {
 		players[g.Team2[0]] = true
 		players[g.Team2[1]] = true
 	}
-	c.briefing = fmt.Sprintf("%d player(s) played %d game(s)", len(c.eGames), len(players))
+	c.briefing = fmt.Sprintf("%d player(s) played %d game(s)", len(players), len(c.eGames))
 	return c.briefing
 }
