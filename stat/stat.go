@@ -2,7 +2,7 @@ package stat
 
 // BaseStat .
 type BaseStat interface {
-	ValidMode() bool
+	ValidMode(string) bool
 	Output() [][]string
 }
 

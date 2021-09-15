@@ -10,126 +10,85 @@ import (
 
 // MultipleTournamentTeamStats generate statistics data of multiple monster DYP tournaments by team
 type MultipleTournamentTeamStats struct {
-	option      stat.Option
-	tournaments []model.Tournament
-	players     []model.EntityPlayer
+	option stat.Option
+	games  []model.EntityGame
 }
 
 // NewMultipleTournamentTeamStats .
-func NewMultipleTournamentTeamStats(tournaments []model.Tournament, players []model.EntityPlayer, option stat.Option) *MultipleTournamentTeamStats {
+func NewMultipleTournamentTeamStats(games []model.EntityGame, option stat.Option) *MultipleTournamentTeamStats {
 	return &MultipleTournamentTeamStats{
-		option:      option,
-		tournaments: tournaments,
-		players:     players,
+		option: option,
+		games:  games,
 	}
 }
 
 // ValidMode .
-func (m MultipleTournamentTeamStats) ValidMode() bool {
-	for _, t := range m.tournaments {
-		if t.Mode != model.ModeMonsterDYP {
-			return false
-		}
-	}
-
-	return true
+func (m MultipleTournamentTeamStats) ValidMode(mode string) bool {
+	return mode == model.ModeMonsterDYP
 }
 
 // Output .
 func (m *MultipleTournamentTeamStats) Output() [][]string {
 	data := make(map[string]model.EntityTeam)
-	players := make(map[string]model.Player)
-	for _, t := range m.tournaments {
-		teams := make(map[string]model.Team)
-		for _, p := range t.Players {
-			if !p.Removed {
-				var found bool
-				for _, ep := range m.players {
-					if ep.IsPlayer(p.Name) {
-						found = true
-						p.Name = ep.Name
-						players[p.ID] = p
-						break
-					}
-				}
-				if !found {
-					fmt.Println(p.Name, "not found")
-				}
+	for _, g := range m.games {
+		t1p1Name := g.Team1[0]
+		t1p2Name := g.Team1[1]
+		t2p1Name := g.Team2[0]
+		t2p2Name := g.Team2[1]
+		team1Name := fmt.Sprintf("%s_%s", t1p1Name, t1p2Name)
+		if t1p1Name > t1p2Name {
+			team1Name = fmt.Sprintf("%s_%s", t1p2Name, t1p1Name)
+		}
+		team2Name := fmt.Sprintf("%s_%s", t2p1Name, t2p2Name)
+		if t2p1Name > t2p2Name {
+			team2Name = fmt.Sprintf("%s_%s", t2p2Name, t2p1Name)
+		}
+		var et1, et2 model.EntityTeam
+		if t, ok := data[team1Name]; ok {
+			et1 = t
+		} else {
+			et1 = model.EntityTeam{
+				Player1: t1p1Name,
+				Player2: t1p2Name,
 			}
 		}
-		for _, t := range t.Teams {
-			teams[t.ID] = t
+		if t, ok := data[team2Name]; ok {
+			et2 = t
+		} else {
+			et2 = model.EntityTeam{
+				Player1: t2p1Name,
+				Player2: t2p2Name,
+			}
 		}
+		timePlayed := g.TimePlayed
+		et1.Played++
+		et2.Played++
+		et1.TimePlayed += timePlayed
+		et2.TimePlayed += timePlayed
+		m.playedTimeStats(&et1, timePlayed)
+		m.playedTimeStats(&et2, timePlayed)
 
-		for _, r := range t.Rounds {
-			for _, p := range r.Plays {
-				if !p.Valid || p.Deactivated || p.Skipped {
-					continue
-				}
-				team1 := teams[p.Team1.ID]
-				team2 := teams[p.Team2.ID]
-				t1p1Name := players[team1.Players[0].ID].Name
-				t1p2Name := players[team1.Players[1].ID].Name
-				t2p1Name := players[team2.Players[0].ID].Name
-				t2p2Name := players[team2.Players[1].ID].Name
-				team1Name := fmt.Sprintf("%s_%s", t1p1Name, t1p2Name)
-				if t1p1Name > t1p2Name {
-					team1Name = fmt.Sprintf("%s_%s", t1p2Name, t1p1Name)
-				}
-				team2Name := fmt.Sprintf("%s_%s", t2p1Name, t2p2Name)
-				if t2p1Name > t2p2Name {
-					team2Name = fmt.Sprintf("%s_%s", t2p2Name, t2p1Name)
-				}
-				var et1, et2 model.EntityTeam
-				if t, ok := data[team1Name]; ok {
-					et1 = t
-				} else {
-					et1 = model.EntityTeam{
-						Player1: t1p1Name,
-						Player2: t1p2Name,
-					}
-				}
-				if t, ok := data[team2Name]; ok {
-					et2 = t
-				} else {
-					et2 = model.EntityTeam{
-						Player1: t2p1Name,
-						Player2: t2p2Name,
-					}
-				}
-				timePlayed := p.TimeEnd - p.TimeStart
-				et1.Played++
-				et2.Played++
-				et1.TimePlayed += timePlayed
-				et2.TimePlayed += timePlayed
-				m.playedTimeStats(&et1, timePlayed)
-				m.playedTimeStats(&et2, timePlayed)
-				for _, d := range p.Disciplines {
-					for _, s := range d.Sets {
-						if s.Team1 > s.Team2 {
-							et1.Won++
-							et2.Lost++
-							et1.GoalsWon += (s.Team1 - s.Team2)
-							et2.GoalsInLost += (s.Team1 - s.Team2)
-						} else if s.Team2 > s.Team1 {
-							et1.Lost++
-							et2.Won++
-							et2.GoalsWon += (s.Team2 - s.Team1)
-							et1.GoalsInLost += (s.Team2 - s.Team1)
-						} else {
-							et1.Draws++
-							et2.Draws++
-						}
-						et1.Goals += s.Team1
-						et2.Goals += s.Team2
-						et1.GoalsIn += s.Team2
-						et2.GoalsIn += s.Team1
-					}
-				}
-				data[team1Name] = et1
-				data[team2Name] = et2
-			}
+		if g.Point1 > g.Point2 {
+			et1.Won++
+			et2.Lost++
+			et1.GoalsWon += (g.Point1 - g.Point2)
+			et2.GoalsInLost += (g.Point1 - g.Point2)
+		} else if g.Point1 < g.Point2 {
+			et1.Lost++
+			et2.Won++
+			et2.GoalsWon += (g.Point2 - g.Point1)
+			et1.GoalsInLost += (g.Point2 - g.Point1)
+		} else {
+			et1.Draws++
+			et2.Draws++
 		}
+		et1.Goals += g.Point1
+		et2.Goals += g.Point2
+		et1.GoalsIn += g.Point2
+		et2.GoalsIn += g.Point1
+
+		data[team1Name] = et1
+		data[team2Name] = et2
 	}
 
 	var sliceData []model.EntityTeam
@@ -176,6 +135,9 @@ func (m *MultipleTournamentTeamStats) Output() [][]string {
 	}
 	table := [][]string{header}
 	for i, d := range sliceData {
+		if d.Played == 0 {
+			continue
+		}
 		goalDiff := fmt.Sprintf("%d", d.GoalDiff)
 		winRate := fmt.Sprintf("%.0f%%", d.WinRate)
 		item := []string{

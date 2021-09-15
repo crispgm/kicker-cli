@@ -1,13 +1,12 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
-	"io/ioutil"
 	"os"
 	"time"
 
 	"github.com/crispgm/kickertool-analyzer/model"
+	"github.com/crispgm/kickertool-analyzer/parser"
 	"github.com/crispgm/kickertool-analyzer/stat"
 	monsterdyp "github.com/crispgm/kickertool-analyzer/stat/monster_dyp"
 	"github.com/pterm/pterm"
@@ -49,7 +48,7 @@ func main() {
 		os.Exit(1)
 	}
 	pterm.Info.Println("Loading players ...")
-	players, err := parsePlayer(player)
+	players, err := parser.ParsePlayer(player)
 	if err != nil {
 		pterm.Error.Println("Load players failed:", err)
 		os.Exit(1)
@@ -68,7 +67,7 @@ func main() {
 	p, _ := pterm.DefaultProgressbar.WithTotal(len(files)).WithRemoveWhenDone().WithTitle("Processing tournaments data").Start()
 	for _, fn := range files {
 		pterm.Success.Println("Parsing", fn)
-		t, err := parseTournament(fn)
+		t, err := parser.ParseTournament(fn)
 		if err != nil {
 			pterm.Error.Println(err)
 			os.Exit(1)
@@ -76,6 +75,12 @@ func main() {
 		tournaments = append(tournaments, *t)
 		p.Increment()
 		time.Sleep(time.Millisecond * 100)
+	}
+	c := parser.NewConverter()
+	games, err := c.Normalize(tournaments, players)
+	if err != nil {
+		pterm.Error.Println(err)
+		os.Exit(1)
 	}
 
 	// calculating
@@ -86,42 +91,21 @@ func main() {
 		WithHomeAway:     withHomeAway,
 	}
 	if mode == "mts" {
-		statInfo = monsterdyp.NewMultipleTournamentStats(tournaments, players, option)
+		statInfo = monsterdyp.NewMultipleTournamentStats(games, option)
 	} else if mode == "mtt" {
-		statInfo = monsterdyp.NewMultipleTournamentTeamStats(tournaments, players, option)
+		statInfo = monsterdyp.NewMultipleTournamentTeamStats(games, option)
 	}
-	if statInfo.ValidMode() {
+	valid := true
+	for _, t := range tournaments {
+		if t.Mode != model.ModeMonsterDYP {
+			valid = false
+			break
+		}
+	}
+	if valid {
 		table := statInfo.Output()
 		if !dryRun {
 			pterm.DefaultTable.WithHasHeader().WithData(table).WithBoxed(true).Render()
 		}
 	}
-}
-
-func parseTournament(fn string) (*model.Tournament, error) {
-	data, err := ioutil.ReadFile(fn)
-	if err != nil {
-		return nil, err
-	}
-
-	var tournament model.Tournament
-	err = json.Unmarshal(data, &tournament)
-	if err != nil {
-		return nil, err
-	}
-	return &tournament, err
-}
-
-func parsePlayer(fn string) ([]model.EntityPlayer, error) {
-	data, err := ioutil.ReadFile(fn)
-	if err != nil {
-		return nil, err
-	}
-
-	var players []model.EntityPlayer
-	err = json.Unmarshal(data, &players)
-	if err != nil {
-		return nil, err
-	}
-	return players, err
 }
