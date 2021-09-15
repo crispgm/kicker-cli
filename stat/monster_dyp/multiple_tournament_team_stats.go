@@ -122,7 +122,11 @@ func (m *MultipleTournamentTeamStats) Output() [][]string {
 			if iWinLost > jWinLost {
 				return true
 			} else if iWinLost == jWinLost {
-				return sliceData[i].Won > sliceData[j].Won
+				if sliceData[i].GoalDiff > sliceData[j].GoalDiff {
+					return true
+				} else if sliceData[i].GoalDiff == sliceData[j].GoalDiff {
+					return sliceData[i].Goals > sliceData[j].Goals
+				}
 			}
 		}
 		return false

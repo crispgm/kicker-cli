@@ -13,7 +13,7 @@ go install github.com/crispgm/kickertool-analyzer/cmd/kicker-cli
 ## Usage
 
 1. Download `.ktool` files
-2. Build and run, which only allows file names (paths) as arguments, no any options.
+2. Build and run, which only allows file names (paths) as arguments.
 
 ## Notice
 
