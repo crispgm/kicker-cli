@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/crispgm/kickertool-analyzer/model"
+	"github.com/crispgm/kickertool-analyzer/operator"
+	monsterdyp "github.com/crispgm/kickertool-analyzer/operator/monster_dyp"
 	"github.com/crispgm/kickertool-analyzer/parser"
-	"github.com/crispgm/kickertool-analyzer/stat"
-	monsterdyp "github.com/crispgm/kickertool-analyzer/stat/monster_dyp"
 	"github.com/pterm/pterm"
 )
 
@@ -28,7 +28,7 @@ var (
 
 func main() {
 	flag.BoolVar(&dryRun, "dry-run", false, "Dry Run")
-	flag.StringVar(&mode, "mode", "", "Stat mode. Supported: mts, mtt")
+	flag.StringVar(&mode, "mode", "", "Stat mode. Supported: mdp, mdt")
 	flag.StringVar(&player, "player", "", "Players' data file")
 	flag.IntVar(&rankMinThreshold, "rmt", 0, "Rank Minimum Threshold")
 	flag.BoolVar(&withTime, "with-time", false, "With Time Analysis")
@@ -36,7 +36,7 @@ func main() {
 	flag.Parse()
 
 	// check mode
-	if supported, ok := stat.SupportedStat[mode]; !ok || !supported {
+	if supported, ok := operator.SupportedOperator[mode]; !ok || !supported {
 		pterm.Error.Println("Invalid mode", mode)
 		os.Exit(1)
 	}
@@ -84,16 +84,16 @@ func main() {
 	}
 
 	// calculating
-	var statInfo stat.BaseStat
-	option := stat.Option{
+	var statOperator operator.BaseOperator
+	option := operator.Option{
 		RankMinThreshold: rankMinThreshold,
 		WithTime:         withTime,
 		WithHomeAway:     withHomeAway,
 	}
-	if mode == "mts" {
-		statInfo = monsterdyp.NewMultipleTournamentStats(games, option)
-	} else if mode == "mtt" {
-		statInfo = monsterdyp.NewMultipleTournamentTeamStats(games, option)
+	if mode == model.ModeMonsterDYPPlayerStats {
+		statOperator = monsterdyp.NewPlayerStats(games, option)
+	} else if mode == model.ModeMonsterDYPTeamStats {
+		statOperator = monsterdyp.NewTeamStats(games, option)
 	}
 	valid := true
 	for _, t := range tournaments {
@@ -103,9 +103,11 @@ func main() {
 		}
 	}
 	if valid {
-		table := statInfo.Output()
+		table := statOperator.Output()
 		if !dryRun {
 			pterm.DefaultTable.WithHasHeader().WithData(table).WithBoxed(true).Render()
 		}
+	} else {
+		pterm.Error.Println("Unsupported tournament mode for this operator")
 	}
 }

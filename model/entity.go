@@ -2,6 +2,12 @@ package model
 
 import "strings"
 
+// Supported modes
+const (
+	ModeMonsterDYPPlayerStats = "mdp"
+	ModeMonsterDYPTeamStats   = "mdt"
+)
+
 // EntityGame is stat for single games
 type EntityGame struct {
 	Team1 []string

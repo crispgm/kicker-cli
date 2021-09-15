@@ -5,32 +5,32 @@ import (
 	"sort"
 
 	"github.com/crispgm/kickertool-analyzer/model"
-	"github.com/crispgm/kickertool-analyzer/stat"
+	"github.com/crispgm/kickertool-analyzer/operator"
 )
 
-// MultipleTournamentStats generate statistics data of multiple monster DYP tournaments
-type MultipleTournamentStats struct {
-	option stat.Option
+// PlayerStats generate statistics data of multiple monster DYP tournaments
+type PlayerStats struct {
+	option operator.Option
 	games  []model.EntityGame
 }
 
-// NewMultipleTournamentStats .
-func NewMultipleTournamentStats(games []model.EntityGame, option stat.Option) *MultipleTournamentStats {
-	return &MultipleTournamentStats{
+// NewPlayerStats .
+func NewPlayerStats(games []model.EntityGame, option operator.Option) *PlayerStats {
+	return &PlayerStats{
 		option: option,
 		games:  games,
 	}
 }
 
 // ValidMode .
-func (m MultipleTournamentStats) ValidMode(mode string) bool {
+func (p PlayerStats) ValidMode(mode string) bool {
 	return mode == model.ModeMonsterDYP
 }
 
 // Output .
-func (m *MultipleTournamentStats) Output() [][]string {
+func (p *PlayerStats) Output() [][]string {
 	data := make(map[string]model.EntityPlayer)
-	for _, g := range m.games {
+	for _, g := range p.games {
 		t1p1Data := data[g.Team1[0]]
 		t1p2Data := data[g.Team1[1]]
 		t2p1Data := data[g.Team2[0]]
@@ -47,10 +47,10 @@ func (m *MultipleTournamentStats) Output() [][]string {
 		t1p2Data.TimePlayed += g.TimePlayed
 		t2p1Data.TimePlayed += g.TimePlayed
 		t2p2Data.TimePlayed += g.TimePlayed
-		m.playedTimeStats(&t1p1Data, g.TimePlayed)
-		m.playedTimeStats(&t1p2Data, g.TimePlayed)
-		m.playedTimeStats(&t2p1Data, g.TimePlayed)
-		m.playedTimeStats(&t2p2Data, g.TimePlayed)
+		p.playedTimeStats(&t1p1Data, g.TimePlayed)
+		p.playedTimeStats(&t1p2Data, g.TimePlayed)
+		p.playedTimeStats(&t2p1Data, g.TimePlayed)
+		p.playedTimeStats(&t2p2Data, g.TimePlayed)
 		if g.Point1 > g.Point2 {
 			t1p1Data.Won++
 			t1p2Data.Won++
@@ -116,10 +116,10 @@ func (m *MultipleTournamentStats) Output() [][]string {
 		sliceData = append(sliceData, d)
 	}
 	sort.SliceStable(sliceData, func(i, j int) bool {
-		if sliceData[i].Played >= m.option.RankMinThreshold && sliceData[j].Played < m.option.RankMinThreshold {
+		if sliceData[i].Played >= p.option.RankMinThreshold && sliceData[j].Played < p.option.RankMinThreshold {
 			return true
 		}
-		if sliceData[i].Played < m.option.RankMinThreshold && sliceData[j].Played >= m.option.RankMinThreshold {
+		if sliceData[i].Played < p.option.RankMinThreshold && sliceData[j].Played >= p.option.RankMinThreshold {
 			return false
 		}
 
@@ -138,10 +138,10 @@ func (m *MultipleTournamentStats) Output() [][]string {
 	header := []string{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%", "PPG", "LPG", "DPW", "DPL"}
 	haHeader := []string{"HW", "HL", "HW%", "AW", "AL", "AW%"}
 	timeHeader := []string{"TPG", "LGP", "SGP"}
-	if m.option.WithHomeAway {
+	if p.option.WithHomeAway {
 		header = append(header, haHeader...)
 	}
-	if m.option.WithTime {
+	if p.option.WithTime {
 		header = append(header, timeHeader...)
 	}
 	table := [][]string{header}
@@ -164,7 +164,7 @@ func (m *MultipleTournamentStats) Output() [][]string {
 			fmt.Sprintf("%.2f", d.DiffPerWon),
 			fmt.Sprintf("%.2f", d.DiffPerLost),
 		}
-		if m.option.WithHomeAway {
+		if p.option.WithHomeAway {
 			item = append(item, []string{
 				fmt.Sprintf("%d", d.HomeWon),
 				fmt.Sprintf("%d", d.HomeLost),
@@ -174,7 +174,7 @@ func (m *MultipleTournamentStats) Output() [][]string {
 				fmt.Sprintf("%.0f%%", d.AwayWonRate),
 			}...)
 		}
-		if m.option.WithTime {
+		if p.option.WithTime {
 			item = append(item, []string{
 				fmt.Sprintf("%02d:%02d", d.TimePerGame/60, d.TimePerGame%60),
 				fmt.Sprintf("%02d:%02d", d.LongestGameTime/60, d.LongestGameTime%60),
@@ -186,7 +186,7 @@ func (m *MultipleTournamentStats) Output() [][]string {
 	return table
 }
 
-func (MultipleTournamentStats) playedTimeStats(data *model.EntityPlayer, timePlayed int) {
+func (PlayerStats) playedTimeStats(data *model.EntityPlayer, timePlayed int) {
 	if timePlayed < 0 || timePlayed > 1000*60*15 {
 		// consider illegal
 		return
