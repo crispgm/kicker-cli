@@ -38,7 +38,7 @@ func main() {
 	flag.Parse()
 
 	// check mode
-	if supported, ok := operator.SupportedOperator[mode]; !ok || !supported {
+	if !operator.IsSupported(mode) {
 		pterm.Error.Println("Invalid mode", mode)
 		os.Exit(1)
 	}
@@ -66,7 +66,11 @@ func main() {
 	var tournaments []model.Tournament
 
 	// parsing
-	p, _ := pterm.DefaultProgressbar.WithTotal(len(files)).WithRemoveWhenDone().WithTitle("Processing tournaments data").Start()
+	p, _ := pterm.DefaultProgressbar.
+		WithTotal(len(files)).
+		WithRemoveWhenDone().
+		WithTitle("Processing tournaments data").
+		Start()
 	for _, fn := range files {
 		pterm.Info.Println("Parsing", fn)
 		t, err := parser.ParseTournament(fn)

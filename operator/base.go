@@ -8,10 +8,18 @@ type BaseOperator interface {
 	Output() [][]string
 }
 
-// SupportedOperator .
-var SupportedOperator = map[string]bool{
+// supportedOperator .
+var supportedOperator = map[string]bool{
 	model.ModeMonsterDYPPlayerStats: true,
 	model.ModeMonsterDYPTeamStats:   true,
+}
+
+// IsSupported .
+func IsSupported(mode string) bool {
+	if supported, ok := supportedOperator[mode]; ok && supported {
+		return true
+	}
+	return false
 }
 
 // Option .
