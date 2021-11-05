@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/crispgm/kickertool-analyzer/elo"
 	"github.com/crispgm/kickertool-analyzer/model"
 	"github.com/crispgm/kickertool-analyzer/operator"
 )
@@ -92,6 +93,34 @@ func (p *PlayerStats) Output() [][]string {
 		t1p2Data.GoalsIn += g.Point2
 		t2p1Data.GoalsIn += g.Point1
 		t2p2Data.GoalsIn += g.Point1
+		t1p1Elo := elo.InitialScore
+		t1p2Elo := elo.InitialScore
+		t2p1Elo := elo.InitialScore
+		t2p2Elo := elo.InitialScore
+		if t1p1Data.EloRating != 0 {
+			t1p1Elo = t1p1Data.EloRating
+		}
+		if t1p2Data.EloRating != 0 {
+			t1p2Elo = t1p2Data.EloRating
+		}
+		if t2p1Data.EloRating != 0 {
+			t2p1Elo = t2p1Data.EloRating
+		}
+		if t2p2Data.EloRating != 0 {
+			t2p2Elo = t2p2Data.EloRating
+		}
+		rate := elo.Rate{
+			T1P1Score: t1p1Elo,
+			T1P2Score: t1p2Elo,
+			T2P1Score: t2p1Elo,
+			T2P2Score: t2p2Elo,
+			HostWin:   g.Point1 > g.Point2,
+		}
+		rate.CalcEloRating()
+		t1p1Data.EloRating = rate.T1P1Score
+		t1p2Data.EloRating = rate.T1P2Score
+		t2p1Data.EloRating = rate.T2P1Score
+		t2p2Data.EloRating = rate.T2P2Score
 		data[g.Team1[0]] = t1p1Data
 		data[g.Team1[1]] = t1p2Data
 		data[g.Team2[0]] = t2p1Data
@@ -123,19 +152,13 @@ func (p *PlayerStats) Output() [][]string {
 			return false
 		}
 
-		if sliceData[i].WinRate > sliceData[j].WinRate {
+		if sliceData[i].EloRating > sliceData[j].EloRating {
 			return true
-		} else if sliceData[i].WinRate == sliceData[j].WinRate {
-			if sliceData[i].GoalDiff > sliceData[j].GoalDiff {
-				return true
-			} else if sliceData[i].GoalDiff == sliceData[j].GoalDiff {
-				return sliceData[i].Goals > sliceData[j].Goals
-			}
 		}
 		return false
 	})
 
-	header := []string{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%"}
+	header := []string{"#", "Name", "Elo", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%"}
 	haHeader := []string{"HW", "HL", "HW%", "AW", "AL", "AW%"}
 	timeHeader := []string{"TPG", "LGP", "SGP"}
 	pointHeader := []string{"PPG", "LPG", "DPW", "DPL"}
@@ -156,6 +179,7 @@ func (p *PlayerStats) Output() [][]string {
 		item := []string{
 			fmt.Sprintf("%d", i+1),
 			d.Name,
+			fmt.Sprintf("%.0f", d.EloRating),
 			fmt.Sprintf("%d", d.Played),
 			fmt.Sprintf("%d", d.Won),
 			fmt.Sprintf("%d", d.Lost),

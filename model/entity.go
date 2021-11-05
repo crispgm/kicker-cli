@@ -64,6 +64,7 @@ type EntityPlayer struct {
 	AwayLost    int
 	AwayWonRate float32
 	WinRate     float32
+	EloRating   float64
 
 	Goals           int
 	GoalsIn         int
