@@ -26,9 +26,13 @@ type Class struct {
 // Rate holds Elo rating
 type Rate struct {
 	T1P1Score float64
+	T1P1Exp   float64
 	T1P2Score float64
+	T1P2Exp   float64
 	T2P1Score float64
+	T2P1Exp   float64
 	T2P2Score float64
+	T2P2Exp   float64
 	HostWin   bool
 }
 
@@ -40,10 +44,10 @@ func (r *Rate) CalcEloRating() {
 	team2Score := (float64(r.T2P1Score) + float64(r.T2P2Score)) / 2
 
 	// expectations
-	t1p1exp := 1 / (1 + math.Pow(10, float64(team2Score-float64(r.T1P1Score))/400))
-	t1p2exp := 1 / (1 + math.Pow(10, float64(team2Score-float64(r.T1P2Score))/400))
-	t2p1exp := 1 / (1 + math.Pow(10, float64(team1Score-float64(r.T2P1Score))/400))
-	t2p2exp := 1 / (1 + math.Pow(10, float64(team1Score-float64(r.T2P2Score))/400))
+	r.T1P1Exp = 1 / (1 + math.Pow(10, float64(team2Score-float64(r.T1P1Score))/400))
+	r.T1P2Exp = 1 / (1 + math.Pow(10, float64(team2Score-float64(r.T1P2Score))/400))
+	r.T2P1Exp = 1 / (1 + math.Pow(10, float64(team1Score-float64(r.T2P1Score))/400))
+	r.T2P2Exp = 1 / (1 + math.Pow(10, float64(team1Score-float64(r.T2P2Score))/400))
 
 	// update scores
 	delta1Score := 0.0
@@ -53,8 +57,8 @@ func (r *Rate) CalcEloRating() {
 	} else {
 		delta2Score = WonScore
 	}
-	r.T1P1Score = math.Round(float64(r.T1P1Score) + K*(delta1Score-float64(t1p1exp)))
-	r.T1P2Score = math.Round(float64(r.T1P2Score) + K*(delta1Score-float64(t1p2exp)))
-	r.T2P1Score = math.Round(float64(r.T2P1Score) + K*(delta2Score-float64(t2p1exp)))
-	r.T2P2Score = math.Round(float64(r.T2P2Score) + K*(delta2Score-float64(t2p2exp)))
+	r.T1P1Score = math.Round(float64(r.T1P1Score) + K*(delta1Score-float64(r.T1P1Exp)))
+	r.T1P2Score = math.Round(float64(r.T1P2Score) + K*(delta1Score-float64(r.T1P2Exp)))
+	r.T2P1Score = math.Round(float64(r.T2P1Score) + K*(delta2Score-float64(r.T2P1Exp)))
+	r.T2P2Score = math.Round(float64(r.T2P2Score) + K*(delta2Score-float64(r.T2P2Exp)))
 }

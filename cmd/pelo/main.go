@@ -36,16 +36,26 @@ func main() {
 	raw.CalcEloRating()
 
 	fmt.Println("Estimated Elo rating:")
+
 	fmt.Println("- If host won:")
-	fmt.Println("  > [Team 1] Player 1:", t1p1Score, "->", rhw.T1P1Score, pterm.Green("+", rhw.T1P1Score-t1p1Score))
-	fmt.Println("  > [Team 1] Player 2:", t1p2Score, "->", rhw.T1P2Score, pterm.Green("+", rhw.T1P2Score-t1p2Score))
-	fmt.Println("  > [Team 2] Player 3:", t2p1Score, "->", rhw.T2P1Score, pterm.Red(rhw.T2P1Score-t2p1Score))
-	fmt.Println("  > [Team 2] Player 4:", t2p2Score, "->", rhw.T2P2Score, pterm.Red(rhw.T2P2Score-t2p2Score))
+	hostWonData := [][]string{
+		{"Team", "Player", "Cur Score", "Expect", "New Score", "Rating Change"},
+		{"1", "1", fmt.Sprintf("%.f", t1p1Score), fmt.Sprintf("%.2f%%", rhw.T1P1Exp*100), fmt.Sprintf("%.f", rhw.T1P1Score), pterm.Green("+", rhw.T1P1Score-t1p1Score)},
+		{"1", "2", fmt.Sprintf("%.f", t1p2Score), fmt.Sprintf("%.2f%%", rhw.T1P2Exp*100), fmt.Sprintf("%.f", rhw.T1P2Score), pterm.Green("+", rhw.T1P2Score-t1p2Score)},
+		{"2", "1", fmt.Sprintf("%.f", t2p1Score), fmt.Sprintf("%.2f%%", rhw.T2P1Exp*100), fmt.Sprintf("%.f", rhw.T2P1Score), pterm.Red(rhw.T2P1Score - t2p1Score)},
+		{"2", "2", fmt.Sprintf("%.f", t2p2Score), fmt.Sprintf("%.2f%%", rhw.T2P2Exp*100), fmt.Sprintf("%.f", rhw.T2P2Score), pterm.Red(rhw.T2P2Score - t2p2Score)},
+	}
+	pterm.DefaultTable.WithHasHeader().WithData(hostWonData).WithBoxed(true).Render()
+
 	fmt.Println("- If away won:")
-	fmt.Println("  > [Team 1] Player 1:", t1p1Score, "->", raw.T1P1Score, pterm.Red(raw.T1P1Score-t1p1Score))
-	fmt.Println("  > [Team 1] Player 2:", t1p2Score, "->", raw.T1P2Score, pterm.Red(raw.T1P2Score-t1p2Score))
-	fmt.Println("  > [Team 2] Player 3:", t2p1Score, "->", raw.T2P1Score, pterm.Green("+", raw.T2P1Score-t2p1Score))
-	fmt.Println("  > [Team 2] Player 4:", t2p2Score, "->", raw.T2P2Score, pterm.Green("+", raw.T2P2Score-t2p2Score))
+	awayWonData := [][]string{
+		{"Team", "Player", "Cur Score", "Expect", "New Score", "Rating Change"},
+		{"1", "1", fmt.Sprintf("%.f", t1p1Score), fmt.Sprintf("%.2f%%", raw.T1P1Exp*100), fmt.Sprintf("%.f", raw.T1P1Score), pterm.Red(raw.T1P1Score - t1p1Score)},
+		{"1", "2", fmt.Sprintf("%.f", t1p2Score), fmt.Sprintf("%.2f%%", raw.T1P2Exp*100), fmt.Sprintf("%.f", raw.T1P2Score), pterm.Red(raw.T1P2Score - t1p2Score)},
+		{"2", "1", fmt.Sprintf("%.f", t2p1Score), fmt.Sprintf("%.2f%%", raw.T2P1Exp*100), fmt.Sprintf("%.f", raw.T2P1Score), pterm.Green("+", raw.T2P1Score-t2p1Score)},
+		{"2", "2", fmt.Sprintf("%.f", t2p2Score), fmt.Sprintf("%.2f%%", raw.T2P2Exp*100), fmt.Sprintf("%.f", raw.T2P2Score), pterm.Green("+", raw.T2P2Score-t2p2Score)},
+	}
+	pterm.DefaultTable.WithHasHeader().WithData(awayWonData).WithBoxed(true).Render()
 }
 
 func convertToFloat(in string) float64 {
