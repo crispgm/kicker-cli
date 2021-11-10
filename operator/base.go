@@ -6,6 +6,7 @@ import "github.com/crispgm/kickertool-analyzer/model"
 type BaseOperator interface {
 	ValidMode(string) bool
 	Output() [][]string
+	Details() []model.EntityPlayer
 }
 
 // supportedOperator .
@@ -28,4 +29,5 @@ type Option struct {
 	WithTime         bool
 	WithHomeAway     bool
 	WithPoint        bool
+	Incremental      bool
 }

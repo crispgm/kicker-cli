@@ -39,6 +39,16 @@ func ParsePlayer(fn string) ([]model.EntityPlayer, error) {
 	return players, err
 }
 
+// WritePlayer .
+func WritePlayer(fn string, players []model.EntityPlayer) error {
+	b, err := json.Marshal(players)
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(fn, b, 0o644)
+	return err
+}
+
 // Converter .
 type Converter struct {
 	eGames   []model.EntityGame

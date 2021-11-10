@@ -11,15 +11,17 @@ import (
 
 // PlayerStats generate statistics data of multiple monster DYP tournaments
 type PlayerStats struct {
-	option operator.Option
-	games  []model.EntityGame
+	option  operator.Option
+	games   []model.EntityGame
+	players []model.EntityPlayer
 }
 
 // NewPlayerStats .
-func NewPlayerStats(games []model.EntityGame, option operator.Option) *PlayerStats {
+func NewPlayerStats(games []model.EntityGame, players []model.EntityPlayer, option operator.Option) *PlayerStats {
 	return &PlayerStats{
-		option: option,
-		games:  games,
+		games:   games,
+		players: players,
+		option:  option,
 	}
 }
 
@@ -31,6 +33,9 @@ func (p PlayerStats) ValidMode(mode string) bool {
 // Output .
 func (p *PlayerStats) Output() [][]string {
 	data := make(map[string]model.EntityPlayer)
+	for _, p := range p.players {
+		data[p.Name] = p
+	}
 	for _, g := range p.games {
 		t1p1Data := data[g.Team1[0]]
 		t1p2Data := data[g.Team1[1]]
@@ -144,6 +149,7 @@ func (p *PlayerStats) Output() [][]string {
 		}
 		sliceData = append(sliceData, d)
 	}
+	p.players = sliceData
 	sort.SliceStable(sliceData, func(i, j int) bool {
 		if sliceData[i].Played >= p.option.RankMinThreshold && sliceData[j].Played < p.option.RankMinThreshold {
 			return true
@@ -229,4 +235,9 @@ func (PlayerStats) playedTimeStats(data *model.EntityPlayer, timePlayed int) {
 	if data.ShortestGameTime > timePlayed || data.ShortestGameTime == 0 {
 		data.ShortestGameTime = timePlayed
 	}
+}
+
+// Details .
+func (p *PlayerStats) Details() []model.EntityPlayer {
+	return p.players
 }
