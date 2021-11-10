@@ -137,15 +137,23 @@ func (p *PlayerStats) Output() [][]string {
 		d.GoalDiff = d.Goals - d.GoalsIn
 		if d.Played != 0 {
 			d.WinRate = float32(d.Won) / float32(d.Played) * 100.0
-			d.HomeWonRate = float32(d.HomeWon) / float32(d.HomeWon+d.HomeLost) * 100.0
-			d.AwayWonRate = float32(d.AwayWon) / float32(d.AwayWon+d.AwayLost) * 100.0
+			if d.HomeWon+d.HomeLost > 0 {
+				d.HomeWonRate = float32(d.HomeWon) / float32(d.HomeWon+d.HomeLost) * 100.0
+			}
+			if d.AwayWon+d.AwayLost > 0 {
+				d.AwayWonRate = float32(d.AwayWon) / float32(d.AwayWon+d.AwayLost) * 100.0
+			}
 			d.PointsPerGame = float32(d.Goals) / float32(d.Played)
 			d.PointsInPerGame = float32(d.GoalsIn) / float32(d.Played)
 			d.TimePerGame = d.TimePlayed / d.Played / 1000
 			d.LongestGameTime /= 1000
 			d.ShortestGameTime /= 1000
-			d.DiffPerWon = float32(d.GoalsWon) / float32(d.Won)
-			d.DiffPerLost = float32(d.GoalsInLost) / float32(d.Lost)
+			if d.Won > 0 {
+				d.DiffPerWon = float32(d.GoalsWon) / float32(d.Won)
+			}
+			if d.Lost > 0 {
+				d.DiffPerLost = float32(d.GoalsInLost) / float32(d.Lost)
+			}
 		}
 		sliceData = append(sliceData, d)
 	}
@@ -179,9 +187,6 @@ func (p *PlayerStats) Output() [][]string {
 	}
 	table := [][]string{header}
 	for i, d := range sliceData {
-		if d.Played == 0 {
-			continue
-		}
 		item := []string{
 			fmt.Sprintf("%d", i+1),
 			d.Name,

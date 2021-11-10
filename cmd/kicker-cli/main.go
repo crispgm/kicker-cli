@@ -4,7 +4,6 @@ import (
 	"flag"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/crispgm/kickertool-analyzer/model"
 	"github.com/crispgm/kickertool-analyzer/operator"
@@ -87,7 +86,6 @@ func main() {
 		}
 		tournaments = append(tournaments, *t)
 		p.Increment()
-		time.Sleep(time.Millisecond * 100)
 	}
 	c := parser.NewConverter()
 	games, err := c.Normalize(tournaments, players)
@@ -125,7 +123,10 @@ func main() {
 			if incremental {
 				players = statOperator.Details()
 				if len(players) > 0 {
-					parser.WritePlayer(player, players)
+					err = parser.WritePlayer(player, players)
+					if err != nil {
+						panic(err)
+					}
 				}
 			}
 		}
