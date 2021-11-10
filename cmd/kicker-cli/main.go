@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/crispgm/kickertool-analyzer/model"
@@ -74,6 +75,10 @@ func main() {
 		WithTitle("Processing tournaments data").
 		Start()
 	for _, fn := range files {
+		if !strings.HasSuffix(fn, ".ktool") {
+			pterm.Warning.Println("Not .ktool file, ignored:", fn)
+			continue
+		}
 		pterm.Info.Println("Parsing", fn)
 		t, err := parser.ParseTournament(fn)
 		if err != nil {
