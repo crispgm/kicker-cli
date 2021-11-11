@@ -11,15 +11,17 @@ import (
 
 // PlayerStats generate statistics data of multiple monster DYP tournaments
 type PlayerStats struct {
-	option operator.Option
-	games  []model.EntityGame
+	option  operator.Option
+	games   []model.EntityGame
+	players []model.EntityPlayer
 }
 
 // NewPlayerStats .
-func NewPlayerStats(games []model.EntityGame, option operator.Option) *PlayerStats {
+func NewPlayerStats(games []model.EntityGame, players []model.EntityPlayer, option operator.Option) *PlayerStats {
 	return &PlayerStats{
-		option: option,
-		games:  games,
+		games:   games,
+		players: players,
+		option:  option,
 	}
 }
 
@@ -31,6 +33,9 @@ func (p PlayerStats) ValidMode(mode string) bool {
 // Output .
 func (p *PlayerStats) Output() [][]string {
 	data := make(map[string]model.EntityPlayer)
+	for _, p := range p.players {
+		data[p.Name] = p
+	}
 	for _, g := range p.games {
 		t1p1Data := data[g.Team1[0]]
 		t1p2Data := data[g.Team1[1]]
@@ -132,18 +137,27 @@ func (p *PlayerStats) Output() [][]string {
 		d.GoalDiff = d.Goals - d.GoalsIn
 		if d.Played != 0 {
 			d.WinRate = float32(d.Won) / float32(d.Played) * 100.0
-			d.HomeWonRate = float32(d.HomeWon) / float32(d.HomeWon+d.HomeLost) * 100.0
-			d.AwayWonRate = float32(d.AwayWon) / float32(d.AwayWon+d.AwayLost) * 100.0
+			if d.HomeWon+d.HomeLost > 0 {
+				d.HomeWonRate = float32(d.HomeWon) / float32(d.HomeWon+d.HomeLost) * 100.0
+			}
+			if d.AwayWon+d.AwayLost > 0 {
+				d.AwayWonRate = float32(d.AwayWon) / float32(d.AwayWon+d.AwayLost) * 100.0
+			}
 			d.PointsPerGame = float32(d.Goals) / float32(d.Played)
 			d.PointsInPerGame = float32(d.GoalsIn) / float32(d.Played)
 			d.TimePerGame = d.TimePlayed / d.Played / 1000
 			d.LongestGameTime /= 1000
 			d.ShortestGameTime /= 1000
-			d.DiffPerWon = float32(d.GoalsWon) / float32(d.Won)
-			d.DiffPerLost = float32(d.GoalsInLost) / float32(d.Lost)
+			if d.Won > 0 {
+				d.DiffPerWon = float32(d.GoalsWon) / float32(d.Won)
+			}
+			if d.Lost > 0 {
+				d.DiffPerLost = float32(d.GoalsInLost) / float32(d.Lost)
+			}
 		}
 		sliceData = append(sliceData, d)
 	}
+	p.players = sliceData
 	sort.SliceStable(sliceData, func(i, j int) bool {
 		if sliceData[i].Played >= p.option.RankMinThreshold && sliceData[j].Played < p.option.RankMinThreshold {
 			return true
@@ -173,9 +187,6 @@ func (p *PlayerStats) Output() [][]string {
 	}
 	table := [][]string{header}
 	for i, d := range sliceData {
-		if d.Played == 0 {
-			continue
-		}
 		item := []string{
 			fmt.Sprintf("%d", i+1),
 			d.Name,
@@ -229,4 +240,9 @@ func (PlayerStats) playedTimeStats(data *model.EntityPlayer, timePlayed int) {
 	if data.ShortestGameTime > timePlayed || data.ShortestGameTime == 0 {
 		data.ShortestGameTime = timePlayed
 	}
+}
+
+// Details .
+func (p *PlayerStats) Details() []model.EntityPlayer {
+	return p.players
 }

@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"os"
-	"time"
+	"strings"
 
 	"github.com/crispgm/kickertool-analyzer/model"
 	"github.com/crispgm/kickertool-analyzer/operator"
@@ -25,16 +25,18 @@ var (
 	withTime         bool
 	withHomeAway     bool
 	withPoint        bool
+	incremental      bool
 )
 
 func main() {
 	flag.BoolVar(&dryRun, "dry-run", false, "Dry Run")
 	flag.StringVar(&mode, "mode", "", "Stat mode. Supported: mdp, mdt")
 	flag.StringVar(&player, "player", "", "Players' data file")
-	flag.IntVar(&rankMinThreshold, "rmt", 0, "Rank Minimum Threshold")
-	flag.BoolVar(&withTime, "with-time", false, "With Time Analysis")
-	flag.BoolVar(&withHomeAway, "with-home-away", false, "With Home/Away Analysis")
-	flag.BoolVar(&withPoint, "with-point", false, "With Point Analysis")
+	flag.IntVar(&rankMinThreshold, "rmt", 0, "Rank minimum threshold")
+	flag.BoolVar(&withTime, "with-time", false, "With time analysis")
+	flag.BoolVar(&withHomeAway, "with-home-away", false, "With home/away analysis")
+	flag.BoolVar(&withPoint, "with-point", false, "With point analysis")
+	flag.BoolVar(&incremental, "incremental", false, "Update player's data incrementally")
 	flag.Parse()
 
 	// check mode
@@ -72,6 +74,10 @@ func main() {
 		WithTitle("Processing tournaments data").
 		Start()
 	for _, fn := range files {
+		if !strings.HasSuffix(fn, ".ktool") {
+			pterm.Warning.Println("Not .ktool file, ignored:", fn)
+			continue
+		}
 		pterm.Info.Println("Parsing", fn)
 		t, err := parser.ParseTournament(fn)
 		if err != nil {
@@ -80,7 +86,6 @@ func main() {
 		}
 		tournaments = append(tournaments, *t)
 		p.Increment()
-		time.Sleep(time.Millisecond * 100)
 	}
 	c := parser.NewConverter()
 	games, err := c.Normalize(tournaments, players)
@@ -96,9 +101,10 @@ func main() {
 		WithTime:         withTime,
 		WithHomeAway:     withHomeAway,
 		WithPoint:        withPoint,
+		Incremental:      incremental,
 	}
 	if mode == model.ModeMonsterDYPPlayerStats {
-		statOperator = monsterdyp.NewPlayerStats(games, option)
+		statOperator = monsterdyp.NewPlayerStats(games, players, option)
 	} else if mode == model.ModeMonsterDYPTeamStats {
 		statOperator = monsterdyp.NewTeamStats(games, option)
 	}
@@ -114,6 +120,15 @@ func main() {
 		table := statOperator.Output()
 		if !dryRun {
 			pterm.DefaultTable.WithHasHeader().WithData(table).WithBoxed(true).Render()
+			if incremental {
+				players = statOperator.Details()
+				if len(players) > 0 {
+					err = parser.WritePlayer(player, players)
+					if err != nil {
+						panic(err)
+					}
+				}
+			}
 		}
 	} else {
 		pterm.Error.Println("Unsupported tournament mode for this operator")

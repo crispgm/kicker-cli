@@ -191,3 +191,8 @@ func (TeamStats) playedTimeStats(data *model.EntityTeam, timePlayed int) {
 		data.ShortestGameTime = timePlayed
 	}
 }
+
+// Details .
+func (t *TeamStats) Details() []model.EntityPlayer {
+	return nil
+}
