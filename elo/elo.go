@@ -61,4 +61,17 @@ func (r *Rate) CalcEloRating() {
 	r.T1P2Score = math.Round(float64(r.T1P2Score) + K*(delta1Score-float64(r.T1P2Exp)))
 	r.T2P1Score = math.Round(float64(r.T2P1Score) + K*(delta2Score-float64(r.T2P1Exp)))
 	r.T2P2Score = math.Round(float64(r.T2P2Score) + K*(delta2Score-float64(r.T2P2Exp)))
+
+	if r.T1P1Score < 0 {
+		r.T1P1Score = 0
+	}
+	if r.T1P2Score < 0 {
+		r.T1P2Score = 0
+	}
+	if r.T2P1Score < 0 {
+		r.T2P1Score = 0
+	}
+	if r.T2P2Score < 0 {
+		r.T2P2Score = 0
+	}
 }
