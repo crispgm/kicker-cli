@@ -34,6 +34,7 @@ type Rate struct {
 	T2P2Score float64
 	T2P2Exp   float64
 	HostWin   bool
+	K         float64
 }
 
 // CalcEloRating calc elo rating based on scores
@@ -57,10 +58,10 @@ func (r *Rate) CalcEloRating() {
 	} else {
 		delta2Score = WonScore
 	}
-	r.T1P1Score = math.Round(float64(r.T1P1Score) + K*(delta1Score-float64(r.T1P1Exp)))
-	r.T1P2Score = math.Round(float64(r.T1P2Score) + K*(delta1Score-float64(r.T1P2Exp)))
-	r.T2P1Score = math.Round(float64(r.T2P1Score) + K*(delta2Score-float64(r.T2P1Exp)))
-	r.T2P2Score = math.Round(float64(r.T2P2Score) + K*(delta2Score-float64(r.T2P2Exp)))
+	r.T1P1Score = math.Round(float64(r.T1P1Score) + r.K*(delta1Score-float64(r.T1P1Exp)))
+	r.T1P2Score = math.Round(float64(r.T1P2Score) + r.K*(delta1Score-float64(r.T1P2Exp)))
+	r.T2P1Score = math.Round(float64(r.T2P1Score) + r.K*(delta2Score-float64(r.T2P1Exp)))
+	r.T2P2Score = math.Round(float64(r.T2P2Score) + r.K*(delta2Score-float64(r.T2P2Exp)))
 
 	if r.T1P1Score < 0 {
 		r.T1P1Score = 0

@@ -24,6 +24,7 @@ func main() {
 		T2P1Score: t2p1Score,
 		T2P2Score: t2p2Score,
 		HostWin:   true,
+		K:         10,
 	}
 	rhw.CalcEloRating()
 	raw := elo.Rate{
@@ -32,6 +33,7 @@ func main() {
 		T2P1Score: t2p1Score,
 		T2P2Score: t2p2Score,
 		HostWin:   false,
+		K:         10,
 	}
 	raw.CalcEloRating()
 

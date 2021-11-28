@@ -120,6 +120,7 @@ func (p *PlayerStats) Output() [][]string {
 			T2P1Score: t2p1Elo,
 			T2P2Score: t2p2Elo,
 			HostWin:   g.Point1 > g.Point2,
+			K:         10,
 		}
 		rate.CalcEloRating()
 		t1p1Data.EloRating = rate.T1P1Score

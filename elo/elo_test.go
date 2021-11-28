@@ -9,6 +9,7 @@ func TestEloScore(t *testing.T) {
 		T2P1Score: 904,
 		T2P2Score: 895,
 		HostWin:   false,
+		K:         10,
 	}
 	r.CalcEloRating()
 	t.Log(r)
