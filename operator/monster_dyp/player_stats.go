@@ -167,8 +167,14 @@ func (p *PlayerStats) Output() [][]string {
 			return false
 		}
 
-		if sliceData[i].EloRating > sliceData[j].EloRating {
-			return true
+		if p.option.OrderBy == "elo" {
+			if sliceData[i].EloRating > sliceData[j].EloRating {
+				return true
+			}
+		} else {
+			if sliceData[i].WinRate > sliceData[j].WinRate {
+				return true
+			}
 		}
 		return false
 	})

@@ -21,6 +21,7 @@ var (
 	dryRun bool
 
 	// Options
+	orderBy          string
 	rankMinThreshold int
 	withTime         bool
 	withHomeAway     bool
@@ -32,6 +33,7 @@ func main() {
 	flag.BoolVar(&dryRun, "dry-run", false, "Dry Run")
 	flag.StringVar(&mode, "mode", "", "Stat mode. Supported: mdp, mdt")
 	flag.StringVar(&player, "player", "", "Players' data file")
+	flag.StringVar(&orderBy, "order-by", "wr", "Order by `wr` (win rate) or `elo` (ELO ranking)")
 	flag.IntVar(&rankMinThreshold, "rmt", 0, "Rank minimum threshold")
 	flag.BoolVar(&withTime, "with-time", false, "With time analysis")
 	flag.BoolVar(&withHomeAway, "with-home-away", false, "With home/away analysis")
@@ -45,6 +47,13 @@ func main() {
 		os.Exit(1)
 	}
 	pterm.Info.Println("Statistics mode:", mode)
+
+	// check orderBy
+	if mode == model.ModeMonsterDYPTeamStats && orderBy != "wr" && orderBy != "elo" {
+		pterm.Error.Println("Invalid order", orderBy)
+		os.Exit(1)
+	}
+	pterm.Info.Println("Order by:", orderBy)
 
 	// load players
 	if len(player) == 0 {
@@ -97,6 +106,7 @@ func main() {
 	// calculating
 	var statOperator operator.BaseOperator
 	option := operator.Option{
+		OrderBy:          orderBy,
 		RankMinThreshold: rankMinThreshold,
 		WithTime:         withTime,
 		WithHomeAway:     withHomeAway,

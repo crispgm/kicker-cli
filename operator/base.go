@@ -25,6 +25,7 @@ func IsSupported(mode string) bool {
 
 // Option .
 type Option struct {
+	OrderBy          string
 	RankMinThreshold int
 	WithTime         bool
 	WithHomeAway     bool
