@@ -1,20 +1,47 @@
 # kickertool-analyzer
 
-Data analyzer of Kickertool.
+Data analyzer tools of Kickertool.
 
-It currently only output statistics data of multiple kickertool tournaments, so that it only supports Monster DYP mode.
+## kicker-cli
 
-## Install
+Statistics data of multiple `.ktool` files, by which organizers could analyzer and rank inside an organization across multiple events.
+
+_Notice_: Only Monster DYP mode is supported.
 
 ```bash
-go install github.com/crispgm/kickertool-analyzer/cmd/kicker-cli
+go install github.com/crispgm/kickertool-analyzer/cmd/kicker-cli@latest
 ```
 
-## Usage
+### Usage
 
 1. Download `.ktool` files
-2. Build and run, which only allows file names (paths) as arguments.
+2. Setup `players.json`
+3. Run command
 
-## Notice
+```text
+Usage of kicker-cli:
 
-It is ranked by Win Rate > Goal Difference > Goals.
+  -dry-run
+        Dry Run
+  -elo-k int
+        Elo K factor (default 10)
+  -incremental
+        Update player's data incrementally
+  -mode string
+        Stat mode. Supported: mdp, mdt
+  -order-by wr
+        Order by wr (win rate) or `elo` (ELO ranking) (default "wr")
+  -player string
+        Players' data file
+  -rmt int
+        Rank minimum threshold
+  -with-home-away
+        With home/away analysis
+  -with-point
+        With point analysis
+  -with-time
+        With time analysis
+
+## pelo
+
+Simple tool to show estimated ELO change between two teams/players.
