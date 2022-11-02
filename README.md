@@ -41,7 +41,14 @@ Usage of kicker-cli:
         With point analysis
   -with-time
         With time analysis
+```
 
 ## pelo
 
-Simple tool to show estimated ELO change between two teams/players.
+Simple tool to show estimated ELO changes between two teams/players.
+
+```shell
+$ pelo 1100 1200
+$ pelo 1103 1203 1289 1013
+$ pelo -k 20 1103 1203 1289 1013
+```
