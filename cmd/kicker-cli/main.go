@@ -1,3 +1,4 @@
+// Package main kicker-cli
 package main
 
 import (
@@ -5,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/crispgm/kickertool-analyzer/elo"
 	"github.com/crispgm/kickertool-analyzer/model"
 	"github.com/crispgm/kickertool-analyzer/operator"
 	monsterdyp "github.com/crispgm/kickertool-analyzer/operator/monster_dyp"
@@ -27,6 +29,7 @@ var (
 	withHomeAway     bool
 	withPoint        bool
 	incremental      bool
+	eloKFactor       int
 )
 
 func main() {
@@ -35,6 +38,7 @@ func main() {
 	flag.StringVar(&player, "player", "", "Players' data file")
 	flag.StringVar(&orderBy, "order-by", "wr", "Order by `wr` (win rate) or `elo` (ELO ranking)")
 	flag.IntVar(&rankMinThreshold, "rmt", 0, "Rank minimum threshold")
+	flag.IntVar(&eloKFactor, "elo-k", elo.K, "Elo K factor")
 	flag.BoolVar(&withTime, "with-time", false, "With time analysis")
 	flag.BoolVar(&withHomeAway, "with-home-away", false, "With home/away analysis")
 	flag.BoolVar(&withPoint, "with-point", false, "With point analysis")
@@ -108,6 +112,7 @@ func main() {
 	option := operator.Option{
 		OrderBy:          orderBy,
 		RankMinThreshold: rankMinThreshold,
+		EloKFactor:       eloKFactor,
 		WithTime:         withTime,
 		WithHomeAway:     withHomeAway,
 		WithPoint:        withPoint,
