@@ -17,13 +17,16 @@ var (
 )
 
 func main() {
-	flag.IntVar(&eloKFactor, "elo-k", elo.K, "Elo K factor")
+	flag.IntVar(&eloKFactor, "k", elo.K, "Elo K factor")
+	flag.Usage = usage
 	flag.Parse()
 
 	players := flag.Args()
 	numOfPlayers := len(players)
 	if numOfPlayers < 2 {
 		pterm.Error.Println("Invalid params")
+		usage()
+		return
 	}
 	if numOfPlayers >= 4 {
 		teamMode = true
@@ -109,4 +112,14 @@ func main() {
 func convertToFloat(in string) float64 {
 	out, _ := strconv.Atoi(in)
 	return float64(out)
+}
+
+func usage() {
+	fmt.Println("Usage:")
+	fmt.Println("  pelo [-k=10] player-ratings...")
+	fmt.Println()
+	fmt.Println("  - Examples:")
+	fmt.Println("    pelo 1500 1300")
+	fmt.Println("    pelo 1500 1300 1400 1100")
+	fmt.Println("    pelo -k=50 1500 1300")
 }
