@@ -23,6 +23,11 @@ type Class struct {
 	Title string
 }
 
+// TitleName returns title name
+func (c Class) TitleName() string {
+	return c.Title
+}
+
 // Rate holds Elo rating
 type Rate struct {
 	T1P1Score float64

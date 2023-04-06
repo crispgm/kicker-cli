@@ -65,7 +65,7 @@ var Classes = []Class{
 		Title: "Starter A",
 	},
 	{
-		Low:   100,
+		Low:   0,
 		High:  199,
 		Title: "Starter B",
 	},
