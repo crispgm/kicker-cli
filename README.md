@@ -1,21 +1,40 @@
-# kickertool-analyzer
+# kicker-cli
 
-Data analyzer tools of Kickertool.
+Foosball organization, event, and data analyzers based on [Kickertool]().
 
-## kicker-cli
+Kickertool is a powerful tournament software that enables everyone to run foosball event.
+`kicker-cli` allows you to maintain data from Kickertool with the support of organization and event management,
+by which organizers could manage, analyze and rank inside an organization across multiple events.
 
-Statistics data of multiple `.ktool` files, by which organizers could analyzer and rank inside an organization across multiple events.
+## Features
 
-_Notice_: Only Monster DYP mode is supported.
+- [x] Players database
+- [x] Multiple files data aggregation
+- [x] Players' rank by win rate and ELO score
+- [ ] Organization
+- [ ] Data file management
+- [ ] Result-based score
+- [ ] Tournament support with levels
+
+### Game Modes
+
+- [x] MonsterDYP
+
+### Operators
+
+- Player Statistics
+- Team Statistics
+
+## Installation
 
 ```bash
-go install github.com/crispgm/kickertool-analyzer/cmd/kicker-cli@latest
+go install github.com/crispgm/kicker-cli/cmd/kicker-cli@latest
 ```
 
-### Usage
+## Usage
 
 1. Download `.ktool` files
-2. Setup `players.json`
+2. Setup players' database
 3. Run command
 
 ```text
@@ -43,12 +62,10 @@ Usage of kicker-cli:
         With time analysis
 ```
 
-## pelo
+## Known Issues
 
-Simple tool to show estimated ELO changes between two teams/players.
+- Game duration is inaccurate because we actually don't input the result as soon as the game is finished.
 
-```shell
-$ pelo 1100 1200
-$ pelo 1103 1203 1289 1013
-$ pelo -k 20 1103 1203 1289 1013
-```
+## License
+
+[MIT](/LICENSE)
