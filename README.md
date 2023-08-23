@@ -57,6 +57,13 @@ Show players:
 kicker-cli player list
 ```
 
+ELO emulation:
+```shell
+pelo 1100 1200
+pelo 1103 1203 1289 1013
+pelo -k 20 1103 1203 1289 1013`,
+```
+
 ## Known Issues
 
 - Game duration is inaccurate because we actually don't input the result as soon as the game is finished.
