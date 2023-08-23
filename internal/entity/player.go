@@ -1,49 +1,11 @@
-package model
+package entity
 
-import "strings"
-
-// Supported modes
-const (
-	ModeMonsterDYPPlayerStats = "mdp"
-	ModeMonsterDYPTeamStats   = "mdt"
+import (
+	"strings"
 )
 
-// EntityGame is stat for single games
-type EntityGame struct {
-	Team1 []string
-	Team2 []string
-
-	TimePlayed int
-	Point1     int
-	Point2     int
-}
-
-// EntityTeam .
-type EntityTeam struct {
-	Player1          string
-	Player2          string
-	Played           int
-	TimePlayed       int
-	Won              int
-	Lost             int
-	Draws            int
-	Goals            int
-	GoalsIn          int
-	GoalDiff         int
-	WinRate          float32
-	TimePerGame      int
-	PointsPerGame    float32
-	PointsInPerGame  float32
-	GoalsWon         int
-	DiffPerWon       float32
-	GoalsInLost      int
-	DiffPerLost      float32
-	LongestGameTime  int
-	ShortestGameTime int
-}
-
-// EntityPlayer .
-type EntityPlayer struct {
+// Player .
+type Player struct {
 	Name    string
 	Aliases []string
 
@@ -75,7 +37,7 @@ type EntityPlayer struct {
 }
 
 // IsPlayer .
-func (p EntityPlayer) IsPlayer(name string) bool {
+func (p Player) IsPlayer(name string) bool {
 	name = strings.ToLower(strings.Trim(name, " "))
 	if name == strings.ToLower(p.Name) {
 		return true

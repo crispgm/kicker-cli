@@ -1,18 +1,21 @@
+// Package operator .
 package operator
 
-import "github.com/crispgm/kickertool-analyzer/model"
+import (
+	"github.com/crispgm/kickertool-analyzer/internal/entity"
+)
 
 // BaseOperator .
 type BaseOperator interface {
 	ValidMode(string) bool
 	Output() [][]string
-	Details() []model.EntityPlayer
+	Details() []entity.Player
 }
 
 // supportedOperator .
 var supportedOperator = map[string]bool{
-	model.ModeMonsterDYPPlayerStats: true,
-	model.ModeMonsterDYPTeamStats:   true,
+	entity.ModeMonsterDYPPlayerStats: true,
+	entity.ModeMonsterDYPTeamStats:   true,
 }
 
 // IsSupported .

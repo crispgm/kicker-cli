@@ -6,11 +6,14 @@ import (
 	"os"
 	"strings"
 
-	"github.com/crispgm/kickertool-analyzer/elo"
-	"github.com/crispgm/kickertool-analyzer/model"
-	"github.com/crispgm/kickertool-analyzer/operator"
-	monsterdyp "github.com/crispgm/kickertool-analyzer/operator/monster_dyp"
-	"github.com/crispgm/kickertool-analyzer/parser"
+	"github.com/crispgm/kickertool-analyzer/internal/converter"
+	"github.com/crispgm/kickertool-analyzer/internal/entity"
+	"github.com/crispgm/kickertool-analyzer/internal/operator"
+	monsterdyp "github.com/crispgm/kickertool-analyzer/internal/operator/monster_dyp"
+	iparser "github.com/crispgm/kickertool-analyzer/internal/parser"
+	"github.com/crispgm/kickertool-analyzer/pkg/elo"
+	"github.com/crispgm/kickertool-analyzer/pkg/ktool/model"
+	"github.com/crispgm/kickertool-analyzer/pkg/ktool/parser"
 	"github.com/pterm/pterm"
 )
 
@@ -53,7 +56,7 @@ func main() {
 	pterm.Info.Println("Statistics mode:", mode)
 
 	// check orderBy
-	if mode == model.ModeMonsterDYPTeamStats && orderBy != "wr" && orderBy != "elo" {
+	if mode == entity.ModeMonsterDYPTeamStats && orderBy != "wr" && orderBy != "elo" {
 		pterm.Error.Println("Invalid order", orderBy)
 		os.Exit(1)
 	}
@@ -65,7 +68,7 @@ func main() {
 		os.Exit(1)
 	}
 	pterm.Info.Println("Loading players ...")
-	players, err := parser.ParsePlayer(player)
+	players, err := iparser.ParsePlayer(player)
 	if err != nil {
 		pterm.Error.Println("Load players failed:", err)
 		os.Exit(1)
@@ -100,7 +103,7 @@ func main() {
 		tournaments = append(tournaments, *t)
 		p.Increment()
 	}
-	c := parser.NewConverter()
+	c := converter.NewConverter()
 	games, err := c.Normalize(tournaments, players)
 	if err != nil {
 		pterm.Error.Println(err)
@@ -118,9 +121,9 @@ func main() {
 		WithPoint:        withPoint,
 		Incremental:      incremental,
 	}
-	if mode == model.ModeMonsterDYPPlayerStats {
+	if mode == entity.ModeMonsterDYPPlayerStats {
 		statOperator = monsterdyp.NewPlayerStats(games, players, option)
-	} else if mode == model.ModeMonsterDYPTeamStats {
+	} else if mode == entity.ModeMonsterDYPTeamStats {
 		statOperator = monsterdyp.NewTeamStats(games, option)
 	}
 	valid := true
@@ -138,7 +141,7 @@ func main() {
 			if incremental {
 				players = statOperator.Details()
 				if len(players) > 0 {
-					err = parser.WritePlayer(player, players)
+					err = iparser.WritePlayer(player, players)
 					if err != nil {
 						panic(err)
 					}

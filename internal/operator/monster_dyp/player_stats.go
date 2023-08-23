@@ -1,23 +1,25 @@
+// Package monsterdyp is operators for mdyp
 package monsterdyp
 
 import (
 	"fmt"
 	"sort"
 
-	"github.com/crispgm/kickertool-analyzer/elo"
-	"github.com/crispgm/kickertool-analyzer/model"
-	"github.com/crispgm/kickertool-analyzer/operator"
+	"github.com/crispgm/kickertool-analyzer/internal/entity"
+	"github.com/crispgm/kickertool-analyzer/internal/operator"
+	"github.com/crispgm/kickertool-analyzer/pkg/elo"
+	"github.com/crispgm/kickertool-analyzer/pkg/ktool/model"
 )
 
 // PlayerStats generate statistics data of multiple monster DYP tournaments
 type PlayerStats struct {
 	option  operator.Option
-	games   []model.EntityGame
-	players []model.EntityPlayer
+	games   []entity.Game
+	players []entity.Player
 }
 
 // NewPlayerStats .
-func NewPlayerStats(games []model.EntityGame, players []model.EntityPlayer, option operator.Option) *PlayerStats {
+func NewPlayerStats(games []entity.Game, players []entity.Player, option operator.Option) *PlayerStats {
 	return &PlayerStats{
 		games:   games,
 		players: players,
@@ -32,7 +34,7 @@ func (p PlayerStats) ValidMode(mode string) bool {
 
 // Output .
 func (p *PlayerStats) Output() [][]string {
-	data := make(map[string]model.EntityPlayer)
+	data := make(map[string]entity.Player)
 	for _, p := range p.players {
 		data[p.Name] = p
 	}
@@ -133,7 +135,7 @@ func (p *PlayerStats) Output() [][]string {
 		data[g.Team2[1]] = t2p2Data
 	}
 
-	var sliceData []model.EntityPlayer
+	var sliceData []entity.Player
 	for _, d := range data {
 		d.GoalDiff = d.Goals - d.GoalsIn
 		if d.Played != 0 {
@@ -236,7 +238,7 @@ func (p *PlayerStats) Output() [][]string {
 	return table
 }
 
-func (PlayerStats) playedTimeStats(data *model.EntityPlayer, timePlayed int) {
+func (PlayerStats) playedTimeStats(data *entity.Player, timePlayed int) {
 	if timePlayed < 0 || timePlayed > 1000*60*15 {
 		// consider illegal
 		return
@@ -250,6 +252,6 @@ func (PlayerStats) playedTimeStats(data *model.EntityPlayer, timePlayed int) {
 }
 
 // Details .
-func (p *PlayerStats) Details() []model.EntityPlayer {
+func (p *PlayerStats) Details() []entity.Player {
 	return p.players
 }

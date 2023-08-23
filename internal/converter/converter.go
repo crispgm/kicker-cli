@@ -1,57 +1,16 @@
-package parser
+// Package converter .
+package converter
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"github.com/crispgm/kickertool-analyzer/internal/entity"
+	"github.com/crispgm/kickertool-analyzer/pkg/ktool/model"
 	"sync"
-
-	"github.com/crispgm/kickertool-analyzer/model"
 )
-
-// ParseTournament .
-func ParseTournament(fn string) (*model.Tournament, error) {
-	data, err := ioutil.ReadFile(fn)
-	if err != nil {
-		return nil, err
-	}
-
-	var tournament model.Tournament
-	err = json.Unmarshal(data, &tournament)
-	if err != nil {
-		return nil, err
-	}
-	return &tournament, err
-}
-
-// ParsePlayer .
-func ParsePlayer(fn string) ([]model.EntityPlayer, error) {
-	data, err := ioutil.ReadFile(fn)
-	if err != nil {
-		return nil, err
-	}
-
-	var players []model.EntityPlayer
-	err = json.Unmarshal(data, &players)
-	if err != nil {
-		return nil, err
-	}
-	return players, err
-}
-
-// WritePlayer .
-func WritePlayer(fn string, players []model.EntityPlayer) error {
-	b, err := json.Marshal(players)
-	if err != nil {
-		return err
-	}
-	err = ioutil.WriteFile(fn, b, 0o644)
-	return err
-}
 
 // Converter .
 type Converter struct {
-	eGames   []model.EntityGame
+	eGames   []entity.Game
 	briefing string
 
 	mu *sync.RWMutex
@@ -65,7 +24,7 @@ func NewConverter() *Converter {
 }
 
 // Normalize .
-func (c *Converter) Normalize(tournaments []model.Tournament, ePlayers []model.EntityPlayer) ([]model.EntityGame, error) {
+func (c *Converter) Normalize(tournaments []model.Tournament, ePlayers []entity.Player) ([]entity.Game, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 
@@ -103,7 +62,7 @@ func (c *Converter) Normalize(tournaments []model.Tournament, ePlayers []model.E
 				t1p2 := players[team1.Players[1].ID]
 				t2p1 := players[team2.Players[0].ID]
 				t2p2 := players[team2.Players[1].ID]
-				var game model.EntityGame
+				var game entity.Game
 				game.Team1 = []string{t1p1.Name, t1p2.Name}
 				game.Team2 = []string{t2p1.Name, t2p2.Name}
 				game.TimePlayed = (p.TimeEnd - p.TimeStart) / 1000

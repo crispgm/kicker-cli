@@ -4,18 +4,19 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/crispgm/kickertool-analyzer/model"
-	"github.com/crispgm/kickertool-analyzer/operator"
+	"github.com/crispgm/kickertool-analyzer/internal/entity"
+	"github.com/crispgm/kickertool-analyzer/internal/operator"
+	"github.com/crispgm/kickertool-analyzer/pkg/ktool/model"
 )
 
 // TeamStats generate statistics data of multiple monster DYP tournaments by team
 type TeamStats struct {
 	option operator.Option
-	games  []model.EntityGame
+	games  []entity.Game
 }
 
 // NewTeamStats .
-func NewTeamStats(games []model.EntityGame, option operator.Option) *TeamStats {
+func NewTeamStats(games []entity.Game, option operator.Option) *TeamStats {
 	return &TeamStats{
 		option: option,
 		games:  games,
@@ -29,7 +30,7 @@ func (t TeamStats) ValidMode(mode string) bool {
 
 // Output .
 func (t *TeamStats) Output() [][]string {
-	data := make(map[string]model.EntityTeam)
+	data := make(map[string]entity.Team)
 	for _, g := range t.games {
 		t1p1Name := g.Team1[0]
 		t1p2Name := g.Team1[1]
@@ -43,11 +44,11 @@ func (t *TeamStats) Output() [][]string {
 		if t2p1Name > t2p2Name {
 			team2Name = fmt.Sprintf("%s_%s", t2p2Name, t2p1Name)
 		}
-		var et1, et2 model.EntityTeam
+		var et1, et2 entity.Team
 		if t, ok := data[team1Name]; ok {
 			et1 = t
 		} else {
-			et1 = model.EntityTeam{
+			et1 = entity.Team{
 				Player1: t1p1Name,
 				Player2: t1p2Name,
 			}
@@ -55,7 +56,7 @@ func (t *TeamStats) Output() [][]string {
 		if t, ok := data[team2Name]; ok {
 			et2 = t
 		} else {
-			et2 = model.EntityTeam{
+			et2 = entity.Team{
 				Player1: t2p1Name,
 				Player2: t2p2Name,
 			}
@@ -91,7 +92,7 @@ func (t *TeamStats) Output() [][]string {
 		data[team2Name] = et2
 	}
 
-	var sliceData []model.EntityTeam
+	var sliceData []entity.Team
 	for _, d := range data {
 		d.GoalDiff = d.Goals - d.GoalsIn
 		if d.Played != 0 {
@@ -179,7 +180,7 @@ func (t *TeamStats) Output() [][]string {
 	return table
 }
 
-func (TeamStats) playedTimeStats(data *model.EntityTeam, timePlayed int) {
+func (TeamStats) playedTimeStats(data *entity.Team, timePlayed int) {
 	if timePlayed < 0 || timePlayed > 1000*60*15 {
 		// consider illegal
 		return
@@ -193,6 +194,6 @@ func (TeamStats) playedTimeStats(data *model.EntityTeam, timePlayed int) {
 }
 
 // Details .
-func (t *TeamStats) Details() []model.EntityPlayer {
+func (t *TeamStats) Details() []entity.Player {
 	return nil
 }
