@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/crispgm/kickertool-analyzer/internal/entity"
-	"github.com/crispgm/kickertool-analyzer/internal/operator"
-	"github.com/crispgm/kickertool-analyzer/pkg/elo"
-	"github.com/crispgm/kickertool-analyzer/pkg/ktool/model"
+	"github.com/crispgm/kicker-cli/internal/entity"
+	"github.com/crispgm/kicker-cli/internal/operator"
+	"github.com/crispgm/kicker-cli/pkg/elo"
+	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 )
 
 // PlayerStats generate statistics data of multiple monster DYP tournaments

@@ -2,7 +2,7 @@
 package operator
 
 import (
-	"github.com/crispgm/kickertool-analyzer/internal/entity"
+	"github.com/crispgm/kicker-cli/internal/entity"
 )
 
 // BaseOperator .

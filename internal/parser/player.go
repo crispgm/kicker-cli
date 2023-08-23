@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	"github.com/crispgm/kickertool-analyzer/internal/entity"
+	"github.com/crispgm/kicker-cli/internal/entity"
 )
 
 // ParsePlayer .

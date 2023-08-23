@@ -7,7 +7,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/crispgm/kickertool-analyzer/pkg/elo"
+	"github.com/crispgm/kicker-cli/pkg/elo"
 	"github.com/pterm/pterm"
 )
 
