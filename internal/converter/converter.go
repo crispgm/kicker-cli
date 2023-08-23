@@ -3,8 +3,8 @@ package converter
 
 import (
 	"fmt"
-	"github.com/crispgm/kickertool-analyzer/internal/entity"
-	"github.com/crispgm/kickertool-analyzer/pkg/ktool/model"
+	"github.com/crispgm/kicker-cli/internal/entity"
+	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 	"sync"
 )
 

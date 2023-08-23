@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	"github.com/crispgm/kickertool-analyzer/pkg/ktool/model"
+	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 )
 
 // ParseTournament .
