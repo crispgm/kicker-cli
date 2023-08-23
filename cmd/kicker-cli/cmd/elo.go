@@ -1,31 +1,40 @@
-// Package main pelo shows estimated ELO changes between two teams/players
-package main
+package cmd
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"strconv"
 
 	"github.com/crispgm/kicker-cli/pkg/elo"
 	"github.com/pterm/pterm"
+	"github.com/spf13/cobra"
 )
+
+func init() {
+	eloCmd.PersistentFlags().IntVarP(&eloKFactor, "elo-k", "k", elo.K, "K factor")
+	rootCmd.AddCommand(eloCmd)
+}
 
 var (
 	eloKFactor int
 	teamMode   bool
 )
 
-func main() {
-	flag.IntVar(&eloKFactor, "k", elo.K, "Elo K factor")
-	flag.Usage = usage
-	flag.Parse()
+var eloCmd = &cobra.Command{
+	Use:   "elo",
+	Short: "Simple tool to show estimated ELO changes between two teams/players.",
+	Long: `Simple tool to show estimated ELO changes between two teams/players.
+$ pelo 1100 1200
+$ pelo 1103 1203 1289 1013
+$ pelo -k 20 1103 1203 1289 1013`,
+	Run: eloMain,
+}
 
-	players := flag.Args()
-	numOfPlayers := len(players)
+func eloMain(cmd *cobra.Command, args []string) {
+	numOfPlayers := len(args)
 	if numOfPlayers < 2 {
 		pterm.Error.Println("Invalid params")
-		usage()
+		cmd.Usage()
 		return
 	}
 	if numOfPlayers >= 4 {
@@ -112,14 +121,4 @@ func main() {
 func convertToFloat(in string) float64 {
 	out, _ := strconv.Atoi(in)
 	return float64(out)
-}
-
-func usage() {
-	fmt.Println("Usage:")
-	fmt.Println("  pelo [-k=10] player-ratings...")
-	fmt.Println()
-	fmt.Println("  - Examples:")
-	fmt.Println("    pelo 1500 1300")
-	fmt.Println("    pelo 1500 1300 1400 1100")
-	fmt.Println("    pelo -k=50 1500 1300")
 }

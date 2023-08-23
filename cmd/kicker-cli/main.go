@@ -6,14 +6,15 @@ import (
 	"os"
 	"strings"
 
-	"github.com/crispgm/kickertool-analyzer/internal/converter"
-	"github.com/crispgm/kickertool-analyzer/internal/entity"
-	"github.com/crispgm/kickertool-analyzer/internal/operator"
-	monsterdyp "github.com/crispgm/kickertool-analyzer/internal/operator/monster_dyp"
-	iparser "github.com/crispgm/kickertool-analyzer/internal/parser"
-	"github.com/crispgm/kickertool-analyzer/pkg/elo"
-	"github.com/crispgm/kickertool-analyzer/pkg/ktool/model"
-	"github.com/crispgm/kickertool-analyzer/pkg/ktool/parser"
+	"github.com/crispgm/kicker-cli/cmd/kicker-cli/cmd"
+	"github.com/crispgm/kicker-cli/internal/converter"
+	"github.com/crispgm/kicker-cli/internal/entity"
+	"github.com/crispgm/kicker-cli/internal/operator"
+	monsterdyp "github.com/crispgm/kicker-cli/internal/operator/monster_dyp"
+	iparser "github.com/crispgm/kicker-cli/internal/parser"
+	"github.com/crispgm/kicker-cli/pkg/elo"
+	"github.com/crispgm/kicker-cli/pkg/ktool/model"
+	"github.com/crispgm/kicker-cli/pkg/ktool/parser"
 	"github.com/pterm/pterm"
 )
 
@@ -36,6 +37,10 @@ var (
 )
 
 func main() {
+	cmd.Execute()
+}
+
+func oldmain() {
 	flag.BoolVar(&dryRun, "dry-run", false, "Dry Run")
 	flag.StringVar(&mode, "mode", "", "Stat mode. Supported: mdp, mdt")
 	flag.StringVar(&player, "player", "", "Players' data file")
