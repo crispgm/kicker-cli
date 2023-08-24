@@ -42,30 +42,31 @@ Init a workspace:
 # init with current folder
 kicker-cli init
 # init with existing folder
-kicker-cli init --workspace=/path/to/workspace
+kicker-cli init --path=/path/to/workspace
 ```
 
 Import `.ktool` files:
 ```shell
 # download from Kickertool and then
-kicker-cli import /path/to/ktool
+kicker-cli import --path=/path/to/ktool
 ```
 
 Get rank:
 ```shell
-kicker-cli rank
+kicker-cli rank --name "my event name"
+kicker-cli rank --all
 ```
 
 Show players:
 ```shell
-kicker-cli player list
+kicker-cli player
 ```
 
 ELO emulation:
 ```shell
-pelo 1100 1200
-pelo 1103 1203 1289 1013
-pelo -k 20 1103 1203 1289 1013`,
+kicker-cli elo 1100 1200
+kicker-cli elo 1103 1203 1289 1013
+kicker-cli elo 1103 1203 1289 1013 -k 20
 ```
 
 ## Known Issues
