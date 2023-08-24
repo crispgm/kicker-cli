@@ -22,8 +22,8 @@ var (
 )
 
 func init() {
-	rankCmd.PersistentFlags().StringVarP(&rankGameMode, "mode", "m", "", "Rank mode")
-	rankCmd.PersistentFlags().StringVarP(&rankEventName, "name", "n", "", "Event name")
+	rankCmd.Flags().StringVarP(&rankGameMode, "mode", "m", "", "Rank mode")
+	rankCmd.Flags().StringVarP(&rankEventName, "name", "n", "", "Event name")
 	rootCmd.AddCommand(rankCmd)
 }
 

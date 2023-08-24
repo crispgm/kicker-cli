@@ -19,9 +19,9 @@ var (
 )
 
 func init() {
-	importCmd.PersistentFlags().StringVarP(&importPath, "path", "p", "", "Path to imported files")
-	importCmd.PersistentFlags().StringVarP(&eventName, "name", "n", "", "Event name")
-	importCmd.PersistentFlags().IntVarP(&points, "points", "", entity.DefaultPoints, "Points for the event")
+	importCmd.Flags().StringVarP(&importPath, "path", "p", "", "Path to imported files")
+	importCmd.Flags().StringVarP(&eventName, "name", "n", "", "Event name")
+	importCmd.Flags().IntVarP(&points, "points", "", entity.DefaultPoints, "Points for the event")
 	rootCmd.AddCommand(importCmd)
 }
 

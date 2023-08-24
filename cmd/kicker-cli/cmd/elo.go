@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	eloCmd.PersistentFlags().IntVarP(&eloKFactor, "elo-k", "k", elo.K, "K factor")
+	eloCmd.Flags().IntVarP(&eloKFactor, "elo-k", "k", elo.K, "K factor")
 	rootCmd.AddCommand(eloCmd)
 }
 

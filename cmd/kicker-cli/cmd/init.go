@@ -17,8 +17,8 @@ var (
 )
 
 func init() {
-	initCmd.PersistentFlags().StringVarP(&initPath, "path", "p", ".", "Path to folder")
-	initCmd.PersistentFlags().StringVarP(&orgName, "name", "n", "Foosball", "Organization name")
+	initCmd.Flags().StringVarP(&initPath, "path", "p", ".", "Path to folder")
+	initCmd.Flags().StringVarP(&orgName, "name", "n", "Foosball", "Organization name")
 	rootCmd.AddCommand(initCmd)
 }
 
