@@ -10,6 +10,10 @@ import (
 	"github.com/crispgm/kicker-cli/internal/app"
 )
 
+var (
+	dryRun bool
+)
+
 var rootCmd = &cobra.Command{
 	Use:     "kicker-cli",
 	Long:    `A Foosball data aggregator, analyzers, and manager based on Kickertool.`,
@@ -20,6 +24,7 @@ var rootCmd = &cobra.Command{
 
 func init() {
 	cobra.OnInitialize()
+	rootCmd.PersistentFlags().BoolVarP(&dryRun, "dry-run", "", false, "Dry Run")
 }
 
 // Execute .

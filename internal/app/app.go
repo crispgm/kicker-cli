@@ -1,7 +1,11 @@
 // Package app .
 package app
 
-import "path/filepath"
+import (
+	"path/filepath"
+
+	"github.com/crispgm/kicker-cli/internal/entity"
+)
 
 // Version of app
 const Version = "1.0.0"
@@ -28,4 +32,15 @@ func NewApp(path, name string) *App {
 // DataPath returns path to data files
 func (app App) DataPath() string {
 	return filepath.Join(app.Path, "/data")
+}
+
+// GetEvent returns event with the given name. Otherwise, return nil.
+func (app App) GetEvent(idOrName string) *entity.Event {
+	for _, e := range app.Conf.Events {
+		if idOrName == e.Name || idOrName == e.ID {
+			return &e
+		}
+	}
+
+	return nil
 }
