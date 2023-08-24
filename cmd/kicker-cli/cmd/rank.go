@@ -19,11 +19,13 @@ import (
 var (
 	rankGameMode  string
 	rankEventName string
+	allEvents     bool
 )
 
 func init() {
 	rankCmd.Flags().StringVarP(&rankGameMode, "mode", "m", "", "Rank mode")
 	rankCmd.Flags().StringVarP(&rankEventName, "name", "n", "", "Event name")
+	rankCmd.Flags().BoolVarP(&allEvents, "all", "a", false, "Rank all events")
 	rootCmd.AddCommand(rankCmd)
 }
 
@@ -38,24 +40,30 @@ var rankCmd = &cobra.Command{
 			pterm.Error.Println("Not a valid kicker workspace")
 			os.Exit(1)
 		}
-		e := instance.GetEvent(rankEventName)
-		if e == nil {
-			pterm.Error.Println("Event not found")
-			os.Exit(1)
+		var files []string
+		if allEvents {
+			for _, e := range instance.Conf.Events {
+				files = append(files, e.Path)
+			}
+		} else {
+			e := instance.GetEvent(rankEventName)
+			if e == nil {
+				pterm.Error.Println("Event not found")
+				os.Exit(1)
+			}
 		}
-		pterm.Info.Println("Loading players ...")
-		// load tournaments
-		pterm.Info.Println("Loading tournaments ...")
-		var tournaments []model.Tournament
 
-		// parsing
-		pterm.Info.Println("Parsing", e.Name)
-		t, err := parser.ParseTournament(filepath.Join(instance.DataPath(), e.Path))
-		if err != nil {
-			pterm.Error.Println(err)
-			os.Exit(1)
+		// load tournaments
+		var tournaments []model.Tournament
+		pterm.Info.Println("Loading tournaments ...")
+		for _, p := range files {
+			t, err := parser.ParseTournament(filepath.Join(instance.DataPath(), p))
+			if err != nil {
+				pterm.Error.Println(err)
+				os.Exit(1)
+			}
+			tournaments = append(tournaments, *t)
 		}
-		tournaments = append(tournaments, *t)
 		c := converter.NewConverter()
 		games, err := c.Normalize(tournaments, instance.Conf.Players)
 		if err != nil {

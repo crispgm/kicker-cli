@@ -3,7 +3,7 @@ module github.com/crispgm/kicker-cli
 go 1.16
 
 require (
-	github.com/google/uuid v1.3.1 // indirect
+	github.com/google/uuid v1.3.1
 	github.com/gookit/color v1.5.1 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/pterm/pterm v0.12.45

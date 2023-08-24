@@ -1,6 +1,7 @@
 # kicker-cli
 
 [![build](https://github.com/crispgm/kicker-cli/actions/workflows/build.yml/badge.svg)](https://github.com/crispgm/kicker-cli/actions/workflows/build.yml)
+[![codecov](https://codecov.io/gh/crispgm/kicker-cli/graph/badge.svg?token=MMGE8I5YNI)](https://codecov.io/gh/crispgm/kicker-cli)
 
 A Foosball data aggregator, analyzers, and manager based on [Kickertool](https://app.kickertool.de/).
 
@@ -10,17 +11,18 @@ by which organizers could manage, analyze and rank inside an organization across
 
 ## Features
 
-- [x] Players database
-- [x] Multiple files data aggregation
-- [x] Players' rank by win rate and ELO score
-- [ ] Organization database
-- [ ] Tournament database
-- [ ] Data file management
+- Organization, Events, and Players database
+- Multiple files data aggregation
+- Rank for players and teams with win rate and ELO score
 - [ ] Result-based score
 
 ### Game Modes
 
-- [x] MonsterDYP
+- [ ] Swiss System
+- [ ] Round
+- MonsterDYP
+- [ ] Double Elimination
+- [ ] Elimination
 
 ### Operators
 
