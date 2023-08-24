@@ -1,5 +1,7 @@
 # kicker-cli
 
+[![build](https://github.com/crispgm/kicker-cli/actions/workflows/build.yml/badge.svg)](https://github.com/crispgm/kicker-cli/actions/workflows/build.yml)
+
 A Foosball data aggregator, analyzers, and manager based on [Kickertool](https://app.kickertool.de/).
 
 Kickertool is a powerful tournament software that enables everyone to run foosball event.
