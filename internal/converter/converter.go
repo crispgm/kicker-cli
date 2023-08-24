@@ -3,9 +3,10 @@ package converter
 
 import (
 	"fmt"
+	"sync"
+
 	"github.com/crispgm/kicker-cli/internal/entity"
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
-	"sync"
 )
 
 // Converter .
