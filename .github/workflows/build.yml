@@ -31,6 +31,9 @@ jobs:
     - name: lint
       uses: morphy2k/revive-action@v2
 
+    - name: test
+      run: ./scripts/test.sh
+
     - name: codecov
       uses: codecov/codecov-action@v3
       env:
