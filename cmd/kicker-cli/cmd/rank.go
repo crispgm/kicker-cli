@@ -57,7 +57,7 @@ var rankCmd = &cobra.Command{
 		var tournaments []model.Tournament
 		pterm.Info.Println("Loading tournaments ...")
 		for _, p := range files {
-			t, err := parser.ParseTournament(filepath.Join(instance.DataPath(), p))
+			t, err := parser.ParseFile(filepath.Join(instance.DataPath(), p))
 			if err != nil {
 				pterm.Error.Println(err)
 				os.Exit(1)

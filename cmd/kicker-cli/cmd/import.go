@@ -10,6 +10,7 @@ import (
 	"github.com/crispgm/kicker-cli/internal/app"
 	"github.com/crispgm/kicker-cli/internal/entity"
 	"github.com/crispgm/kicker-cli/internal/util"
+	"github.com/crispgm/kicker-cli/pkg/ktool/parser"
 )
 
 var (
@@ -39,6 +40,15 @@ var importCmd = &cobra.Command{
 		if err != nil {
 			pterm.Error.Println("Not a valid kicker workspace")
 			os.Exit(1)
+		}
+
+		t, err := parser.ParseFile(importPath)
+		if err != nil {
+			pterm.Error.Println("Unable to parse file")
+			os.Exit(1)
+		}
+		if eventName == "" {
+			eventName = t.Name
 		}
 
 		pterm.Info.Printfln("Importing \"%s\" `%s` ...", eventName, importPath)

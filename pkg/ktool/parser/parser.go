@@ -8,8 +8,8 @@ import (
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 )
 
-// ParseTournament .
-func ParseTournament(fn string) (*model.Tournament, error) {
+// ParseFile .
+func ParseFile(fn string) (*model.Tournament, error) {
 	data, err := ioutil.ReadFile(fn)
 	if err != nil {
 		return nil, err

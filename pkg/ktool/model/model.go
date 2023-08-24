@@ -1,18 +1,35 @@
+// Package model of kickertool
 package model
+
+import "time"
 
 // Modes
 const (
-	ModeMonsterDYP = "monster_dyp"
+	ModeSwissSystem       = "swiss_system"
+	ModeRounds            = "rounds"
+	ModeRoundRobin        = "round_robin"
+	ModeMonsterDYP        = "monster_dyp"
+	ModeDoubleElimination = "double_elimination"
+	ModeElimination       = "elimination"
 )
 
 // Tournament .
 type Tournament struct {
-	Name      string   `json:"name"`
-	Mode      string   `json:"mode"`
+	Name     string    `json:"name"`
+	Created  time.Time `json:"created"`
+	Version  string    `json:"version"`
+	Mode     string    `json:"mode"`
+	NameType string    `json:"nameType"`
+
 	NumRounds int      `json:"numRounds"`
-	Players   []Player `json:"players,omitempty"`
-	Teams     []Team
-	Rounds    []Round `json:"rounds,omitempty"`
+	Players   []Player `json:"players"`
+	Teams     []Team   `json:"teams"`
+
+	// for pre-eliminations
+	Rounds []Round `json:"rounds"`
+
+	// for eliminations
+	KnockOffs []KnockOff `json:"ko"`
 }
 
 // Team .
@@ -63,4 +80,10 @@ type Discipline struct {
 type Set struct {
 	Team1 int `json:"team1"`
 	Team2 int `json:"team2"`
+}
+
+// KnockOff .
+type KnockOff struct {
+	Levels     []Play `json:"levels"`
+	LeftLevels []Play `json:"leftLevels"`
 }
