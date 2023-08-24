@@ -4,36 +4,37 @@ import (
 	"strings"
 )
 
-// Player .
+// Player is a real world player
 type Player struct {
-	Name    string
-	Aliases []string
+	ID      string   `yaml:"id"`
+	Name    string   `yaml:"name"`
+	Aliases []string `yaml:"aliases"`
 
-	Played           int     `yaml:"played,omitempty"`
-	TimePlayed       int     `yaml:"time_played,omitempty"`
-	LongestGameTime  int     `yaml:"longest_game_time,omitempty"`
-	ShortestGameTime int     `yaml:"shortest_game_time,omitempty"`
-	TimePerGame      int     `yaml:"time_per_game,omitempty"`
-	Won              int     `yaml:"won,omitempty"`
-	Lost             int     `yaml:"lost,omitempty"`
-	Draws            int     `yaml:"draws,omitempty"`
-	HomeWon          int     `yaml:"home_won,omitempty"`
-	HomeLost         int     `yaml:"home_lost,omitempty"`
-	HomeWonRate      float32 `yaml:"home_won_rate,omitempty"`
-	AwayWon          int     `yaml:"away_won,omitempty"`
-	AwayLost         int     `yaml:"away_lost,omitempty"`
-	AwayWonRate      float32 `yaml:"away_won_rate,omitempty"`
-	WinRate          float32 `yaml:"win_rate,omitempty"`
-	EloRating        float64 `yaml:"elo_rating,omitempty"`
-	Goals            int     `yaml:"goals,omitempty"`
-	GoalsIn          int     `yaml:"goals_in,omitempty"`
-	GoalDiff         int     `yaml:"goal_diff,omitempty"`
-	PointsPerGame    float32 `yaml:"points_per_game,omitempty"`
-	PointsInPerGame  float32 `yaml:"points_in_per_game,omitempty"`
-	GoalsWon         int     `yaml:"goals_won,omitempty"`
-	DiffPerWon       float32 `yaml:"diff_per_won,omitempty"`
-	GoalsInLost      int     `yaml:"goals_in_lost,omitempty"`
-	DiffPerLost      float32 `yaml:"diff_per_lost,omitempty"`
+	Played           int     `yaml:"played"`
+	TimePlayed       int     `yaml:"time_played"`
+	LongestGameTime  int     `yaml:"longest_game_time"`
+	ShortestGameTime int     `yaml:"shortest_game_time"`
+	TimePerGame      int     `yaml:"time_per_game"`
+	Won              int     `yaml:"won"`
+	Lost             int     `yaml:"lost"`
+	Draws            int     `yaml:"draws"`
+	HomeWon          int     `yaml:"home_won"`
+	HomeLost         int     `yaml:"home_lost"`
+	HomeWonRate      float32 `yaml:"home_won_rate"`
+	AwayWon          int     `yaml:"away_won"`
+	AwayLost         int     `yaml:"away_lost"`
+	AwayWonRate      float32 `yaml:"away_won_rate"`
+	WinRate          float32 `yaml:"win_rate"`
+	EloRating        float64 `yaml:"elo_rating"`
+	Goals            int     `yaml:"goals"`
+	GoalsIn          int     `yaml:"goals_in"`
+	GoalDiff         int     `yaml:"goal_diff"`
+	PointsPerGame    float32 `yaml:"points_per_game"`
+	PointsInPerGame  float32 `yaml:"points_in_per_game"`
+	GoalsWon         int     `yaml:"goals_won"`
+	DiffPerWon       float32 `yaml:"diff_per_won"`
+	GoalsInLost      int     `yaml:"goals_in_lost"`
+	DiffPerLost      float32 `yaml:"diff_per_lost"`
 }
 
 // IsPlayer .

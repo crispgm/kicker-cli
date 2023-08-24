@@ -5,9 +5,10 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/crispgm/kicker-cli/pkg/elo"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
+
+	"github.com/crispgm/kicker-cli/pkg/elo"
 )
 
 func init() {

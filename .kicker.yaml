@@ -1,0 +1,15 @@
+manifest_version: 1
+
+organization:
+  name: My Foosball Community
+
+players:
+  - name: David Zhang
+    alias:
+      - dz
+      - David
+    level: beginner
+
+events:
+  - name: Weekly Tournament 1
+    points: 50

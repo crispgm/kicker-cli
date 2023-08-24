@@ -6,6 +6,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/pterm/pterm"
+
 	"github.com/crispgm/kicker-cli/cmd/kicker-cli/cmd"
 	"github.com/crispgm/kicker-cli/internal/converter"
 	"github.com/crispgm/kicker-cli/internal/entity"
@@ -15,7 +17,6 @@ import (
 	"github.com/crispgm/kicker-cli/pkg/elo"
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 	"github.com/crispgm/kicker-cli/pkg/ktool/parser"
-	"github.com/pterm/pterm"
 )
 
 // flags
