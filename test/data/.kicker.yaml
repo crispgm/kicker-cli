@@ -1,0 +1,44 @@
+manifest_version: 1
+
+organization:
+  name: My Foosball Community
+
+players:
+  - name: Tzila Tendai
+    alias:
+      - tz
+      - tt
+    level: beginner
+  - name: Dagrún Jadranko
+    alias:
+      - Dagrún
+    level: amateur
+  - name: Eija Alexei
+    alias:
+    level: pro
+  - name: Martynas Martin
+    alias:
+      - Martynas A. Martin
+    level: pro
+  - name: Kaidi Estebe
+    alias:
+    level: beginner
+  - name: Noortje Milen
+    alias:
+    level: pro
+  - name: Raja Mayamiko
+    alias:
+    level: pro
+  - name: Jay Atli
+    alias:
+    level: pro
+  - name: Koji Rebeka
+    alias:
+    level: amateur
+  - name: Zé Manel Swati
+    alias:
+    level: beginner
+
+events:
+  - name: Weekly Tournament 1
+    points: 50

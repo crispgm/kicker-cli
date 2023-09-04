@@ -18,16 +18,24 @@ by which organizers could manage, analyze and rank inside an organization across
 
 ### Game Modes
 
-- [ ] Swiss System
-- [ ] Round
+#### Round Games
+
 - MonsterDYP
-- [ ] Double Elimination
-- [ ] Elimination
+- Rounds
+- [ ] Round Robin
+- Swiss System
+
+#### Knockoff Games
+
+- Double Elimination
+- Elimination
 
 ### Operators
 
 - Player Statistics
+- [ ] Player Rivals
 - Team Statistics
+- [ ] Team Rivals
 
 ## Installation
 
