@@ -4,7 +4,5 @@ package model
 type Team struct {
 	Model
 
-	Players []struct {
-		ID string `json:"_id"`
-	}
+	Players []Player
 }

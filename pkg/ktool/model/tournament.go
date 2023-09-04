@@ -34,12 +34,13 @@ type Sport struct {
 type Options struct {
 	Model
 
-	NumPoints  int  `json:"numPoints"`
-	NumSets    int  `json:"numSets"`
-	TwoAhead   int  `json:"twoAhead"`
-	Draw       bool `json:"draw"`
-	PointsWin  int  `json:"pointsWin"`
-	PointsDraw int  `json:"pointsDraw"`
+	Name       string `json:"name"`
+	NumPoints  int    `json:"numPoints"`
+	NumSets    int    `json:"numSets"`
+	TwoAhead   bool   `json:"twoAhead"`
+	Draw       bool   `json:"draw"`
+	PointsWin  int    `json:"pointsWin"`
+	PointsDraw int    `json:"pointsDraw"`
 }
 
 // IsSingle .
