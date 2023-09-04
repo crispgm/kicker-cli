@@ -1,6 +1,19 @@
-package elo
+// Package class definition of classes
+package class
 
 import "math"
+
+// Class for player score
+type Class struct {
+	Low   int
+	High  int
+	Title string
+}
+
+// TitleName returns title name
+func (c Class) TitleName() string {
+	return c.Title
+}
 
 // Classes definition
 var Classes = []Class{

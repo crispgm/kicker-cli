@@ -1,3 +1,4 @@
+// Package elo calculate ELO score
 package elo
 
 import "math"
@@ -15,18 +16,6 @@ const (
 	// LostScore is the score for losing
 	LostScore = 0.0
 )
-
-// Class for player score
-type Class struct {
-	Low   int
-	High  int
-	Title string
-}
-
-// TitleName returns title name
-func (c Class) TitleName() string {
-	return c.Title
-}
 
 // Rate holds Elo rating
 type Rate struct {

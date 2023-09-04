@@ -8,7 +8,7 @@ import (
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 
-	"github.com/crispgm/kicker-cli/pkg/elo"
+	"github.com/crispgm/kicker-cli/pkg/class/elo"
 )
 
 func init() {
