@@ -1,8 +1,24 @@
-manifest_version: 1
-
+manifest_version: "1"
 organization:
+  id: ""
   name: My Foosball Community
-
+  kicker_tool_id: ""
+events:
+  - id: 191321a4-a709-4ff2-8ad2-ce8c20bb8265
+    name: test swiss
+    path: test_swiss.ktool
+    points: 50
+    url: ""
+  - id: 4cd925fb-c0e5-4dce-8802-83cefbad080f
+    name: test rounds
+    path: test_rounds.ktool
+    points: 50
+    url: ""
+  - id: 013baa38-0ad0-4855-93c9-e87d37e2ed4a
+    name: test round robin
+    path: test_round_robin.ktool
+    points: 50
+    url: ""
 players:
   - name: Tzila Tendai
     alias:
@@ -14,31 +30,27 @@ players:
       - Dagrún
     level: amateur
   - name: Eija Alexei
-    alias:
+    alias: []
     level: pro
   - name: Martynas Martin
     alias:
       - Martynas A. Martin
     level: pro
   - name: Kaidi Estebe
-    alias:
+    alias: []
     level: beginner
   - name: Noortje Milen
-    alias:
+    alias: []
     level: pro
   - name: Raja Mayamiko
-    alias:
+    alias: []
     level: pro
   - name: Jay Atli
-    alias:
+    alias: []
     level: pro
   - name: Koji Rebeka
-    alias:
+    alias: []
     level: amateur
   - name: Zé Manel Swati
-    alias:
+    alias: []
     level: beginner
-
-events:
-  - name: Weekly Tournament 1
-    points: 50

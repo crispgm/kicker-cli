@@ -24,6 +24,7 @@ func TestParseGame(t *testing.T) {
 	}{
 		{model.ModeSwissSystem, true, true, true},
 		{model.ModeRounds, true, true, false},
+		{model.ModeRoundRobin, true, true, false},
 	}
 
 	for _, tc := range testCases {
