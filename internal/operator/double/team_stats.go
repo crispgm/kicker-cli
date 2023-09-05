@@ -1,4 +1,4 @@
-package monsterdyp
+package double
 
 import (
 	"fmt"

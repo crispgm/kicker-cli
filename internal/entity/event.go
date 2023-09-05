@@ -11,6 +11,7 @@ type Event struct {
 	Name   string `yaml:"name"`
 	Path   string `yaml:"path"`
 	Points int    `yaml:"points"`
+	URL    string `yaml:"url"`
 }
 
 // NewEvent creates an event

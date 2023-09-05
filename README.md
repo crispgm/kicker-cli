@@ -22,7 +22,7 @@ by which organizers could manage, analyze and rank inside an organization across
 
 - MonsterDYP
 - Rounds
-- [ ] Round Robin
+- Round Robin
 - Swiss System
 
 #### Knockoff Games
@@ -32,10 +32,11 @@ by which organizers could manage, analyze and rank inside an organization across
 
 ### Operators
 
-- Player Statistics
-- [ ] Player Rivals
-- Team Statistics
-- [ ] Team Rivals
+- Double Player Ranks
+- Double Team Ranks
+- [ ] Double Team Rivals
+- [ ] Single Player Ranks
+- [ ] Single Player Rivals
 
 ## Installation
 
@@ -59,10 +60,16 @@ Import `.ktool` files:
 kicker-cli import --path=/path/to/ktool
 ```
 
-Get rank:
+Event management:
 ```shell
-kicker-cli rank --name "my event name"
-kicker-cli rank --all
+# list events
+kicker-cli event ls
+# get rank
+kicker-cli event rank --name "my event name"
+kicker-cli event rank --all
+# open event
+kicekr-cli event --name "my event name" open
+#  => xdg-open event-url
 ```
 
 Show players:

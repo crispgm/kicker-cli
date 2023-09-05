@@ -1,5 +1,5 @@
-// Package monsterdyp is operators for mdyp
-package monsterdyp
+// Package double is operators for double games
+package double
 
 import (
 	"fmt"

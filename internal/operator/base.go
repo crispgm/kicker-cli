@@ -14,8 +14,8 @@ type BaseOperator interface {
 
 // supportedOperator .
 var supportedOperator = map[string]bool{
-	entity.ModeMonsterDYPPlayerStats: true,
-	entity.ModeMonsterDYPTeamStats:   true,
+	entity.ModeDoublePlayerRanks: true,
+	entity.ModeDoubleTeamRanks:   true,
 }
 
 // IsSupported .
@@ -34,5 +34,4 @@ type Option struct {
 	WithTime         bool
 	WithHomeAway     bool
 	WithPoint        bool
-	Incremental      bool
 }

@@ -12,13 +12,13 @@ import (
 )
 
 var (
-	initPath string
-	orgName  string
+	initPath    string
+	initOrgName string
 )
 
 func init() {
-	initCmd.Flags().StringVarP(&initPath, "path", "p", ".", "Path to folder")
-	initCmd.Flags().StringVarP(&orgName, "name", "n", "Foosball", "Organization name")
+	initCmd.Flags().StringVarP(&initPath, "path", "p", ".", "path to folder")
+	initCmd.Flags().StringVarP(&initOrgName, "name", "n", "Foosball", "organization name")
 	rootCmd.AddCommand(initCmd)
 }
 
@@ -35,20 +35,17 @@ var initCmd = &cobra.Command{
 		if err != nil {
 			pterm.Info.Printfln("Initializing `%s` ...", instance.Path)
 			pterm.Info.Printfln("Creating `%s` ...", instance.Name)
-			instance.Conf.Organization = *entity.NewOrganization(orgName)
+			instance.Conf.Organization = *entity.NewOrganization(initOrgName)
 			err = instance.WriteConf()
 			if err != nil {
-				pterm.Error.Println(err)
-				os.Exit(1)
+				errorMessageAndExit(err)
 			}
 			err = os.Mkdir(filepath.Join(instance.Path, "data"), os.FileMode(0o755))
 			if err != nil {
-				pterm.Error.Println(err)
-				os.Exit(1)
+				errorMessageAndExit(err)
 			}
 		} else {
-			pterm.Error.Println("Found existing `.kicker.yaml`")
-			os.Exit(1)
+			errorMessageAndExit("Found existing `.kicker.yaml`")
 		}
 	},
 }

@@ -6,8 +6,9 @@ import (
 
 // Organization .
 type Organization struct {
-	ID   string `yaml:"id"`
-	Name string `yaml:"name"`
+	ID           string `yaml:"id"`
+	Name         string `yaml:"name"`
+	KickerToolID string `yaml:"kicker_tool_id"`
 }
 
 // NewOrganization creates an organization with name and UUID
