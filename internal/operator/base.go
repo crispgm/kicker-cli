@@ -1,29 +1,13 @@
 // Package operator .
 package operator
 
-import (
-	"github.com/crispgm/kicker-cli/internal/entity"
-)
+import "github.com/crispgm/kicker-cli/internal/entity"
 
-// BaseOperator .
-type BaseOperator interface {
-	ValidMode(string) bool
+// Operator .
+type Operator interface {
+	SupportedFormats(nameType string, mode string) bool
+	Input(games []entity.Game, players []entity.Player, options Option)
 	Output() [][]string
-	Details() []entity.Player
-}
-
-// supportedOperator .
-var supportedOperator = map[string]bool{
-	entity.ModeDoublePlayerRanks: true,
-	entity.ModeDoubleTeamRanks:   true,
-}
-
-// IsSupported .
-func IsSupported(mode string) bool {
-	if supported, ok := supportedOperator[mode]; ok && supported {
-		return true
-	}
-	return false
 }
 
 // Option .
@@ -33,5 +17,5 @@ type Option struct {
 	EloKFactor       int
 	WithTime         bool
 	WithHomeAway     bool
-	WithPoint        bool
+	WithGoals        bool
 }

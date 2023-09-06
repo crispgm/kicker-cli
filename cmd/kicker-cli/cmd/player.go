@@ -26,7 +26,7 @@ var playerCmd = &cobra.Command{
 			table = append(table, []string{
 				p.ID,
 				p.Name,
-				"",
+				fmt.Sprintf("%d", p.Points),
 				fmt.Sprintf("%d", p.Played),
 				fmt.Sprintf("%d", p.Won),
 				fmt.Sprintf("%d", p.Lost),

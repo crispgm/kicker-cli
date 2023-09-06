@@ -10,18 +10,27 @@ import (
 	"github.com/crispgm/kicker-cli/internal/entity"
 	"github.com/crispgm/kicker-cli/internal/operator"
 	"github.com/crispgm/kicker-cli/internal/operator/double"
+	"github.com/crispgm/kicker-cli/pkg/class/elo"
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 	"github.com/crispgm/kicker-cli/pkg/ktool/parser"
 )
 
 var (
-	rankGameMode  string
-	rankNameType  string
-	rankAllEvents bool
+	rankGameMode   string
+	rankNameType   string
+	rankAllEvents  bool
+	rankMinPlayed  int
+	rankELOKFactor int
+	rankWithTime   bool
+	rankWithGoals  bool
 )
 
 func init() {
 	rankCmd.Flags().BoolVarP(&rankAllEvents, "all", "a", false, "rank all events")
+	rankCmd.Flags().IntVarP(&rankMinPlayed, "minimum-played", "m", 5, "minimum matches played")
+	rankCmd.Flags().IntVarP(&rankELOKFactor, "elo-k", "k", elo.K, "K factor")
+	rankCmd.Flags().BoolVarP(&rankWithTime, "with-time", "", false, "rank with time duration")
+	rankCmd.Flags().BoolVarP(&rankWithGoals, "with-goals", "", false, "rank with goals")
 	eventCmd.AddCommand(rankCmd)
 }
 
@@ -64,22 +73,31 @@ var rankCmd = &cobra.Command{
 		}
 
 		// calculating
-		var statOperator operator.BaseOperator
-		option := operator.Option{
+		var op operator.Operator
+		options := operator.Option{
 			OrderBy:          "wr",
-			RankMinThreshold: 5,
-			EloKFactor:       eloKFactor,
-			WithTime:         false,
+			RankMinThreshold: rankMinPlayed,
+			EloKFactor:       rankELOKFactor,
 			WithHomeAway:     false,
-			WithPoint:        false,
+			WithTime:         rankWithTime,
+			WithGoals:        rankWithGoals,
 		}
-		if rankGameMode == entity.ModeDoublePlayerRanks {
-			statOperator = double.NewPlayerStats(games, instance.Conf.Players, option)
-		} else if rankGameMode == entity.ModeDoubleTeamRanks {
-			statOperator = double.NewTeamStats(games, option)
+
+		switch rankGameMode {
+		case entity.ModeDoublePlayerRanks:
+			op = &double.PlayerRanks{}
+		case entity.ModeDoubleTeamRanks:
+			op = &double.TeamRanks{}
+		// case entity.ModeDoubleTeamRivals:
+		// case entity.ModeSinglePlayerRanks:
+		// case entity.ModeSinglePlayerRivals:
+		default:
+			errorMessageAndExit("Please present a valid rank mode")
 		}
+
+		op.Input(games, instance.Conf.Players, options)
 		pterm.Info.Println("Briefing:", c.Briefing())
-		table := statOperator.Output()
+		table := op.Output()
 		pterm.DefaultTable.WithHasHeader().WithData(table).WithBoxed(true).Render()
 	},
 }

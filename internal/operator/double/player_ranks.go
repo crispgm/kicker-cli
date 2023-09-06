@@ -11,29 +11,35 @@ import (
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 )
 
-// PlayerStats generate statistics data of multiple monster DYP tournaments
-type PlayerStats struct {
-	option  operator.Option
+var _ operator.Operator = (*PlayerRanks)(nil)
+
+// PlayerRanks generate statistics data of multiple monster DYP tournaments
+type PlayerRanks struct {
+	options operator.Option
 	games   []entity.Game
 	players []entity.Player
 }
 
-// NewPlayerStats .
-func NewPlayerStats(games []entity.Game, players []entity.Player, option operator.Option) *PlayerStats {
-	return &PlayerStats{
-		games:   games,
-		players: players,
-		option:  option,
+// SupportedFormats .
+func (p PlayerRanks) SupportedFormats(nameType, mode string) bool {
+	if nameType == "byp" || nameType == "dyp" {
+		if mode == model.ModeMonsterDYP || mode == model.ModeRounds || mode == model.ModeRoundRobin {
+			return true
+		}
 	}
+
+	return false
 }
 
-// ValidMode .
-func (p PlayerStats) ValidMode(mode string) bool {
-	return mode == model.ModeMonsterDYP
+// Input .
+func (p *PlayerRanks) Input(games []entity.Game, players []entity.Player, options operator.Option) {
+	p.games = games
+	p.players = players
+	p.options = options
 }
 
 // Output .
-func (p *PlayerStats) Output() [][]string {
+func (p *PlayerRanks) Output() [][]string {
 	data := make(map[string]entity.Player)
 	for _, p := range p.players {
 		data[p.Name] = p
@@ -122,7 +128,7 @@ func (p *PlayerStats) Output() [][]string {
 			T2P1Score: t2p1Elo,
 			T2P2Score: t2p2Elo,
 			HostWin:   g.Point1 > g.Point2,
-			K:         float64(p.option.EloKFactor),
+			K:         float64(p.options.EloKFactor),
 		}
 		rate.CalcEloRating()
 		t1p1Data.EloRating = rate.T1P1Score
@@ -162,14 +168,14 @@ func (p *PlayerStats) Output() [][]string {
 	}
 	p.players = sliceData
 	sort.SliceStable(sliceData, func(i, j int) bool {
-		if sliceData[i].Played >= p.option.RankMinThreshold && sliceData[j].Played < p.option.RankMinThreshold {
+		if sliceData[i].Played >= p.options.RankMinThreshold && sliceData[j].Played < p.options.RankMinThreshold {
 			return true
 		}
-		if sliceData[i].Played < p.option.RankMinThreshold && sliceData[j].Played >= p.option.RankMinThreshold {
+		if sliceData[i].Played < p.options.RankMinThreshold && sliceData[j].Played >= p.options.RankMinThreshold {
 			return false
 		}
 
-		if p.option.OrderBy == "elo" {
+		if p.options.OrderBy == "elo" {
 			if sliceData[i].EloRating > sliceData[j].EloRating {
 				return true
 			}
@@ -185,13 +191,13 @@ func (p *PlayerStats) Output() [][]string {
 	haHeader := []string{"HW", "HL", "HW%", "AW", "AL", "AW%"}
 	timeHeader := []string{"TPG", "LGP", "SGP"}
 	pointHeader := []string{"PPG", "LPG", "DPW", "DPL"}
-	if p.option.WithHomeAway {
+	if p.options.WithHomeAway {
 		header = append(header, haHeader...)
 	}
-	if p.option.WithTime {
+	if p.options.WithTime {
 		header = append(header, timeHeader...)
 	}
-	if p.option.WithPoint {
+	if p.options.WithGoals {
 		header = append(header, pointHeader...)
 	}
 	table := [][]string{header}
@@ -208,7 +214,7 @@ func (p *PlayerStats) Output() [][]string {
 			fmt.Sprintf("%d", d.GoalDiff),
 			fmt.Sprintf("%.0f%%", d.WinRate),
 		}
-		if p.option.WithHomeAway {
+		if p.options.WithHomeAway {
 			item = append(item, []string{
 				fmt.Sprintf("%d", d.HomeWon),
 				fmt.Sprintf("%d", d.HomeLost),
@@ -218,14 +224,14 @@ func (p *PlayerStats) Output() [][]string {
 				fmt.Sprintf("%.0f%%", d.AwayWonRate),
 			}...)
 		}
-		if p.option.WithTime {
+		if p.options.WithTime {
 			item = append(item, []string{
 				fmt.Sprintf("%02d:%02d", d.TimePerGame/60, d.TimePerGame%60),
 				fmt.Sprintf("%02d:%02d", d.LongestGameTime/60, d.LongestGameTime%60),
 				fmt.Sprintf("%02d:%02d", d.ShortestGameTime/60, d.ShortestGameTime%60),
 			}...)
 		}
-		if p.option.WithPoint {
+		if p.options.WithGoals {
 			item = append(item, []string{
 				fmt.Sprintf("%.2f", d.PointsPerGame),
 				fmt.Sprintf("%.2f", d.PointsInPerGame),
@@ -238,7 +244,7 @@ func (p *PlayerStats) Output() [][]string {
 	return table
 }
 
-func (PlayerStats) playedTimeStats(data *entity.Player, timePlayed int) {
+func (PlayerRanks) playedTimeStats(data *entity.Player, timePlayed int) {
 	if timePlayed < 0 || timePlayed > 1000*60*15 {
 		// consider illegal
 		return
@@ -249,9 +255,4 @@ func (PlayerStats) playedTimeStats(data *entity.Player, timePlayed int) {
 	if data.ShortestGameTime > timePlayed || data.ShortestGameTime == 0 {
 		data.ShortestGameTime = timePlayed
 	}
-}
-
-// Details .
-func (p *PlayerStats) Details() []entity.Player {
-	return p.players
 }

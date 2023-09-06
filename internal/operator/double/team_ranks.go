@@ -9,27 +9,33 @@ import (
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 )
 
-// TeamStats generate statistics data of multiple monster DYP tournaments by team
-type TeamStats struct {
-	option operator.Option
-	games  []entity.Game
+var _ operator.Operator = (*TeamRanks)(nil)
+
+// TeamRanks generate statistics data of multiple monster DYP tournaments by team
+type TeamRanks struct {
+	options operator.Option
+	games   []entity.Game
 }
 
-// NewTeamStats .
-func NewTeamStats(games []entity.Game, option operator.Option) *TeamStats {
-	return &TeamStats{
-		option: option,
-		games:  games,
+// SupportedFormats .
+func (t TeamRanks) SupportedFormats(nameType, mode string) bool {
+	if nameType == "byp" || nameType == "dyp" {
+		if mode == model.ModeMonsterDYP || mode == model.ModeRounds || mode == model.ModeRoundRobin {
+			return true
+		}
 	}
+
+	return false
 }
 
-// ValidMode .
-func (t TeamStats) ValidMode(mode string) bool {
-	return mode == model.ModeMonsterDYP
+// Input .
+func (t *TeamRanks) Input(games []entity.Game, players []entity.Player, options operator.Option) {
+	t.games = games
+	t.options = options
 }
 
 // Output .
-func (t *TeamStats) Output() [][]string {
+func (t *TeamRanks) Output() [][]string {
 	data := make(map[string]entity.Team)
 	for _, g := range t.games {
 		t1p1Name := g.Team1[0]
@@ -108,10 +114,10 @@ func (t *TeamStats) Output() [][]string {
 		sliceData = append(sliceData, d)
 	}
 	sort.SliceStable(sliceData, func(i, j int) bool {
-		if sliceData[i].Played >= t.option.RankMinThreshold && sliceData[j].Played < t.option.RankMinThreshold {
+		if sliceData[i].Played >= t.options.RankMinThreshold && sliceData[j].Played < t.options.RankMinThreshold {
 			return true
 		}
-		if sliceData[i].Played < t.option.RankMinThreshold && sliceData[j].Played >= t.option.RankMinThreshold {
+		if sliceData[i].Played < t.options.RankMinThreshold && sliceData[j].Played >= t.options.RankMinThreshold {
 			return false
 		}
 
@@ -136,10 +142,10 @@ func (t *TeamStats) Output() [][]string {
 	header := []string{"#", "Name", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%"}
 	timeHeader := []string{"TPG", "LGP", "SGP"}
 	pointHeader := []string{"PPG", "LPG", "DPW", "DPL"}
-	if t.option.WithTime {
+	if t.options.WithTime {
 		header = append(header, timeHeader...)
 	}
-	if t.option.WithPoint {
+	if t.options.WithGoals {
 		header = append(header, pointHeader...)
 	}
 	table := [][]string{header}
@@ -160,14 +166,14 @@ func (t *TeamStats) Output() [][]string {
 			goalDiff,
 			winRate,
 		}
-		if t.option.WithTime {
+		if t.options.WithTime {
 			item = append(item, []string{
 				fmt.Sprintf("%02d:%02d", d.TimePerGame/60, d.TimePerGame%60),
 				fmt.Sprintf("%02d:%02d", d.LongestGameTime/60, d.LongestGameTime%60),
 				fmt.Sprintf("%02d:%02d", d.ShortestGameTime/60, d.ShortestGameTime%60),
 			}...)
 		}
-		if t.option.WithPoint {
+		if t.options.WithGoals {
 			item = append(item, []string{
 				fmt.Sprintf("%.2f", d.PointsPerGame),
 				fmt.Sprintf("%.2f", d.PointsInPerGame),
@@ -180,7 +186,7 @@ func (t *TeamStats) Output() [][]string {
 	return table
 }
 
-func (TeamStats) playedTimeStats(data *entity.Team, timePlayed int) {
+func (TeamRanks) playedTimeStats(data *entity.Team, timePlayed int) {
 	if timePlayed < 0 || timePlayed > 1000*60*15 {
 		// consider illegal
 		return
@@ -191,9 +197,4 @@ func (TeamStats) playedTimeStats(data *entity.Team, timePlayed int) {
 	if data.ShortestGameTime > timePlayed || data.ShortestGameTime == 0 {
 		data.ShortestGameTime = timePlayed
 	}
-}
-
-// Details .
-func (t *TeamStats) Details() []entity.Player {
-	return nil
 }
