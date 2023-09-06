@@ -15,6 +15,7 @@ type Option struct {
 	OrderBy          string
 	RankMinThreshold int
 	EloKFactor       int
+	WithHeader       bool
 	WithTime         bool
 	WithHomeAway     bool
 	WithGoals        bool

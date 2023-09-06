@@ -200,7 +200,10 @@ func (p *PlayerRanks) Output() [][]string {
 	if p.options.WithGoals {
 		header = append(header, pointHeader...)
 	}
-	table := [][]string{header}
+	table := [][]string{}
+	if p.options.WithHeader {
+		table = append(table, header)
+	}
 	for i, d := range sliceData {
 		item := []string{
 			fmt.Sprintf("%d", i+1),

@@ -148,7 +148,10 @@ func (t *TeamRanks) Output() [][]string {
 	if t.options.WithGoals {
 		header = append(header, pointHeader...)
 	}
-	table := [][]string{header}
+	table := [][]string{}
+	if t.options.WithHeader {
+		table = append(table, header)
+	}
 	for i, d := range sliceData {
 		if d.Played == 0 {
 			continue

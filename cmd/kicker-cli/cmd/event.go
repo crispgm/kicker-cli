@@ -9,12 +9,16 @@ import (
 
 var (
 	eventIDOrName string
+	eventGameMode string
+	eventNameType string
+	allEvents     bool
 )
 
 func init() {
+	eventCmd.PersistentFlags().BoolVarP(&allEvents, "all", "a", false, "rank all events")
 	eventCmd.PersistentFlags().StringVarP(&eventIDOrName, "name", "n", "", "event ID or name")
-	eventCmd.PersistentFlags().StringVarP(&rankGameMode, "mode", "m", "", "rank mode")
-	eventCmd.PersistentFlags().StringVarP(&rankNameType, "name-type", "t", "", "name type (single, byp, dyp or monster_dyp)")
+	eventCmd.PersistentFlags().StringVarP(&eventGameMode, "mode", "m", "", "rank mode")
+	eventCmd.PersistentFlags().StringVarP(&eventNameType, "name-type", "t", "", "name type (single, byp, dyp or monster_dyp)")
 	eventCmd.AddCommand(eventListCmd)
 	rootCmd.AddCommand(eventCmd)
 }
@@ -28,10 +32,11 @@ var eventCmd = &cobra.Command{
 }
 
 var eventListCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List events",
-	Long:  "List events",
-	Run:   eventListCommand,
+	Use:     "list",
+	Aliases: []string{"ls"},
+	Short:   "List events",
+	Long:    "List events",
+	Run:     eventListCommand,
 }
 
 func eventListCommand(cmd *cobra.Command, args []string) {
@@ -66,5 +71,5 @@ func eventListCommand(cmd *cobra.Command, args []string) {
 	if len(table) == 1 {
 		errorMessageAndExit("No event(s) found.")
 	}
-	pterm.DefaultTable.WithHasHeader().WithData(table).WithBoxed(true).Render()
+	pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
 }

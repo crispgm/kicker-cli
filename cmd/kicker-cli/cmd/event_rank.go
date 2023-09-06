@@ -16,9 +16,6 @@ import (
 )
 
 var (
-	rankGameMode   string
-	rankNameType   string
-	rankAllEvents  bool
 	rankMinPlayed  int
 	rankELOKFactor int
 	rankWithTime   bool
@@ -26,11 +23,10 @@ var (
 )
 
 func init() {
-	rankCmd.Flags().BoolVarP(&rankAllEvents, "all", "a", false, "rank all events")
-	rankCmd.Flags().IntVarP(&rankMinPlayed, "minimum-played", "m", 5, "minimum matches played")
-	rankCmd.Flags().IntVarP(&rankELOKFactor, "elo-k", "k", elo.K, "K factor")
-	rankCmd.Flags().BoolVarP(&rankWithTime, "with-time", "", false, "rank with time duration")
+	rankCmd.Flags().IntVarP(&rankMinPlayed, "minimum-played", "", 0, "minimum matches played")
 	rankCmd.Flags().BoolVarP(&rankWithGoals, "with-goals", "", false, "rank with goals")
+	rankCmd.Flags().BoolVarP(&rankWithTime, "with-time", "", false, "rank with time duration")
+	rankCmd.Flags().IntVarP(&rankELOKFactor, "elo-k", "k", elo.K, "K factor")
 	eventCmd.AddCommand(rankCmd)
 }
 
@@ -42,7 +38,7 @@ var rankCmd = &cobra.Command{
 		instance := initInstanceAndLoadConf()
 
 		var files []string
-		if rankAllEvents {
+		if allEvents {
 			for _, e := range instance.Conf.Events {
 				files = append(files, e.Path)
 			}
@@ -55,19 +51,23 @@ var rankCmd = &cobra.Command{
 
 		// load tournaments
 		var tournaments []model.Tournament
-		pterm.Info.Println("Loading tournaments ...")
 		for _, p := range files {
 			t, err := parser.ParseFile(filepath.Join(instance.DataPath(), p))
 			if err != nil {
 				errorMessageAndExit(err)
 			}
-			if t.NameType != rankNameType {
+			if t.NameType != eventNameType {
 				continue
 			}
 			tournaments = append(tournaments, *t)
 		}
+		if len(tournaments) == 0 {
+			pterm.Warning.Println("No matched tournament(s)")
+			return
+		}
+		pterm.Info.Println("Loading tournaments ...")
 		c := converter.NewConverter()
-		games, err := c.Normalize(tournaments, instance.Conf.Players)
+		trn, err := c.Normalize(tournaments, instance.Conf.Players)
 		if err != nil {
 			errorMessageAndExit(err)
 		}
@@ -78,12 +78,13 @@ var rankCmd = &cobra.Command{
 			OrderBy:          "wr",
 			RankMinThreshold: rankMinPlayed,
 			EloKFactor:       rankELOKFactor,
+			WithHeader:       !globalNoHeaders,
 			WithHomeAway:     false,
 			WithTime:         rankWithTime,
 			WithGoals:        rankWithGoals,
 		}
 
-		switch rankGameMode {
+		switch eventGameMode {
 		case entity.ModeDoublePlayerRanks:
 			op = &double.PlayerRanks{}
 		case entity.ModeDoubleTeamRanks:
@@ -95,9 +96,10 @@ var rankCmd = &cobra.Command{
 			errorMessageAndExit("Please present a valid rank mode")
 		}
 
-		op.Input(games, instance.Conf.Players, options)
 		pterm.Info.Println("Briefing:", c.Briefing())
+		pterm.Println()
+		op.Input(trn.AllGames, instance.Conf.Players, options)
 		table := op.Output()
-		pterm.DefaultTable.WithHasHeader().WithData(table).WithBoxed(true).Render()
+		pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
 	},
 }

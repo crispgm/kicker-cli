@@ -8,14 +8,18 @@ import (
 	"github.com/crispgm/kicker-cli/internal/app"
 )
 
-var globalNoColor bool
+var (
+	globalNoColors  bool
+	globalNoHeaders bool
+	globalNoBoxes   bool
+)
 
 var rootCmd = &cobra.Command{
 	Use:     "kicker-cli",
 	Long:    "A Foosball data aggregator, analyzers, and manager based on Kickertool.",
 	Version: app.Version,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		if globalNoColor {
+		if globalNoColors {
 			pterm.DisableColor()
 		}
 	},
@@ -26,7 +30,9 @@ var rootCmd = &cobra.Command{
 
 func init() {
 	cobra.OnInitialize()
-	rootCmd.PersistentFlags().BoolVarP(&globalNoColor, "no-colors", "", false, "show no colors")
+	rootCmd.PersistentFlags().BoolVarP(&globalNoColors, "no-colors", "", false, "show no colors")
+	rootCmd.PersistentFlags().BoolVarP(&globalNoHeaders, "no-headers", "", false, "no table headers")
+	rootCmd.PersistentFlags().BoolVarP(&globalNoBoxes, "no-boxes", "", false, "no table boxes")
 }
 
 // Execute .
