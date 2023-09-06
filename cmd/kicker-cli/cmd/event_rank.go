@@ -65,7 +65,8 @@ var rankCmd = &cobra.Command{
 			pterm.Warning.Println("No matched tournament(s)")
 			return
 		}
-		pterm.Info.Println("Loading tournaments ...")
+
+		pterm.Println("Loading tournaments ...")
 		c := converter.NewConverter()
 		trn, err := c.Normalize(tournaments, instance.Conf.Players)
 		if err != nil {
@@ -96,7 +97,7 @@ var rankCmd = &cobra.Command{
 			errorMessageAndExit("Please present a valid rank mode")
 		}
 
-		pterm.Info.Println("Briefing:", c.Briefing())
+		pterm.Println("Briefing:", c.Briefing())
 		pterm.Println()
 		op.Input(trn.AllGames, instance.Conf.Players, options)
 		table := op.Output()

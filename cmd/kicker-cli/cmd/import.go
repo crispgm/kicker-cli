@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"fmt"
 	"path/filepath"
+	"strings"
 
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -12,15 +14,15 @@ import (
 )
 
 var (
-	importPath        string
-	importEventName   string
-	importEventPoints int
+	importEventName                 string
+	importEventPoints               int
+	importEventCreateUnknownPlayers bool
 )
 
 func init() {
-	importCmd.Flags().StringVarP(&importPath, "path", "p", "", "path to imported files")
 	importCmd.Flags().StringVarP(&importEventName, "name", "n", "", "event name")
 	importCmd.Flags().IntVarP(&importEventPoints, "points", "", entity.DefaultPoints, "points for the event")
+	importCmd.Flags().BoolVarP(&importEventCreateUnknownPlayers, "create-unknown-players", "c", false, "create unknown players during importing")
 	rootCmd.AddCommand(importCmd)
 }
 
@@ -30,23 +32,58 @@ var importCmd = &cobra.Command{
 	Long:  "Import one .ktool file and it will be converted to an event automatically",
 	Run: func(cmd *cobra.Command, args []string) {
 		instance := initInstanceAndLoadConf()
-
-		t, err := parser.ParseFile(importPath)
-		if err != nil {
-			errorMessageAndExit("Unable to parse file")
-		}
-		if importEventName == "" {
-			importEventName = t.Name
+		if len(args) == 0 {
+			return
 		}
 
-		pterm.Info.Printfln("Importing \"%s\" `%s` ...", importEventName, importPath)
-		fn := filepath.Base(importPath)
-		event := *entity.NewEvent(fn, importEventName, importEventPoints)
-		err = util.CopyFile(importPath, filepath.Join(instance.DataPath(), fn))
-		instance.Conf.Events = append(instance.Conf.Events, event)
-		err = instance.WriteConf()
-		if err != nil {
-			pterm.Error.Println(err)
+		for _, importPath := range args {
+			if strings.HasPrefix(importPath, "~") {
+				importPath = util.ExpandUserHomeDir(importPath)
+			}
+			t, err := parser.ParseFile(importPath)
+			if err != nil {
+				errorMessageAndExit("Unable to parse file:", err)
+			}
+			if importEventName == "" {
+				importEventName = t.Name
+			}
+
+			for _, p := range t.Players {
+				found := false
+				for _, cp := range instance.Conf.Players {
+					if cp.IsPlayer(p.Name) {
+						found = true
+					}
+				}
+				if !found {
+					var needCreate bool
+					if !importEventCreateUnknownPlayers {
+						needCreate, _ = pterm.DefaultInteractiveConfirm.
+							WithDefaultText(fmt.Sprintf("Create a new player with name `%s`", p.Name)).
+							WithDefaultValue(true).
+							Show()
+					} else {
+						needCreate = true
+					}
+					if needCreate {
+						instance.AddPlayer(*entity.NewPlayer(p.Name))
+					}
+				}
+			}
+
+			pterm.Printfln("Importing \"%s\" `%s` ...", importEventName, importPath)
+			fn := filepath.Base(importPath)
+			event := *entity.NewEvent(fn, importEventName, importEventPoints)
+			err = util.CopyFile(importPath, filepath.Join(instance.DataPath(), fn))
+			if err != nil {
+				errorMessageAndExit(err)
+			}
+			instance.AddEvent(event)
 		}
+		err := instance.WriteConf()
+		if err != nil {
+			errorMessageAndExit(err)
+		}
+		pterm.Printfln("%d event(s) imported", len(instance.Conf.Events))
 	},
 }

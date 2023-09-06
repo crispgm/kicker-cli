@@ -44,3 +44,13 @@ func (app *App) WriteConf() error {
 	err = ioutil.WriteFile(app.FilePath, b, 0o644)
 	return err
 }
+
+// AddEvent .
+func (app *App) AddEvent(events ...entity.Event) {
+	app.Conf.Events = append(app.Conf.Events, events...)
+}
+
+// AddPlayer .
+func (app *App) AddPlayer(players ...entity.Player) {
+	app.Conf.Players = append(app.Conf.Players, players...)
+}

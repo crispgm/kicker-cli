@@ -27,14 +27,14 @@ var initCmd = &cobra.Command{
 	Short: "Initialize a folder path",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(initPath) == 0 || initPath == "." {
-			pterm.Info.Println("Initializing current folder...")
+			pterm.Println("Initializing current folder...")
 		}
 		// check `.kicker.yaml`
 		instance := app.NewApp(initPath, app.DefaultName)
 		err := instance.LoadConf()
 		if err != nil {
-			pterm.Info.Printfln("Initializing `%s` ...", instance.Path)
-			pterm.Info.Printfln("Creating `%s` ...", instance.Name)
+			pterm.Printfln("Initializing `%s` ...", instance.Path)
+			pterm.Printfln("Creating `%s` ...", instance.Name)
 			instance.Conf.Organization = *entity.NewOrganization(initOrgName)
 			err = instance.WriteConf()
 			if err != nil {

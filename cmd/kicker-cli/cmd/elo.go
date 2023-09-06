@@ -78,7 +78,7 @@ func eloMain(cmd *cobra.Command, args []string) {
 	}
 	raw.CalcEloRating()
 
-	pterm.Info.Printf("Estimated Elo rating (k=%d):\n", eloKFactor)
+	pterm.Printfln("Estimated Elo rating (k=%d):", eloKFactor)
 
 	if teamMode {
 		fmt.Println("- If host won:")
