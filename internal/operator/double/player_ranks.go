@@ -7,8 +7,9 @@ import (
 
 	"github.com/crispgm/kicker-cli/internal/entity"
 	"github.com/crispgm/kicker-cli/internal/operator"
-	"github.com/crispgm/kicker-cli/pkg/class/elo"
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
+	"github.com/crispgm/kicker-cli/pkg/rating"
+	"github.com/crispgm/kicker-cli/pkg/rating/elo"
 )
 
 var _ operator.Operator = (*PlayerRanks)(nil)
@@ -122,19 +123,23 @@ func (p *PlayerRanks) Output() [][]string {
 		if t2p2Data.EloRating != 0 {
 			t2p2Elo = t2p2Data.EloRating
 		}
-		rate := elo.Rate{
-			T1P1Score: t1p1Elo,
-			T1P2Score: t1p2Elo,
-			T2P1Score: t2p1Elo,
-			T2P2Score: t2p2Elo,
-			HostWin:   g.Point1 > g.Point2,
-			K:         float64(p.options.EloKFactor),
+		sa := rating.Won
+		if g.Point1 == g.Point2 {
+			sa = rating.Drew
+		} else {
+			sa = rating.Lost
 		}
-		rate.CalcEloRating()
-		t1p1Data.EloRating = rate.T1P1Score
-		t1p2Data.EloRating = rate.T1P2Score
-		t2p1Data.EloRating = rate.T2P1Score
-		t2p2Data.EloRating = rate.T2P2Score
+		team1elo := (t1p1Elo + t1p2Elo) / 2
+		team2elo := (t2p1Elo + t2p2Elo) / 2
+		rate := elo.EloRating{K: float64(p.options.EloKFactor)}
+		rate.InitialScore(t1p1Elo, team2elo)
+		t1p1Data.EloRating = rate.Calculate(sa)
+		rate.InitialScore(t1p2Elo, team2elo)
+		t1p2Data.EloRating = rate.Calculate(sa)
+		rate.InitialScore(t2p1Elo, team1elo)
+		t2p1Data.EloRating = rate.Calculate(sa)
+		rate.InitialScore(t2p1Elo, team1elo)
+		t2p2Data.EloRating = rate.Calculate(sa)
 		data[g.Team1[0]] = t1p1Data
 		data[g.Team1[1]] = t1p2Data
 		data[g.Team2[0]] = t2p1Data

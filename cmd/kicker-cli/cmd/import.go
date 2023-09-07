@@ -72,8 +72,9 @@ var importCmd = &cobra.Command{
 			}
 
 			pterm.Printfln("Importing \"%s\" `%s` ...", importEventName, importPath)
-			fn := filepath.Base(importPath)
-			event := *entity.NewEvent(fn, importEventName, importEventPoints)
+			event := *entity.NewEvent("temp", importEventName, importEventPoints)
+			fn := fmt.Sprintf("%s.ktool", event.ID)
+			event.Path = fn
 			err = util.CopyFile(importPath, filepath.Join(instance.DataPath(), fn))
 			if err != nil {
 				errorMessageAndExit(err)

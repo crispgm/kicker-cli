@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"os"
+	"strconv"
 
 	"github.com/pterm/pterm"
 
@@ -21,4 +22,9 @@ func initInstanceAndLoadConf() *app.App {
 func errorMessageAndExit(a ...interface{}) {
 	pterm.Error.Println(a...)
 	os.Exit(1)
+}
+
+func convertToFloat(in string) float64 {
+	out, _ := strconv.Atoi(in)
+	return float64(out)
 }

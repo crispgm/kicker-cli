@@ -10,9 +10,9 @@ import (
 	"github.com/crispgm/kicker-cli/internal/entity"
 	"github.com/crispgm/kicker-cli/internal/operator"
 	"github.com/crispgm/kicker-cli/internal/operator/double"
-	"github.com/crispgm/kicker-cli/pkg/class/elo"
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 	"github.com/crispgm/kicker-cli/pkg/ktool/parser"
+	"github.com/crispgm/kicker-cli/pkg/rating/elo"
 )
 
 var (

@@ -77,11 +77,11 @@ Show players:
 kicker-cli player
 ```
 
-ELO emulation:
+Evaluation:
 ```shell
-kicker-cli elo 1100 1200
-kicker-cli elo 1103 1203 1289 1013
-kicker-cli elo 1103 1203 1289 1013 -k 20
+kicker-cli eval -a elo 1100 1200
+kicker-cli eval -a elo 1103 1203 1289 1013
+kicker-cli eval -a elo -k 20 1103 1203 1289 1013
 ```
 
 ## Known Issues
