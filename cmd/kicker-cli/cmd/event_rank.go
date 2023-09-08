@@ -35,6 +35,19 @@ var rankCmd = &cobra.Command{
 	Short: "Get rank",
 	Long:  "Get rank",
 	Run: func(cmd *cobra.Command, args []string) {
+		var op operator.Operator
+		switch eventGameMode {
+		case entity.ModeDoublePlayerRanks:
+			op = &double.PlayerRanks{}
+		case entity.ModeDoubleTeamRanks:
+			op = &double.TeamRanks{}
+		// case entity.ModeDoubleTeamRivals:
+		// case entity.ModeSinglePlayerRanks:
+		// case entity.ModeSinglePlayerRivals:
+		default:
+			errorMessageAndExit("Please present a valid rank mode")
+		}
+
 		instance := initInstanceAndLoadConf()
 
 		var files []string
@@ -42,10 +55,14 @@ var rankCmd = &cobra.Command{
 			for _, e := range instance.Conf.Events {
 				files = append(files, e.Path)
 			}
-		} else {
-			e := instance.GetEvent(eventIDOrName)
-			if e == nil {
-				errorMessageAndExit("No event(s) found.")
+		} else if len(args) > 0 {
+			for _, arg := range args {
+				e := instance.GetEvent(arg)
+				if e != nil {
+					files = append(files, e.Path)
+				} else {
+					errorMessageAndExit("Event", arg, "not found")
+				}
 			}
 		}
 
@@ -55,6 +72,10 @@ var rankCmd = &cobra.Command{
 			t, err := parser.ParseFile(filepath.Join(instance.DataPath(), p))
 			if err != nil {
 				errorMessageAndExit(err)
+			}
+			if eventNameType == "" {
+				// choose the first file as name type if it's not set
+				eventNameType = t.NameType
 			}
 			if t.NameType != eventNameType {
 				continue
@@ -74,7 +95,6 @@ var rankCmd = &cobra.Command{
 		}
 
 		// calculating
-		var op operator.Operator
 		options := operator.Option{
 			OrderBy:          "wr",
 			RankMinThreshold: rankMinPlayed,
@@ -83,18 +103,6 @@ var rankCmd = &cobra.Command{
 			WithHomeAway:     false,
 			WithTime:         rankWithTime,
 			WithGoals:        rankWithGoals,
-		}
-
-		switch eventGameMode {
-		case entity.ModeDoublePlayerRanks:
-			op = &double.PlayerRanks{}
-		case entity.ModeDoubleTeamRanks:
-			op = &double.TeamRanks{}
-		// case entity.ModeDoubleTeamRivals:
-		// case entity.ModeSinglePlayerRanks:
-		// case entity.ModeSinglePlayerRivals:
-		default:
-			errorMessageAndExit("Please present a valid rank mode")
 		}
 
 		pterm.Println("Briefing:", c.Briefing())

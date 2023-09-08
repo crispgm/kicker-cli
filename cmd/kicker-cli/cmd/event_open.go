@@ -14,8 +14,11 @@ var eventOpenCmd = &cobra.Command{
 	Short: "Open event URL",
 	Long:  "Open event URL",
 	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) == 0 {
+			errorMessageAndExit("Please present an event ID or name")
+		}
 		instance := initInstanceAndLoadConf()
-		if e := instance.GetEvent(eventIDOrName); e != nil {
+		if e := instance.GetEvent(args[0]); e != nil {
 			if len(e.URL) == 0 {
 				errorMessageAndExit("URL is not set for this event")
 			}
@@ -24,7 +27,7 @@ var eventOpenCmd = &cobra.Command{
 				errorMessageAndExit(err)
 			}
 		} else {
-			errorMessageAndExit("No event(s) found.")
+			errorMessageAndExit("No event(s) found")
 		}
 	},
 }
