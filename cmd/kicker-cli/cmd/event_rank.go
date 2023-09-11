@@ -26,7 +26,8 @@ var (
 )
 
 func init() {
-	rankCmd.Flags().IntVarP(&rankMinPlayed, "minimum-played", "", 0, "minimum matches played")
+	rankCmd.Flags().StringVarP(&rankGameMode, "mode", "m", "", "rank mode")
+	rankCmd.Flags().IntVarP(&rankMinPlayed, "minimum-played", "p", 0, "minimum matches played")
 	rankCmd.Flags().BoolVarP(&rankWithGoals, "with-goals", "", false, "rank with goals")
 	rankCmd.Flags().BoolVarP(&rankWithTime, "with-time", "", false, "rank with time duration")
 	rankCmd.Flags().IntVarP(&rankELOKFactor, "elo-k", "k", elo.K, "K factor")

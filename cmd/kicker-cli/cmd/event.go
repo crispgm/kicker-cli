@@ -14,14 +14,12 @@ import (
 
 var (
 	eventIDOrName string
-	eventGameMode string
 	eventNameType string
 	allEvents     bool
 )
 
 func init() {
 	eventCmd.PersistentFlags().BoolVarP(&allEvents, "all", "a", false, "rank all events")
-	eventCmd.PersistentFlags().StringVarP(&eventGameMode, "mode", "m", "", "rank mode")
 	eventCmd.PersistentFlags().StringVarP(&eventNameType, "name-type", "t", "", "name type (single, byp, dyp or monster_dyp)")
 	eventCmd.AddCommand(eventListCmd)
 	rootCmd.AddCommand(eventCmd)
@@ -47,7 +45,7 @@ func eventListCommand(cmd *cobra.Command, args []string) {
 	instance := initInstanceAndLoadConf()
 	// load tournaments
 	var table [][]string
-	header := []string{"ID", "Name", "Points", "Name Type", "Mode", "URL"}
+	header := []string{"ID", "Name", "Date Time", "Points", "Name Type", "Mode", "URL"}
 	table = append(table, header)
 	if len(args) > 0 {
 		for _, arg := range args {
@@ -56,7 +54,9 @@ func eventListCommand(cmd *cobra.Command, args []string) {
 				if err != nil {
 					errorMessageAndExit(err)
 				}
-				showInfo(&table, e, t)
+				if len(t.Mode) > 0 && t.Mode == eventNameType {
+					showInfo(&table, e, t)
+				}
 			}
 		}
 	} else {
@@ -65,7 +65,9 @@ func eventListCommand(cmd *cobra.Command, args []string) {
 			if err != nil {
 				errorMessageAndExit(err)
 			}
-			showInfo(&table, &e, t)
+			if len(t.Mode) > 0 && t.Mode == eventNameType {
+				showInfo(&table, &e, t)
+			}
 		}
 	}
 	if len(table) == 1 {
@@ -82,6 +84,7 @@ func showInfo(table *[][]string, e *entity.Event, t *model.Tournament) {
 	*table = append(*table, []string{
 		e.ID,
 		e.Name,
+		t.Created.Format("2006-01-02 15:04"),
 		fmt.Sprintf("%d", e.Points),
 		t.NameType,
 		t.Mode,
