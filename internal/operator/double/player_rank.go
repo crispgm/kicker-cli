@@ -12,19 +12,19 @@ import (
 	"github.com/crispgm/kicker-cli/pkg/rating/elo"
 )
 
-var _ operator.Operator = (*PlayerRanks)(nil)
+var _ operator.Operator = (*PlayerRank)(nil)
 
-// PlayerRanks generate statistics data of multiple monster DYP tournaments
-type PlayerRanks struct {
+// PlayerRank generate statistics data of double tournaments by player
+type PlayerRank struct {
 	options operator.Option
 	games   []entity.Game
 	players []entity.Player
 }
 
 // SupportedFormats .
-func (p PlayerRanks) SupportedFormats(nameType, mode string) bool {
-	if nameType == "byp" || nameType == "dyp" {
-		if mode == model.ModeMonsterDYP || mode == model.ModeRounds || mode == model.ModeRoundRobin {
+func (p PlayerRank) SupportedFormats(trn *model.Tournament) bool {
+	if trn.IsDouble() {
+		if trn.Mode == model.ModeMonsterDYP || trn.Mode == model.ModeRounds || trn.Mode == model.ModeRoundRobin {
 			return true
 		}
 	}
@@ -33,14 +33,14 @@ func (p PlayerRanks) SupportedFormats(nameType, mode string) bool {
 }
 
 // Input .
-func (p *PlayerRanks) Input(games []entity.Game, players []entity.Player, options operator.Option) {
+func (p *PlayerRank) Input(games []entity.Game, players []entity.Player, options operator.Option) {
 	p.games = games
 	p.players = players
 	p.options = options
 }
 
 // Output .
-func (p *PlayerRanks) Output() [][]string {
+func (p *PlayerRank) Output() [][]string {
 	data := make(map[string]entity.Player)
 	for _, p := range p.players {
 		data[p.Name] = p
@@ -67,37 +67,37 @@ func (p *PlayerRanks) Output() [][]string {
 		p.playedTimeStats(&t2p1Data, g.TimePlayed)
 		p.playedTimeStats(&t2p2Data, g.TimePlayed)
 		if g.Point1 > g.Point2 {
-			t1p1Data.Won++
-			t1p2Data.Won++
-			t2p1Data.Lost++
-			t2p2Data.Lost++
-			t1p1Data.HomeWon++
-			t1p2Data.HomeWon++
-			t2p1Data.AwayLost++
-			t2p2Data.AwayLost++
-			t1p1Data.GoalsWon += (g.Point1 - g.Point2)
-			t1p2Data.GoalsWon += (g.Point1 - g.Point2)
-			t2p1Data.GoalsInLost += (g.Point1 - g.Point2)
-			t2p2Data.GoalsInLost += (g.Point1 - g.Point2)
+			t1p1Data.Win++
+			t1p2Data.Win++
+			t2p1Data.Loss++
+			t2p2Data.Loss++
+			t1p1Data.HomeWin++
+			t1p2Data.HomeWin++
+			t2p1Data.AwayLoss++
+			t2p2Data.AwayLoss++
+			t1p1Data.GoalsWin += (g.Point1 - g.Point2)
+			t1p2Data.GoalsWin += (g.Point1 - g.Point2)
+			t2p1Data.GoalsInLoss += (g.Point1 - g.Point2)
+			t2p2Data.GoalsInLoss += (g.Point1 - g.Point2)
 		} else if g.Point2 > g.Point1 {
-			t1p1Data.Lost++
-			t1p2Data.Lost++
-			t2p1Data.Won++
-			t2p2Data.Won++
-			t1p1Data.HomeLost++
-			t1p2Data.HomeLost++
-			t2p1Data.AwayWon++
-			t2p2Data.AwayWon++
-			t2p1Data.GoalsWon += (g.Point2 - g.Point1)
-			t2p2Data.GoalsWon += (g.Point2 - g.Point1)
-			t1p1Data.GoalsInLost += (g.Point2 - g.Point1)
-			t1p2Data.GoalsInLost += (g.Point2 - g.Point1)
+			t1p1Data.Loss++
+			t1p2Data.Loss++
+			t2p1Data.Win++
+			t2p2Data.Win++
+			t1p1Data.HomeLoss++
+			t1p2Data.HomeLoss++
+			t2p1Data.AwayWin++
+			t2p2Data.AwayWin++
+			t2p1Data.GoalsWin += (g.Point2 - g.Point1)
+			t2p2Data.GoalsWin += (g.Point2 - g.Point1)
+			t1p1Data.GoalsInLoss += (g.Point2 - g.Point1)
+			t1p2Data.GoalsInLoss += (g.Point2 - g.Point1)
 		} else {
 			// basically not approachable
-			t1p1Data.Draws++
-			t1p2Data.Draws++
-			t2p1Data.Draws++
-			t2p2Data.Draws++
+			t1p1Data.Draw++
+			t1p2Data.Draw++
+			t2p1Data.Draw++
+			t2p2Data.Draw++
 		}
 		t1p1Data.Goals += g.Point1
 		t1p2Data.Goals += g.Point1
@@ -123,15 +123,15 @@ func (p *PlayerRanks) Output() [][]string {
 		if t2p2Data.EloRating != 0 {
 			t2p2Elo = t2p2Data.EloRating
 		}
-		sa := rating.Won
+		sa := rating.Win
 		if g.Point1 == g.Point2 {
-			sa = rating.Drew
+			sa = rating.Draw
 		} else {
-			sa = rating.Lost
+			sa = rating.Loss
 		}
 		team1elo := (t1p1Elo + t1p2Elo) / 2
 		team2elo := (t2p1Elo + t2p2Elo) / 2
-		rate := elo.EloRating{K: float64(p.options.EloKFactor)}
+		rate := elo.Elo{K: float64(p.options.EloKFactor)}
 		rate.InitialScore(t1p1Elo, team2elo)
 		t1p1Data.EloRating = rate.Calculate(sa)
 		rate.InitialScore(t1p2Elo, team2elo)
@@ -150,23 +150,23 @@ func (p *PlayerRanks) Output() [][]string {
 	for _, d := range data {
 		d.GoalDiff = d.Goals - d.GoalsIn
 		if d.Played != 0 {
-			d.WinRate = float32(d.Won) / float32(d.Played) * 100.0
-			if d.HomeWon+d.HomeLost > 0 {
-				d.HomeWonRate = float32(d.HomeWon) / float32(d.HomeWon+d.HomeLost) * 100.0
+			d.WinRate = float32(d.Win) / float32(d.Played) * 100.0
+			if d.HomeWin+d.HomeLoss > 0 {
+				d.HomeWinRate = float32(d.HomeWin) / float32(d.HomeWin+d.HomeLoss) * 100.0
 			}
-			if d.AwayWon+d.AwayLost > 0 {
-				d.AwayWonRate = float32(d.AwayWon) / float32(d.AwayWon+d.AwayLost) * 100.0
+			if d.AwayWin+d.AwayLoss > 0 {
+				d.AwayWinRate = float32(d.AwayWin) / float32(d.AwayWin+d.AwayLoss) * 100.0
 			}
 			d.PointsPerGame = float32(d.Goals) / float32(d.Played)
 			d.PointsInPerGame = float32(d.GoalsIn) / float32(d.Played)
 			d.TimePerGame = d.TimePlayed / d.Played / 1000
 			d.LongestGameTime /= 1000
 			d.ShortestGameTime /= 1000
-			if d.Won > 0 {
-				d.DiffPerWon = float32(d.GoalsWon) / float32(d.Won)
+			if d.Win > 0 {
+				d.DiffPerWin = float32(d.GoalsWin) / float32(d.Win)
 			}
-			if d.Lost > 0 {
-				d.DiffPerLost = float32(d.GoalsInLost) / float32(d.Lost)
+			if d.Loss > 0 {
+				d.DiffPerLoss = float32(d.GoalsInLoss) / float32(d.Loss)
 			}
 		}
 		sliceData = append(sliceData, d)
@@ -198,7 +198,7 @@ func (p *PlayerRanks) Output() [][]string {
 		sliceData = sliceData[len(sliceData)-p.options.Tail:]
 	}
 
-	header := []string{"#", "Name", "Elo", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%"}
+	header := []string{"#", "Name", "Elo", "Num", "Win", "Loss", "G+", "G-", "G±", "WR%"}
 	haHeader := []string{"HW", "HL", "HW%", "AW", "AL", "AW%"}
 	timeHeader := []string{"TPG", "LGP", "SGP"}
 	pointHeader := []string{"PPG", "LPG", "DPW", "DPL"}
@@ -221,8 +221,8 @@ func (p *PlayerRanks) Output() [][]string {
 			d.Name,
 			fmt.Sprintf("%.0f", d.EloRating),
 			fmt.Sprintf("%d", d.Played),
-			fmt.Sprintf("%d", d.Won),
-			fmt.Sprintf("%d", d.Lost),
+			fmt.Sprintf("%d", d.Win),
+			fmt.Sprintf("%d", d.Loss),
 			fmt.Sprintf("%d", d.Goals),
 			fmt.Sprintf("%d", d.GoalsIn),
 			fmt.Sprintf("%d", d.GoalDiff),
@@ -230,12 +230,12 @@ func (p *PlayerRanks) Output() [][]string {
 		}
 		if p.options.WithHomeAway {
 			item = append(item, []string{
-				fmt.Sprintf("%d", d.HomeWon),
-				fmt.Sprintf("%d", d.HomeLost),
-				fmt.Sprintf("%.0f%%", d.HomeWonRate),
-				fmt.Sprintf("%d", d.AwayWon),
-				fmt.Sprintf("%d", d.HomeLost),
-				fmt.Sprintf("%.0f%%", d.AwayWonRate),
+				fmt.Sprintf("%d", d.HomeWin),
+				fmt.Sprintf("%d", d.HomeLoss),
+				fmt.Sprintf("%.0f%%", d.HomeWinRate),
+				fmt.Sprintf("%d", d.AwayWin),
+				fmt.Sprintf("%d", d.HomeLoss),
+				fmt.Sprintf("%.0f%%", d.AwayWinRate),
 			}...)
 		}
 		if p.options.WithTime {
@@ -249,8 +249,8 @@ func (p *PlayerRanks) Output() [][]string {
 			item = append(item, []string{
 				fmt.Sprintf("%.2f", d.PointsPerGame),
 				fmt.Sprintf("%.2f", d.PointsInPerGame),
-				fmt.Sprintf("%.2f", d.DiffPerWon),
-				fmt.Sprintf("%.2f", d.DiffPerLost),
+				fmt.Sprintf("%.2f", d.DiffPerWin),
+				fmt.Sprintf("%.2f", d.DiffPerLoss),
 			}...)
 		}
 		table = append(table, item)
@@ -258,7 +258,7 @@ func (p *PlayerRanks) Output() [][]string {
 	return table
 }
 
-func (PlayerRanks) playedTimeStats(data *entity.Player, timePlayed int) {
+func (PlayerRank) playedTimeStats(data *entity.Player, timePlayed int) {
 	if timePlayed < 0 || timePlayed > 1000*60*15 {
 		// consider illegal
 		return

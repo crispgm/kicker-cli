@@ -45,7 +45,7 @@ type Options struct {
 
 // IsSingle .
 func (t Tournament) IsSingle() bool {
-	return t.NameType == "single"
+	return t.NameType == NameTypeSingle
 }
 
 // IsDouble .
@@ -55,10 +55,15 @@ func (t Tournament) IsDouble() bool {
 
 // IsBYP .
 func (t Tournament) IsBYP() bool {
-	return t.NameType == "byp"
+	return t.NameType == NameTypeBYP
 }
 
 // IsDYP .
 func (t Tournament) IsDYP() bool {
-	return t.NameType == "dyp"
+	return t.NameType == NameTypeDYP
+}
+
+// IsMonsterDYP .
+func (t Tournament) IsMonsterDYP() bool {
+	return t.NameType == NameTypeMonsterDYP
 }

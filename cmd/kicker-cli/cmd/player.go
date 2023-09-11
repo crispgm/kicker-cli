@@ -32,7 +32,7 @@ func listPlayerCommand(cmd *cobra.Command, args []string) {
 	instance := initInstanceAndLoadConf()
 	// load tournaments
 	var table [][]string
-	header := []string{"ID", "Name", "Points", "Played", "Won", "Lost", "W%", "ELO"}
+	header := []string{"ID", "Name", "Points", "Played", "Win", "Loss", "W%", "ELO"}
 	if !globalNoHeaders {
 		table = append(table, header)
 	}
@@ -42,8 +42,8 @@ func listPlayerCommand(cmd *cobra.Command, args []string) {
 			p.Name,
 			fmt.Sprintf("%d", p.Points),
 			fmt.Sprintf("%d", p.Played),
-			fmt.Sprintf("%d", p.Won),
-			fmt.Sprintf("%d", p.Lost),
+			fmt.Sprintf("%d", p.Win),
+			fmt.Sprintf("%d", p.Loss),
 			fmt.Sprintf("%.0f%%", p.WinRate),
 			fmt.Sprintf("%.0f", p.EloRating),
 		})

@@ -11,7 +11,7 @@ func TestEloScore(t *testing.T) {
 		Ra          int
 		Rb          int
 		K           int
-		WonDrewLost int
+		WinDrawLoss int
 	}
 	tests := []struct {
 		name string
@@ -24,7 +24,7 @@ func TestEloScore(t *testing.T) {
 				Ra:          1000,
 				Rb:          1000,
 				K:           40,
-				WonDrewLost: rating.Drew,
+				WinDrawLoss: rating.Draw,
 			},
 			want: 1000,
 		},
@@ -34,16 +34,16 @@ func TestEloScore(t *testing.T) {
 				Ra:          1000,
 				Rb:          1000,
 				K:           40,
-				WonDrewLost: rating.Won,
+				WinDrawLoss: rating.Win,
 			},
 			want: 1020,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			er := EloRating{K: float64(tt.args.K)}
+			er := Elo{K: float64(tt.args.K)}
 			er.InitialScore(float64(tt.args.Ra), float64(tt.args.Rb))
-			if got := er.Calculate(tt.args.WonDrewLost); got != tt.want {
+			if got := er.Calculate(tt.args.WinDrawLoss); got != tt.want {
 				t.Errorf("Calculate() = %v, want %v", got, tt.want)
 			}
 		})

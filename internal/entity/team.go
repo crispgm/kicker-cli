@@ -6,9 +6,9 @@ type Team struct {
 	Player2          string
 	Played           int
 	TimePlayed       int
-	Won              int
-	Lost             int
-	Draws            int
+	Win              int
+	Draw             int
+	Loss             int
 	Goals            int
 	GoalsIn          int
 	GoalDiff         int
@@ -16,10 +16,10 @@ type Team struct {
 	TimePerGame      int
 	PointsPerGame    float32
 	PointsInPerGame  float32
-	GoalsWon         int
-	DiffPerWon       float32
-	GoalsInLost      int
-	DiffPerLost      float32
+	GoalsWin         int
+	DiffPerWin       float32
+	GoalsInLoss      int
+	DiffPerLoss      float32
 	LongestGameTime  int
 	ShortestGameTime int
 }

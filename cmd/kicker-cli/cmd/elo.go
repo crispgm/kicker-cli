@@ -73,53 +73,53 @@ func eloMain(t1p1Score, t1p2Score, t2p1Score, t2p2Score float64) {
 	)
 	t1AvgScore = (t1p1Score + t1p2Score) / 2
 	t2AvgScore = (t2p1Score + t2p2Score) / 2
-	er := elo.EloRating{K: float64(evalEloKFactor)}
+	er := elo.Elo{K: float64(evalEloKFactor)}
 	er.InitialScore(t1p1Score, t2AvgScore)
-	t1p1Exp := er.Calculate(rating.Won)
+	t1p1Exp := er.Calculate(rating.Win)
 	er.InitialScore(t1p2Score, t2AvgScore)
-	t1p2Exp := er.Calculate(rating.Won)
+	t1p2Exp := er.Calculate(rating.Win)
 	er.InitialScore(t2p1Score, t1AvgScore)
-	t2p1Exp := er.Calculate(rating.Won)
+	t2p1Exp := er.Calculate(rating.Win)
 	er.InitialScore(t2p2Score, t1AvgScore)
-	t2p2Exp := er.Calculate(rating.Won)
+	t2p2Exp := er.Calculate(rating.Win)
 
 	if teamMode {
 		fmt.Println("- If team1 won:")
-		hostWonData := [][]string{
+		hostWinData := [][]string{
 			{"Team", "Player", "Cur Score", "New Score", "Rating Change"},
 			{"A", "1", fmt.Sprintf("%.f", t1p1Score), fmt.Sprintf("%.f", t1p1Exp), pterm.Green(fmt.Sprintf("+%.f", t1p1Exp-t1p1Score))},
 			{"A", "2", fmt.Sprintf("%.f", t1p2Score), fmt.Sprintf("%.f", t1p2Exp), pterm.Green(fmt.Sprintf("+%.f", t1p2Exp-t1p2Score))},
 			{"B", "1", fmt.Sprintf("%.f", t2p1Score), fmt.Sprintf("%.f", t2p1Exp), pterm.Red(fmt.Sprintf("%.f", t2p1Score-t2p1Exp))},
 			{"B", "2", fmt.Sprintf("%.f", t2p2Score), fmt.Sprintf("%.f", t2p2Exp), pterm.Red(fmt.Sprintf("%.f", t2p2Score-t2p2Exp))},
 		}
-		pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(hostWonData).WithBoxed(!globalNoBoxes).Render()
+		pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(hostWinData).WithBoxed(!globalNoBoxes).Render()
 		fmt.Println()
 
 		fmt.Println("- If team2 won:")
-		awayWonData := [][]string{
+		awayWinData := [][]string{
 			{"Team", "Player", "Cur Score", "New Score", "Rating Change"},
 			{"A", "1", fmt.Sprintf("%.f", t1p1Score), fmt.Sprintf("%.f", t1p1Exp), pterm.Red(fmt.Sprintf("%.f", t1p1Score-t1p1Exp))},
 			{"A", "2", fmt.Sprintf("%.f", t1p2Score), fmt.Sprintf("%.f", t1p2Exp), pterm.Red(fmt.Sprintf("%.f", t1p2Score-t1p2Exp))},
 			{"B", "1", fmt.Sprintf("%.f", t2p1Score), fmt.Sprintf("%.f", t2p1Exp), pterm.Green(fmt.Sprintf("+%.f", t2p1Exp-t2p1Score))},
 			{"B", "2", fmt.Sprintf("%.f", t2p2Score), fmt.Sprintf("%.f", t2p2Exp), pterm.Green(fmt.Sprintf("+%.f", t2p2Exp-t2p2Score))},
 		}
-		pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(awayWonData).WithBoxed(!globalNoBoxes).Render()
+		pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(awayWinData).WithBoxed(!globalNoBoxes).Render()
 	} else {
 		fmt.Println("- If player1 won:")
-		hostWonData := [][]string{
+		hostWinData := [][]string{
 			{"Player", "Cur Score", "New Score", "Rating Change"},
 			{"1", fmt.Sprintf("%.f", t1p1Score), fmt.Sprintf("%.f", t1p1Exp), pterm.Green(fmt.Sprintf("+%.f", t1p1Exp-t1p1Score))},
 			{"2", fmt.Sprintf("%.f", t2p1Score), fmt.Sprintf("%.f", t2p1Exp), pterm.Red(fmt.Sprintf("%.f", t2p1Score-t2p1Exp))},
 		}
-		pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(hostWonData).WithBoxed(!globalNoBoxes).Render()
+		pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(hostWinData).WithBoxed(!globalNoBoxes).Render()
 		fmt.Println()
 
 		fmt.Println("- If player2 won:")
-		awayWonData := [][]string{
+		awayWinData := [][]string{
 			{"Player", "Cur Score", "New Score", "Rating Change"},
 			{"1", fmt.Sprintf("%.f", t1p1Score), fmt.Sprintf("%.f", t1p1Exp), pterm.Red(fmt.Sprintf("%.f", t1p1Score-t1p1Exp))},
 			{"2", fmt.Sprintf("%.f", t2p1Score), fmt.Sprintf("%.f", t2p1Exp), pterm.Green(fmt.Sprintf("+%.f", t2p1Exp-t2p1Score))},
 		}
-		pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(awayWonData).WithBoxed(!globalNoBoxes).Render()
+		pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(awayWinData).WithBoxed(!globalNoBoxes).Render()
 	}
 }

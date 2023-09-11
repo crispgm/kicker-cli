@@ -49,28 +49,29 @@ var rankCmd = &cobra.Command{
 		var op operator.Operator
 		switch rankGameMode {
 		case entity.ModeDoublePlayerRank:
-			op = &double.PlayerRanks{}
+			op = &double.PlayerRank{}
 		case entity.ModeDoubleTeamRank:
-			op = &double.TeamRanks{}
-		// case entity.ModeDoubleTeamRivals:
-		// case entity.ModeSinglePlayerRanks:
-		// case entity.ModeSinglePlayerRivals:
+			op = &double.TeamRank{}
+		case entity.ModeDoubleTeamRival:
+			op = &double.TeamRival{}
+		// case entity.ModeSinglePlayerRank:
+		// case entity.ModeSinglePlayerRival:
 		default:
 			errorMessageAndExit("Please present a valid rank mode")
 		}
 
 		instance := initInstanceAndLoadConf()
 
-		var files []string
+		var events []*entity.Event
 		if allEvents {
 			for _, e := range instance.Conf.Events {
-				files = append(files, e.Path)
+				events = append(events, &e)
 			}
 		} else if len(args) > 0 {
 			for _, arg := range args {
 				e := instance.GetEvent(arg)
 				if e != nil {
-					files = append(files, e.Path)
+					events = append(events, e)
 				} else {
 					errorMessageAndExit("Event", arg, "not found")
 				}
@@ -79,8 +80,8 @@ var rankCmd = &cobra.Command{
 
 		// load tournaments
 		var tournaments []model.Tournament
-		for _, p := range files {
-			t, err := parser.ParseFile(filepath.Join(instance.DataPath(), p))
+		for _, e := range events {
+			t, err := parser.ParseFile(filepath.Join(instance.DataPath(), e.Path))
 			if err != nil {
 				errorMessageAndExit(err)
 			}
@@ -89,6 +90,10 @@ var rankCmd = &cobra.Command{
 				eventNameType = t.NameType
 			}
 			if t.NameType != eventNameType {
+				continue
+			}
+			if !op.SupportedFormats(t) {
+				pterm.Warning.Println("Not supported by operator. Ignoring", e.ID)
 				continue
 			}
 			tournaments = append(tournaments, *t)

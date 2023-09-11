@@ -1,11 +1,11 @@
 // Package rating multiple algorithms for rating
 package rating
 
-// literally won/draw/lost
+// literally win/draw/loss
 const (
-	Won = iota + 1
-	Drew
-	Lost
+	Win = iota + 1
+	Draw
+	Loss
 )
 
 // Rating interface of rating system

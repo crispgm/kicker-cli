@@ -15,9 +15,9 @@ type Player struct {
 	Aliases   []string `yaml:"aliases"`
 	Points    int      `yaml:"points"`
 	Played    int      `yaml:"played"`
-	Won       int      `yaml:"won"`
-	Lost      int      `yaml:"lost"`
-	Draws     int      `yaml:"draws"`
+	Win       int      `yaml:"win"`
+	Loss      int      `yaml:"loss"`
+	Draw      int      `yaml:"draw"`
 	EloRating float64  `yaml:"elo_rating"`
 	WinRate   float32  `yaml:"win_rate"`
 
@@ -25,21 +25,21 @@ type Player struct {
 	LongestGameTime  int     `yaml:"longest_game_time,omitempty"`
 	ShortestGameTime int     `yaml:"shortest_game_time,omitempty"`
 	TimePerGame      int     `yaml:"time_per_game,omitempty"`
-	HomeWon          int     `yaml:"home_won,omitempty,omitempty"`
-	HomeLost         int     `yaml:"home_lost,omitempty"`
-	HomeWonRate      float32 `yaml:"home_won_rate,omitempty"`
-	AwayWon          int     `yaml:"away_won,omitempty"`
-	AwayLost         int     `yaml:"away_lost,omitempty"`
-	AwayWonRate      float32 `yaml:"away_won_rate,omitempty"`
+	HomeWin          int     `yaml:"home_win,omitempty,omitempty"`
+	HomeLoss         int     `yaml:"home_loss,omitempty"`
+	HomeWinRate      float32 `yaml:"home_win_rate,omitempty"`
+	AwayWin          int     `yaml:"away_win,omitempty"`
+	AwayLoss         int     `yaml:"away_loss,omitempty"`
+	AwayWinRate      float32 `yaml:"away_win_rate,omitempty"`
 	Goals            int     `yaml:"goals,omitempty"`
 	GoalsIn          int     `yaml:"goals_in,omitempty"`
 	GoalDiff         int     `yaml:"goal_diff,omitempty"`
 	PointsPerGame    float32 `yaml:"points_per_game,omitempty"`
 	PointsInPerGame  float32 `yaml:"points_in_per_game,omitempty"`
-	GoalsWon         int     `yaml:"goals_won,omitempty"`
-	DiffPerWon       float32 `yaml:"diff_per_won,omitempty"`
-	GoalsInLost      int     `yaml:"goals_in_lost,omitempty"`
-	DiffPerLost      float32 `yaml:"diff_per_lost,omitempty"`
+	GoalsWin         int     `yaml:"goals_win,omitempty"`
+	DiffPerWin       float32 `yaml:"diff_per_win,omitempty"`
+	GoalsInLoss      int     `yaml:"goals_in_loss,omitempty"`
+	DiffPerLoss      float32 `yaml:"diff_per_loss,omitempty"`
 }
 
 // NewPlayer creates a player

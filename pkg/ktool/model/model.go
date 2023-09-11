@@ -11,6 +11,14 @@ const (
 	ModeElimination       = "elimination"
 )
 
+// Name Types
+const (
+	NameTypeSingle     = "single"
+	NameTypeBYP        = "byp"
+	NameTypeDYP        = "dyp"
+	NameTypeMonsterDYP = "monster_dyp"
+)
+
 // Model an entity that contains ID and type
 type Model struct {
 	ID   string `json:"_id"`
