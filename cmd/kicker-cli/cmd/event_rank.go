@@ -16,7 +16,10 @@ import (
 )
 
 var (
+	rankGameMode   string
 	rankMinPlayed  int
+	rankHead       int
+	rankTail       int
 	rankELOKFactor int
 	rankWithTime   bool
 	rankWithGoals  bool
@@ -27,6 +30,10 @@ func init() {
 	rankCmd.Flags().BoolVarP(&rankWithGoals, "with-goals", "", false, "rank with goals")
 	rankCmd.Flags().BoolVarP(&rankWithTime, "with-time", "", false, "rank with time duration")
 	rankCmd.Flags().IntVarP(&rankELOKFactor, "elo-k", "k", elo.K, "K factor")
+	rankCmd.Flags().IntVarP(&rankHead, "head", "", 0, "display the head part of rank")
+	rankCmd.Flags().IntVarP(&rankTail, "tail", "", 0, "display the last part of rank")
+	rankCmd.MarkFlagRequired("mode")
+	rankCmd.MarkFlagsMutuallyExclusive("head", "tail")
 	eventCmd.AddCommand(rankCmd)
 }
 
@@ -35,11 +42,14 @@ var rankCmd = &cobra.Command{
 	Short: "Get rank",
 	Long:  "Get rank",
 	Run: func(cmd *cobra.Command, args []string) {
+		if rankHead < 0 || rankTail < 0 {
+			errorMessageAndExit("Only non-negitive number is allowed for head or tail")
+		}
 		var op operator.Operator
-		switch eventGameMode {
-		case entity.ModeDoublePlayerRanks:
+		switch rankGameMode {
+		case entity.ModeDoublePlayerRank:
 			op = &double.PlayerRanks{}
-		case entity.ModeDoubleTeamRanks:
+		case entity.ModeDoubleTeamRank:
 			op = &double.TeamRanks{}
 		// case entity.ModeDoubleTeamRivals:
 		// case entity.ModeSinglePlayerRanks:
@@ -96,13 +106,15 @@ var rankCmd = &cobra.Command{
 
 		// calculating
 		options := operator.Option{
-			OrderBy:          "wr",
-			RankMinThreshold: rankMinPlayed,
-			EloKFactor:       rankELOKFactor,
-			WithHeader:       !globalNoHeaders,
-			WithHomeAway:     false,
-			WithTime:         rankWithTime,
-			WithGoals:        rankWithGoals,
+			OrderBy:       "wr",
+			MinimumPlayed: rankMinPlayed,
+			Head:          rankHead,
+			Tail:          rankTail,
+			EloKFactor:    rankELOKFactor,
+			WithHeader:    !globalNoHeaders,
+			WithHomeAway:  false,
+			WithTime:      rankWithTime,
+			WithGoals:     rankWithGoals,
 		}
 
 		pterm.Println("Briefing:", c.Briefing())

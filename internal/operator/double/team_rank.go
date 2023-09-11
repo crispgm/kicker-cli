@@ -114,10 +114,10 @@ func (t *TeamRanks) Output() [][]string {
 		sliceData = append(sliceData, d)
 	}
 	sort.SliceStable(sliceData, func(i, j int) bool {
-		if sliceData[i].Played >= t.options.RankMinThreshold && sliceData[j].Played < t.options.RankMinThreshold {
+		if sliceData[i].Played >= t.options.MinimumPlayed && sliceData[j].Played < t.options.MinimumPlayed {
 			return true
 		}
-		if sliceData[i].Played < t.options.RankMinThreshold && sliceData[j].Played >= t.options.RankMinThreshold {
+		if sliceData[i].Played < t.options.MinimumPlayed && sliceData[j].Played >= t.options.MinimumPlayed {
 			return false
 		}
 

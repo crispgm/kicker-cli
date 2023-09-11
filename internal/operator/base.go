@@ -12,11 +12,13 @@ type Operator interface {
 
 // Option .
 type Option struct {
-	OrderBy          string
-	RankMinThreshold int
-	EloKFactor       int
-	WithHeader       bool
-	WithTime         bool
-	WithHomeAway     bool
-	WithGoals        bool
+	OrderBy       string
+	MinimumPlayed int
+	Head          int
+	Tail          int
+	EloKFactor    int
+	WithHeader    bool
+	WithTime      bool
+	WithHomeAway  bool
+	WithGoals     bool
 }

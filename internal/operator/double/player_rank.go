@@ -173,10 +173,10 @@ func (p *PlayerRanks) Output() [][]string {
 	}
 	p.players = sliceData
 	sort.SliceStable(sliceData, func(i, j int) bool {
-		if sliceData[i].Played >= p.options.RankMinThreshold && sliceData[j].Played < p.options.RankMinThreshold {
+		if sliceData[i].Played >= p.options.MinimumPlayed && sliceData[j].Played < p.options.MinimumPlayed {
 			return true
 		}
-		if sliceData[i].Played < p.options.RankMinThreshold && sliceData[j].Played >= p.options.RankMinThreshold {
+		if sliceData[i].Played < p.options.MinimumPlayed && sliceData[j].Played >= p.options.MinimumPlayed {
 			return false
 		}
 
@@ -191,6 +191,12 @@ func (p *PlayerRanks) Output() [][]string {
 		}
 		return false
 	})
+
+	if p.options.Head > 0 && len(sliceData) > p.options.Head {
+		sliceData = sliceData[:p.options.Head]
+	} else if p.options.Tail > 0 && len(sliceData) > p.options.Tail {
+		sliceData = sliceData[len(sliceData)-p.options.Tail:]
+	}
 
 	header := []string{"#", "Name", "Elo", "Num", "Won", "Lost", "G+", "G-", "G±", "WR%"}
 	haHeader := []string{"HW", "HL", "HW%", "AW", "AL", "AW%"}
