@@ -24,7 +24,9 @@ type PlayerRank struct {
 // SupportedFormats .
 func (p PlayerRank) SupportedFormats(trn *model.Tournament) bool {
 	if trn.IsDouble() {
-		if trn.Mode == model.ModeMonsterDYP || trn.Mode == model.ModeRounds || trn.Mode == model.ModeRoundRobin {
+		if trn.Mode == model.ModeMonsterDYP ||
+			trn.Mode == model.ModeSwissSystem || trn.Mode == model.ModeRounds || trn.Mode == model.ModeRoundRobin ||
+			trn.Mode == model.ModeDoubleElimination || trn.Mode == model.ModeElimination {
 			return true
 		}
 	}
@@ -62,10 +64,6 @@ func (p *PlayerRank) Output() [][]string {
 		t1p2Data.TimePlayed += g.TimePlayed
 		t2p1Data.TimePlayed += g.TimePlayed
 		t2p2Data.TimePlayed += g.TimePlayed
-		p.playedTimeStats(&t1p1Data, g.TimePlayed)
-		p.playedTimeStats(&t1p2Data, g.TimePlayed)
-		p.playedTimeStats(&t2p1Data, g.TimePlayed)
-		p.playedTimeStats(&t2p2Data, g.TimePlayed)
 		if g.Point1 > g.Point2 {
 			t1p1Data.Win++
 			t1p2Data.Win++
@@ -198,16 +196,8 @@ func (p *PlayerRank) Output() [][]string {
 		sliceData = sliceData[len(sliceData)-p.options.Tail:]
 	}
 
-	header := []string{"#", "Name", "Elo", "Num", "Win", "Loss", "G+", "G-", "G±", "WR%"}
-	haHeader := []string{"HW", "HL", "HW%", "AW", "AL", "AW%"}
-	timeHeader := []string{"TPG", "LGP", "SGP"}
-	pointHeader := []string{"PPG", "LPG", "DPW", "DPL"}
-	if p.options.WithHomeAway {
-		header = append(header, haHeader...)
-	}
-	if p.options.WithTime {
-		header = append(header, timeHeader...)
-	}
+	header := []string{"#", "Name", "Num", "Win", "Loss", "Draw", "Elo", "WR%"}
+	pointHeader := []string{"G+", "G-", "G±", "PPG", "LPG", "DPW", "DPL"}
 	if p.options.WithGoals {
 		header = append(header, pointHeader...)
 	}
@@ -219,34 +209,18 @@ func (p *PlayerRank) Output() [][]string {
 		item := []string{
 			fmt.Sprintf("%d", i+1),
 			d.Name,
-			fmt.Sprintf("%.0f", d.EloRating),
 			fmt.Sprintf("%d", d.Played),
 			fmt.Sprintf("%d", d.Win),
 			fmt.Sprintf("%d", d.Loss),
-			fmt.Sprintf("%d", d.Goals),
-			fmt.Sprintf("%d", d.GoalsIn),
-			fmt.Sprintf("%d", d.GoalDiff),
+			fmt.Sprintf("%d", d.Draw),
+			fmt.Sprintf("%.0f", d.EloRating),
 			fmt.Sprintf("%.0f%%", d.WinRate),
-		}
-		if p.options.WithHomeAway {
-			item = append(item, []string{
-				fmt.Sprintf("%d", d.HomeWin),
-				fmt.Sprintf("%d", d.HomeLoss),
-				fmt.Sprintf("%.0f%%", d.HomeWinRate),
-				fmt.Sprintf("%d", d.AwayWin),
-				fmt.Sprintf("%d", d.HomeLoss),
-				fmt.Sprintf("%.0f%%", d.AwayWinRate),
-			}...)
-		}
-		if p.options.WithTime {
-			item = append(item, []string{
-				fmt.Sprintf("%02d:%02d", d.TimePerGame/60, d.TimePerGame%60),
-				fmt.Sprintf("%02d:%02d", d.LongestGameTime/60, d.LongestGameTime%60),
-				fmt.Sprintf("%02d:%02d", d.ShortestGameTime/60, d.ShortestGameTime%60),
-			}...)
 		}
 		if p.options.WithGoals {
 			item = append(item, []string{
+				fmt.Sprintf("%d", d.Goals),
+				fmt.Sprintf("%d", d.GoalsIn),
+				fmt.Sprintf("%d", d.GoalDiff),
 				fmt.Sprintf("%.2f", d.PointsPerGame),
 				fmt.Sprintf("%.2f", d.PointsInPerGame),
 				fmt.Sprintf("%.2f", d.DiffPerWin),
@@ -256,17 +230,4 @@ func (p *PlayerRank) Output() [][]string {
 		table = append(table, item)
 	}
 	return table
-}
-
-func (PlayerRank) playedTimeStats(data *entity.Player, timePlayed int) {
-	if timePlayed < 0 || timePlayed > 1000*60*15 {
-		// consider illegal
-		return
-	}
-	if data.LongestGameTime < timePlayed || data.LongestGameTime == 0 {
-		data.LongestGameTime = timePlayed
-	}
-	if data.ShortestGameTime > timePlayed || data.ShortestGameTime == 0 {
-		data.ShortestGameTime = timePlayed
-	}
 }

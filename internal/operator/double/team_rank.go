@@ -72,8 +72,6 @@ func (t *TeamRank) Output() [][]string {
 		et2.Played++
 		et1.TimePlayed += timePlayed
 		et2.TimePlayed += timePlayed
-		t.playedTimeStats(&et1, timePlayed)
-		t.playedTimeStats(&et2, timePlayed)
 
 		if g.Point1 > g.Point2 {
 			et1.Win++
@@ -145,12 +143,8 @@ func (t *TeamRank) Output() [][]string {
 		sliceData = sliceData[len(sliceData)-t.options.Tail:]
 	}
 
-	header := []string{"#", "Name", "Num", "Win", "Loss", "G+", "G-", "G±", "WR%"}
-	timeHeader := []string{"TPG", "LGP", "SGP"}
-	pointHeader := []string{"PPG", "LPG", "DPW", "DPL"}
-	if t.options.WithTime {
-		header = append(header, timeHeader...)
-	}
+	header := []string{"#", "Name", "Num", "Win", "Loss", "Draw", "WR%"}
+	pointHeader := []string{"G+", "G-", "G±", "PPG", "LPG", "DPW", "DPL"}
 	if t.options.WithGoals {
 		header = append(header, pointHeader...)
 	}
@@ -170,20 +164,14 @@ func (t *TeamRank) Output() [][]string {
 			fmt.Sprintf("%d", d.Played),
 			fmt.Sprintf("%d", d.Win),
 			fmt.Sprintf("%d", d.Loss),
-			fmt.Sprintf("%d", d.Goals),
-			fmt.Sprintf("%d", d.GoalsIn),
-			goalDiff,
+			fmt.Sprintf("%d", d.Draw),
 			winRate,
-		}
-		if t.options.WithTime {
-			item = append(item, []string{
-				fmt.Sprintf("%02d:%02d", d.TimePerGame/60, d.TimePerGame%60),
-				fmt.Sprintf("%02d:%02d", d.LongestGameTime/60, d.LongestGameTime%60),
-				fmt.Sprintf("%02d:%02d", d.ShortestGameTime/60, d.ShortestGameTime%60),
-			}...)
 		}
 		if t.options.WithGoals {
 			item = append(item, []string{
+				fmt.Sprintf("%d", d.Goals),
+				fmt.Sprintf("%d", d.GoalsIn),
+				goalDiff,
 				fmt.Sprintf("%.2f", d.PointsPerGame),
 				fmt.Sprintf("%.2f", d.PointsInPerGame),
 				fmt.Sprintf("%.2f", d.DiffPerWin),
@@ -193,17 +181,4 @@ func (t *TeamRank) Output() [][]string {
 		table = append(table, item)
 	}
 	return table
-}
-
-func (TeamRank) playedTimeStats(data *entity.Team, timePlayed int) {
-	if timePlayed < 0 || timePlayed > 1000*60*15 {
-		// consider illegal
-		return
-	}
-	if data.LongestGameTime < timePlayed || data.LongestGameTime == 0 {
-		data.LongestGameTime = timePlayed
-	}
-	if data.ShortestGameTime > timePlayed || data.ShortestGameTime == 0 {
-		data.ShortestGameTime = timePlayed
-	}
 }

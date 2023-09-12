@@ -18,10 +18,12 @@ type Play struct {
 	TimeStart   int  `json:"timeStart"`
 	TimeEnd     int  `json:"timeEnd"`
 	Team1       struct {
-		ID string `json:"_id"`
+		ID   string `json:"_id"`
+		Type string `json:"type"`
 	}
 	Team2 struct {
-		ID string `json:"_id"`
+		ID   string `json:"_id"`
+		Type string `json:"type"`
 	}
 	Disciplines []Discipline `json:"disciplines"`
 }

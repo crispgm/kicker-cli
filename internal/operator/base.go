@@ -21,7 +21,5 @@ type Option struct {
 	Tail          int
 	EloKFactor    int
 	WithHeader    bool
-	WithTime      bool
-	WithHomeAway  bool
 	WithGoals     bool
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/crispgm/kicker-cli/internal/entity"
 	"github.com/crispgm/kicker-cli/internal/operator"
 	"github.com/crispgm/kicker-cli/internal/operator/double"
+	"github.com/crispgm/kicker-cli/internal/operator/single"
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 	"github.com/crispgm/kicker-cli/pkg/ktool/parser"
 	"github.com/crispgm/kicker-cli/pkg/rating/elo"
@@ -21,7 +22,6 @@ var (
 	rankHead       int
 	rankTail       int
 	rankELOKFactor int
-	rankWithTime   bool
 	rankWithGoals  bool
 )
 
@@ -29,7 +29,6 @@ func init() {
 	rankCmd.Flags().StringVarP(&rankGameMode, "mode", "m", "", "rank mode")
 	rankCmd.Flags().IntVarP(&rankMinPlayed, "minimum-played", "p", 0, "minimum matches played")
 	rankCmd.Flags().BoolVarP(&rankWithGoals, "with-goals", "", false, "rank with goals")
-	rankCmd.Flags().BoolVarP(&rankWithTime, "with-time", "", false, "rank with time duration")
 	rankCmd.Flags().IntVarP(&rankELOKFactor, "elo-k", "k", elo.K, "K factor")
 	rankCmd.Flags().IntVarP(&rankHead, "head", "", 0, "display the head part of rank")
 	rankCmd.Flags().IntVarP(&rankTail, "tail", "", 0, "display the last part of rank")
@@ -54,7 +53,8 @@ var rankCmd = &cobra.Command{
 			op = &double.TeamRank{}
 		// case entity.ModeDoubleTeamRival:
 		// 	op = &double.TeamRival{}
-		// case entity.ModeSinglePlayerRank:
+		case entity.ModeSinglePlayerRank:
+			op = &single.PlayerRank{}
 		// case entity.ModeSinglePlayerRival:
 		default:
 			errorMessageAndExit("Please present a valid rank mode")
@@ -62,16 +62,16 @@ var rankCmd = &cobra.Command{
 
 		instance := initInstanceAndLoadConf()
 
-		var events []*entity.Event
+		var events []entity.Event
 		if allEvents {
 			for _, e := range instance.Conf.Events {
-				events = append(events, &e)
+				events = append(events, e)
 			}
 		} else if len(args) > 0 {
 			for _, arg := range args {
 				e := instance.GetEvent(arg)
 				if e != nil {
-					events = append(events, e)
+					events = append(events, *e)
 				} else {
 					errorMessageAndExit("Event", arg, "not found")
 				}
@@ -118,8 +118,6 @@ var rankCmd = &cobra.Command{
 			Tail:          rankTail,
 			EloKFactor:    rankELOKFactor,
 			WithHeader:    !globalNoHeaders,
-			WithHomeAway:  false,
-			WithTime:      rankWithTime,
 			WithGoals:     rankWithGoals,
 		}
 

@@ -116,26 +116,48 @@ func (Converter) convertPlayToGame(
 			continue
 		}
 
-		team1 := teams[p.Team1.ID]
-		team2 := teams[p.Team2.ID]
-		if p.Team2.ID == "" {
+		var (
+			game  entity.Game
+			team1 model.Team
+			team2 model.Team
+		)
+		if p.Team1.ID == "" || p.Team2.ID == "" {
 			// pass the game
 			continue
 		}
-		t1p1 := players[team1.Players[0].ID]
-		t1p2 := players[team1.Players[1].ID]
-		t2p1 := players[team2.Players[0].ID]
-		t2p2 := players[team2.Players[1].ID]
-		var game entity.Game
-		game.Team1 = []string{t1p1.Name, t1p2.Name}
-		game.Team2 = []string{t2p1.Name, t2p2.Name}
+		if p.Team1.Type == "Team" {
+			team1 = teams[p.Team1.ID]
+			team2 = teams[p.Team2.ID]
+			t1p1 := players[team1.Players[0].ID]
+			t1p2 := players[team1.Players[1].ID]
+			t2p1 := players[team2.Players[0].ID]
+			t2p2 := players[team2.Players[1].ID]
+			game.Team1 = []string{t1p1.Name, t1p2.Name}
+			game.Team2 = []string{t2p1.Name, t2p2.Name}
+		} else if p.Team1.Type == "Player" {
+			team1 = model.Team{Players: []model.Player{players[p.Team1.ID]}}
+			team2 = model.Team{Players: []model.Player{players[p.Team2.ID]}}
+			game.Team1 = []string{team1.ID}
+			game.Team2 = []string{team2.ID}
+		} else {
+			continue
+		}
 		game.TimePlayed = (p.TimeEnd - p.TimeStart) / 1000
+		var sets []entity.Set
 		for _, d := range p.Disciplines {
 			for _, s := range d.Sets {
-				game.Point1 = s.Team1
-				game.Point2 = s.Team2
+				sets = append(sets, entity.Set{Point1: s.Team1, Point2: s.Team2})
+				if s.Team1 > s.Team2 {
+					game.Point1++
+				} else if s.Team1 < s.Team2 {
+					game.Point2++
+				} else {
+					// what about draw?
+				}
 			}
+			break // only support one discipline right now
 		}
+		game.Sets = sets
 		games = append(games, game)
 	}
 	return games, nil
