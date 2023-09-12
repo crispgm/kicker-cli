@@ -52,8 +52,8 @@ var rankCmd = &cobra.Command{
 			op = &double.PlayerRank{}
 		case entity.ModeDoubleTeamRank:
 			op = &double.TeamRank{}
-		case entity.ModeDoubleTeamRival:
-			op = &double.TeamRival{}
+		// case entity.ModeDoubleTeamRival:
+		// 	op = &double.TeamRival{}
 		// case entity.ModeSinglePlayerRank:
 		// case entity.ModeSinglePlayerRival:
 		default:

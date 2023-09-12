@@ -110,8 +110,8 @@ func (t *TeamRank) Output() [][]string {
 			d.ShortestGameTime /= 1000
 			d.DiffPerWin = float32(d.GoalsWin) / float32(d.Win)
 			d.DiffPerLoss = float32(d.GoalsInLoss) / float32(d.Loss)
+			sliceData = append(sliceData, d)
 		}
-		sliceData = append(sliceData, d)
 	}
 	sort.SliceStable(sliceData, func(i, j int) bool {
 		if sliceData[i].Played >= t.options.MinimumPlayed && sliceData[j].Played < t.options.MinimumPlayed {

@@ -168,8 +168,8 @@ func (p *PlayerRank) Output() [][]string {
 			if d.Loss > 0 {
 				d.DiffPerLoss = float32(d.GoalsInLoss) / float32(d.Loss)
 			}
+			sliceData = append(sliceData, d)
 		}
-		sliceData = append(sliceData, d)
 	}
 	p.players = sliceData
 	sort.SliceStable(sliceData, func(i, j int) bool {
