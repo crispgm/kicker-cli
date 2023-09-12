@@ -13,7 +13,7 @@ by which organizers could manage, analyze and rank inside an organization across
 
 - Organization, Events, and Players database
 - Multiple files data aggregation
-- Rank for players and teams with win rate and ELO score
+- Rank for players and teams with basic win rate and ELO score
 - [ ] Result-based score
 
 ### Game Modes
@@ -32,11 +32,11 @@ by which organizers could manage, analyze and rank inside an organization across
 
 ### Operators
 
-- Double Player Ranks
-- Double Team Ranks
-- [ ] Double Team Rivals
-- [ ] Single Player Ranks
-- [ ] Single Player Rivals
+- Double Player Ranks: BYP, DYP, and MonsterDYP
+- Double Team Ranks: BYP, DYP, and MonsterDYP
+- [ ] Double Team Rivals: BYP, DYP, and MonsterDYP
+- [ ] Single Player Ranks: Single
+- [ ] Single Player Rivals: Single
 
 ## Installation
 
