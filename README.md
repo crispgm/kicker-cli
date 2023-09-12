@@ -35,7 +35,7 @@ by which organizers could manage, analyze and rank inside an organization across
 - Double Player Ranks: BYP, DYP, and MonsterDYP
 - Double Team Ranks: BYP, DYP, and MonsterDYP
 - Single Player Ranks: Single
-- [ ] Double Team Rivals: BYP, DYP, and MonsterDYP
+- Double Team Rivals: BYP, DYP, and MonsterDYP
 - [ ] Single Player Rivals: Single
 
 ## Installation
@@ -51,7 +51,7 @@ Init a workspace:
 # init with current folder
 kicker-cli init
 # init with existing folder
-kicker-cli init --path=/path/to/workspace
+kicker-cli init /path/to/workspace
 ```
 
 Import `.ktool` files:

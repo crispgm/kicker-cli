@@ -20,7 +20,9 @@ type TeamRank struct {
 // SupportedFormats .
 func (t TeamRank) SupportedFormats(trn *model.Tournament) bool {
 	if trn.IsDouble() {
-		if trn.Mode == model.ModeMonsterDYP || trn.Mode == model.ModeRounds || trn.Mode == model.ModeRoundRobin {
+		if trn.Mode == model.ModeMonsterDYP ||
+			trn.Mode == model.ModeSwissSystem || trn.Mode == model.ModeRounds || trn.Mode == model.ModeRoundRobin ||
+			trn.Mode == model.ModeDoubleElimination || trn.Mode == model.ModeElimination {
 			return true
 		}
 	}
