@@ -34,6 +34,7 @@ func TestConvertDoubleGames(t *testing.T) {
 			assert.Len(t, rec.WinnerBracket, 5)
 			assert.Nil(t, rec.ThirdPlace)
 			assert.Len(t, rec.AllGames, 18)
+			assert.NotEmpty(t, nc.Briefing())
 		}
 	}
 }

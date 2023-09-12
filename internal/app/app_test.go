@@ -26,6 +26,10 @@ func TestAppLoadConf(t *testing.T) {
 	assert.Equal(t, "My Foosball Community", app.Conf.Organization.Name)
 	assert.NotEmpty(t, app.Conf.Players)
 	assert.NotEmpty(t, app.Conf.Events)
+
+	assert.Equal(t, fmt.Sprintf("%s/%s", path, "data"), app.DataPath())
+	assert.NotNil(t, app.GetEvent("978d68fa-5f9e-49df-b576-12b29299c215"))
+	assert.Nil(t, app.GetEvent("d68fa-5f9e-49df-b576-12b29299c215"))
 }
 
 func TestAppWriteConf(t *testing.T) {

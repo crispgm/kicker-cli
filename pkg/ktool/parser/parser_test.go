@@ -56,3 +56,16 @@ func TestParseGame(t *testing.T) {
 		})
 	}
 }
+
+func TestParseGameFail(t *testing.T) {
+	_, err := ParseFile("not-existed-path")
+	assert.Error(t, err)
+	ciMode := os.Getenv("KICKER_CLI_CI_MODE")
+	path := "../../.."
+	if ciMode == "1" {
+		path = "."
+	}
+	_, err = ParseFile(path + "/README.md")
+	t.Log(err)
+	assert.Error(t, err)
+}
