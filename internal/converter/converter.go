@@ -15,6 +15,7 @@ type Converter struct {
 
 	record   entity.Record
 	briefing string
+	single   bool
 }
 
 // NewConverter .
@@ -34,6 +35,7 @@ func (c *Converter) Normalize(tournaments []model.Tournament, ePlayers []entity.
 
 	// players and teams
 	for _, t := range tournaments {
+		c.single = t.IsSingle()
 		teams := make(map[string]model.Team)
 		players := make(map[string]model.Player)
 		for _, p := range t.Players {
@@ -116,18 +118,14 @@ func (Converter) convertPlayToGame(
 			continue
 		}
 
-		var (
-			game  entity.Game
-			team1 model.Team
-			team2 model.Team
-		)
+		var game entity.Game
 		if p.Team1.ID == "" || p.Team2.ID == "" {
 			// pass the game
 			continue
 		}
 		if p.Team1.Type == "Team" {
-			team1 = teams[p.Team1.ID]
-			team2 = teams[p.Team2.ID]
+			team1 := teams[p.Team1.ID]
+			team2 := teams[p.Team2.ID]
 			t1p1 := players[team1.Players[0].ID]
 			t1p2 := players[team1.Players[1].ID]
 			t2p1 := players[team2.Players[0].ID]
@@ -135,10 +133,8 @@ func (Converter) convertPlayToGame(
 			game.Team1 = []string{t1p1.Name, t1p2.Name}
 			game.Team2 = []string{t2p1.Name, t2p2.Name}
 		} else if p.Team1.Type == "Player" {
-			team1 = model.Team{Players: []model.Player{players[p.Team1.ID]}}
-			team2 = model.Team{Players: []model.Player{players[p.Team2.ID]}}
-			game.Team1 = []string{team1.ID}
-			game.Team2 = []string{team2.ID}
+			game.Team1 = []string{players[p.Team1.ID].Name}
+			game.Team2 = []string{players[p.Team2.ID].Name}
 		} else {
 			continue
 		}
@@ -168,9 +164,27 @@ func (c *Converter) Briefing() string {
 	players := make(map[string]bool)
 	for _, g := range c.record.PreliminaryRounds {
 		players[g.Team1[0]] = true
-		players[g.Team1[1]] = true
 		players[g.Team2[0]] = true
-		players[g.Team2[1]] = true
+		if !c.single {
+			players[g.Team2[1]] = true
+			players[g.Team1[1]] = true
+		}
+	}
+	for _, g := range c.record.WinnerBracket {
+		players[g.Team1[0]] = true
+		players[g.Team2[0]] = true
+		if !c.single {
+			players[g.Team2[1]] = true
+			players[g.Team1[1]] = true
+		}
+	}
+	for _, g := range c.record.LoserBracket {
+		players[g.Team1[0]] = true
+		players[g.Team2[0]] = true
+		if !c.single {
+			players[g.Team2[1]] = true
+			players[g.Team1[1]] = true
+		}
 	}
 	numOfGames := len(c.record.PreliminaryRounds) +
 		len(c.record.WinnerBracket) +
