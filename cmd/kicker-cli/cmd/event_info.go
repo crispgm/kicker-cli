@@ -24,7 +24,7 @@ var eventInfoCmd = &cobra.Command{
 	Long:    "Show event details",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
-			errorMessageAndExit("No event ID or name present")
+			errorMessageAndExit("Please present an event ID")
 		}
 		arg := args[0]
 		instance := initInstanceAndLoadConf()

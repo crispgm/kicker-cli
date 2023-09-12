@@ -34,10 +34,10 @@ func (app App) DataPath() string {
 	return filepath.Join(app.Path, "/data")
 }
 
-// GetEvent returns event with the given name. Otherwise, return nil.
-func (app App) GetEvent(idOrName string) *entity.Event {
+// GetEvent returns event with the given id. Otherwise, return nil.
+func (app App) GetEvent(id string) *entity.Event {
 	for _, e := range app.Conf.Events {
-		if idOrName == e.Name || idOrName == e.ID {
+		if id == e.ID {
 			return &e
 		}
 	}

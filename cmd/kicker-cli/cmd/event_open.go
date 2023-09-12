@@ -15,7 +15,7 @@ var eventOpenCmd = &cobra.Command{
 	Long:  "Open event URL",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
-			errorMessageAndExit("Please present an event ID or name")
+			errorMessageAndExit("Please present an event ID")
 		}
 		instance := initInstanceAndLoadConf()
 		if e := instance.GetEvent(args[0]); e != nil {
