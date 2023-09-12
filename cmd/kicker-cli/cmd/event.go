@@ -22,6 +22,7 @@ func init() {
 	eventCmd.PersistentFlags().BoolVarP(&allEvents, "all", "a", false, "rank all events")
 	eventCmd.PersistentFlags().StringVarP(&eventNameType, "name-type", "t", "", "name type (single, byp, dyp or monster_dyp)")
 	eventCmd.AddCommand(eventListCmd)
+	eventCmd.MarkFlagsMutuallyExclusive("all", "name-type")
 	rootCmd.AddCommand(eventCmd)
 }
 
@@ -50,30 +51,30 @@ func eventListCommand(cmd *cobra.Command, args []string) {
 	if len(args) > 0 {
 		for _, arg := range args {
 			if e := instance.GetEvent(arg); e != nil {
-				t, err := parser.ParseFile(filepath.Join(instance.DataPath(), e.Path))
-				if err != nil {
-					errorMessageAndExit(err)
-				}
-				if len(t.Mode) > 0 && t.Mode == eventNameType {
-					showInfo(&table, e, t)
-				}
+				showEvent(instance.DataPath(), e, &table)
 			}
 		}
 	} else {
 		for _, e := range instance.Conf.Events {
-			t, err := parser.ParseFile(filepath.Join(instance.DataPath(), e.Path))
-			if err != nil {
-				errorMessageAndExit(err)
-			}
-			if len(t.Mode) > 0 && t.Mode == eventNameType {
-				showInfo(&table, &e, t)
-			}
+			showEvent(instance.DataPath(), &e, &table)
 		}
 	}
 	if len(table) == 1 {
 		errorMessageAndExit("No event(s) found")
 	}
 	pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
+}
+
+func showEvent(dataPath string, e *entity.Event, table *[][]string) {
+	t, err := parser.ParseFile(filepath.Join(dataPath, e.Path))
+	if err != nil {
+		errorMessageAndExit(err)
+	}
+	if !allEvents && (len(eventNameType) > 0 && t.NameType != eventNameType) {
+		return
+	}
+
+	showInfo(table, e, t)
 }
 
 func showInfo(table *[][]string, e *entity.Event, t *model.Tournament) {
