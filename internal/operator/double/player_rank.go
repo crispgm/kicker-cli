@@ -105,6 +105,7 @@ func (p *PlayerRank) Output() [][]string {
 		t1p2Data.GoalsIn += g.Point2
 		t2p1Data.GoalsIn += g.Point1
 		t2p2Data.GoalsIn += g.Point1
+		// ELO
 		t1p1Elo := elo.InitialScore
 		t1p2Elo := elo.InitialScore
 		t2p1Elo := elo.InitialScore
@@ -122,22 +123,29 @@ func (p *PlayerRank) Output() [][]string {
 			t2p2Elo = t2p2Data.EloRating
 		}
 		sa := rating.Win
+		sb := rating.Loss
 		if g.Point1 == g.Point2 {
 			sa = rating.Draw
-		} else {
+			sb = rating.Draw
+		} else if g.Point1 < g.Point2 {
 			sa = rating.Loss
+			sb = rating.Win
 		}
+
 		team1elo := (t1p1Elo + t1p2Elo) / 2
 		team2elo := (t2p1Elo + t2p2Elo) / 2
+
 		rate := elo.Elo{K: float64(p.options.EloKFactor)}
 		rate.InitialScore(t1p1Elo, team2elo)
 		t1p1Data.EloRating = rate.Calculate(sa)
 		rate.InitialScore(t1p2Elo, team2elo)
 		t1p2Data.EloRating = rate.Calculate(sa)
+
 		rate.InitialScore(t2p1Elo, team1elo)
-		t2p1Data.EloRating = rate.Calculate(sa)
-		rate.InitialScore(t2p1Elo, team1elo)
-		t2p2Data.EloRating = rate.Calculate(sa)
+		t2p1Data.EloRating = rate.Calculate(sb)
+		rate.InitialScore(t2p2Elo, team1elo)
+		t2p2Data.EloRating = rate.Calculate(sb)
+
 		data[g.Team1[0]] = t1p1Data
 		data[g.Team1[1]] = t1p2Data
 		data[g.Team2[0]] = t2p1Data

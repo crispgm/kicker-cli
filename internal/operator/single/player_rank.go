@@ -88,16 +88,19 @@ func (p *PlayerRank) Output() [][]string {
 			p2Elo = p2Data.EloRating
 		}
 		sa := rating.Win
+		sb := rating.Loss
 		if g.Point1 == g.Point2 {
 			sa = rating.Draw
-		} else {
+			sb = rating.Draw
+		} else if g.Point1 < g.Point2 {
 			sa = rating.Loss
+			sb = rating.Win
 		}
 		rate := elo.Elo{K: float64(p.options.EloKFactor)}
 		rate.InitialScore(p1Elo, p2Elo)
 		p1Data.EloRating = rate.Calculate(sa)
 		rate.InitialScore(p2Elo, p1Elo)
-		p2Data.EloRating = rate.Calculate(sa)
+		p2Data.EloRating = rate.Calculate(sb)
 		data[g.Team1[0]] = p1Data
 		data[g.Team2[0]] = p2Data
 	}

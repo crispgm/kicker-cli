@@ -22,11 +22,13 @@ var (
 	rankHead       int
 	rankTail       int
 	rankELOKFactor int
+	rankOrderBy    string
 	rankWithGoals  bool
 )
 
 func init() {
 	rankCmd.Flags().StringVarP(&rankGameMode, "mode", "m", "", "rank mode")
+	rankCmd.Flags().StringVarP(&rankOrderBy, "order-by", "o", "wr", "order by (wr/elo)")
 	rankCmd.Flags().IntVarP(&rankMinPlayed, "minimum-played", "p", 0, "minimum matches played")
 	rankCmd.Flags().BoolVarP(&rankWithGoals, "with-goals", "", false, "rank with goals")
 	rankCmd.Flags().IntVarP(&rankELOKFactor, "elo-k", "k", elo.K, "K factor")
@@ -113,7 +115,7 @@ var rankCmd = &cobra.Command{
 
 		// calculating
 		options := operator.Option{
-			OrderBy:       "wr",
+			OrderBy:       rankOrderBy,
 			MinimumPlayed: rankMinPlayed,
 			Head:          rankHead,
 			Tail:          rankTail,

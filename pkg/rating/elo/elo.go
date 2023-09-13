@@ -11,7 +11,7 @@ const (
 	// InitialScore of Elo rating
 	InitialScore = 1500.0
 	// K is the constant for Elo rating
-	K = 10.0
+	K = 40.0
 
 	// WinScore is the score for winning
 	WinScore = 1.0
