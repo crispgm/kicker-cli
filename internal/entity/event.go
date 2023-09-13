@@ -10,6 +10,7 @@ type Event struct {
 	ID         string `yaml:"id"`
 	Name       string `yaml:"name"`
 	Path       string `yaml:"path"`
+	MD5        string `yaml:"md5"`
 	Points     int    `yaml:"points"`
 	ITSFPoints int    `yaml:"itsf_points"`
 	ATSAPoints int    `yaml:"atsa_points"`

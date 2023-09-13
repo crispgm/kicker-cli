@@ -76,6 +76,15 @@ var importCmd = &cobra.Command{
 			event := *entity.NewEvent("temp", importEventName, importEventPoints)
 			fn := fmt.Sprintf("%s.ktool", event.ID)
 			event.Path = fn
+			md5, err := util.MD5CheckSum(importPath)
+			if err != nil {
+				errorMessageAndExit(err)
+			}
+			for _, e := range instance.Conf.Events {
+				if e.MD5 == md5 {
+					errorMessageAndExit("Duplicated event found:", e.ID)
+				}
+			}
 			err = util.CopyFile(importPath, filepath.Join(instance.DataPath(), fn))
 			if err != nil {
 				errorMessageAndExit(err)

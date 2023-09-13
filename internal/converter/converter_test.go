@@ -8,7 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/crispgm/kicker-cli/internal/entity"
-	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 	"github.com/crispgm/kicker-cli/pkg/ktool/parser"
 )
 
@@ -27,7 +26,7 @@ func TestConvertDoubleGames(t *testing.T) {
 			ePlayers = append(ePlayers, *entity.NewPlayer(p.Name))
 		}
 		nc := NewConverter()
-		rec, err := nc.Normalize([]model.Tournament{*trn}, ePlayers)
+		rec, err := nc.Normalize(ePlayers, *trn)
 		if assert.NoError(t, err) && assert.NotNil(t, rec) {
 			assert.Len(t, rec.PreliminaryRounds, 10)
 			assert.Len(t, rec.LoserBracket, 3)
