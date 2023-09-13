@@ -82,7 +82,11 @@ kicker-cli event delete 351e00bf-025c-4243-b381-2f5a135c3070
 
 Player management:
 ```shell
-kicker-cli player
+# list players
+kicker-cli player ls
+
+# delete player
+kicker-cli player delete 13d4ea60-f6ff-48da-be1e-413d38328cb0
 ```
 
 Evaluation:
@@ -92,9 +96,10 @@ kicker-cli eval -a elo 1103 1203 1289 1013
 kicker-cli eval -a elo -k 20 1103 1203 1289 1013
 ```
 
-## Known Issues
+## Known Issues & Limitations
 
-- Game duration is inaccurate because we actually don't input the result as soon as the game is finished.
+- Games are not ordered exactly the same as playing order. Thus, ELO rating is not accurate.
+- Game duration is inaccurate because we actually don't input the result as soon as the game is finished. So we abandoned all time factors.
 
 ## License
 

@@ -2,10 +2,7 @@
 package app
 
 import (
-	"errors"
 	"path/filepath"
-
-	"github.com/crispgm/kicker-cli/internal/entity"
 )
 
 // Version of app
@@ -33,31 +30,4 @@ func NewApp(path, name string) *App {
 // DataPath returns path to data files
 func (app App) DataPath() string {
 	return filepath.Join(app.Path, "/data")
-}
-
-// GetEvent returns event with the given id. Otherwise, return nil.
-func (app App) GetEvent(id string) *entity.Event {
-	for _, e := range app.Conf.Events {
-		if id == e.ID {
-			return &e
-		}
-	}
-
-	return nil
-}
-
-// DeleteEvent delete an event
-func (app *App) DeleteEvent(id string) error {
-	s := -1
-	for i, e := range app.Conf.Events {
-		if id == e.ID {
-			s = i
-		}
-	}
-	if s < 0 {
-		return errors.New("Event not found")
-	}
-
-	app.Conf.Events = append(app.Conf.Events[:s], app.Conf.Events[s+1:]...)
-	return nil
 }
