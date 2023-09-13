@@ -7,11 +7,13 @@ const DefaultPoints = 50
 
 // Event .
 type Event struct {
-	ID     string `yaml:"id"`
-	Name   string `yaml:"name"`
-	Path   string `yaml:"path"`
-	Points int    `yaml:"points"`
-	URL    string `yaml:"url"`
+	ID         string `yaml:"id"`
+	Name       string `yaml:"name"`
+	Path       string `yaml:"path"`
+	Points     int    `yaml:"points"`
+	ITSFPoints int    `yaml:"itsf_points"`
+	ATSAPoints int    `yaml:"atsa_points"`
+	URL        string `yaml:"url"`
 }
 
 // NewEvent creates an event

@@ -16,9 +16,9 @@ var _ operator.Operator = (*PlayerRank)(nil)
 
 // PlayerRank generate statistics data of double tournaments by player
 type PlayerRank struct {
-	options operator.Option
-	games   []entity.Game
-	players []entity.Player
+	options     operator.Option
+	tournaments []entity.Tournament
+	players     []entity.Player
 }
 
 // SupportedFormats .
@@ -35,8 +35,8 @@ func (p PlayerRank) SupportedFormats(trn *model.Tournament) bool {
 }
 
 // Input .
-func (p *PlayerRank) Input(games []entity.Game, players []entity.Player, options operator.Option) {
-	p.games = games
+func (p *PlayerRank) Input(tournaments []entity.Tournament, players []entity.Player, options operator.Option) {
+	p.tournaments = tournaments
 	p.players = players
 	p.options = options
 }
@@ -47,109 +47,111 @@ func (p *PlayerRank) Output() [][]string {
 	for _, p := range p.players {
 		data[p.Name] = p
 	}
-	for _, g := range p.games {
-		t1p1Data := data[g.Team1[0]]
-		t1p2Data := data[g.Team1[1]]
-		t2p1Data := data[g.Team2[0]]
-		t2p2Data := data[g.Team2[1]]
-		t1p1Data.Name = g.Team1[0]
-		t1p2Data.Name = g.Team1[1]
-		t2p1Data.Name = g.Team2[0]
-		t2p2Data.Name = g.Team2[1]
-		t1p1Data.Played++
-		t1p2Data.Played++
-		t2p1Data.Played++
-		t2p2Data.Played++
-		t1p1Data.TimePlayed += g.TimePlayed
-		t1p2Data.TimePlayed += g.TimePlayed
-		t2p1Data.TimePlayed += g.TimePlayed
-		t2p2Data.TimePlayed += g.TimePlayed
-		if g.Point1 > g.Point2 {
-			t1p1Data.Win++
-			t1p2Data.Win++
-			t2p1Data.Loss++
-			t2p2Data.Loss++
-			t1p1Data.HomeWin++
-			t1p2Data.HomeWin++
-			t2p1Data.AwayLoss++
-			t2p2Data.AwayLoss++
-			t1p1Data.GoalsWin += (g.Point1 - g.Point2)
-			t1p2Data.GoalsWin += (g.Point1 - g.Point2)
-			t2p1Data.GoalsInLoss += (g.Point1 - g.Point2)
-			t2p2Data.GoalsInLoss += (g.Point1 - g.Point2)
-		} else if g.Point2 > g.Point1 {
-			t1p1Data.Loss++
-			t1p2Data.Loss++
-			t2p1Data.Win++
-			t2p2Data.Win++
-			t1p1Data.HomeLoss++
-			t1p2Data.HomeLoss++
-			t2p1Data.AwayWin++
-			t2p2Data.AwayWin++
-			t2p1Data.GoalsWin += (g.Point2 - g.Point1)
-			t2p2Data.GoalsWin += (g.Point2 - g.Point1)
-			t1p1Data.GoalsInLoss += (g.Point2 - g.Point1)
-			t1p2Data.GoalsInLoss += (g.Point2 - g.Point1)
-		} else {
-			// basically not approachable
-			t1p1Data.Draw++
-			t1p2Data.Draw++
-			t2p1Data.Draw++
-			t2p2Data.Draw++
-		}
-		t1p1Data.Goals += g.Point1
-		t1p2Data.Goals += g.Point1
-		t2p1Data.Goals += g.Point2
-		t2p2Data.Goals += g.Point2
-		t1p1Data.GoalsIn += g.Point2
-		t1p2Data.GoalsIn += g.Point2
-		t2p1Data.GoalsIn += g.Point1
-		t2p2Data.GoalsIn += g.Point1
-		// ELO
-		t1p1Elo := elo.InitialScore
-		t1p2Elo := elo.InitialScore
-		t2p1Elo := elo.InitialScore
-		t2p2Elo := elo.InitialScore
-		if t1p1Data.EloRating != 0 {
-			t1p1Elo = t1p1Data.EloRating
-		}
-		if t1p2Data.EloRating != 0 {
-			t1p2Elo = t1p2Data.EloRating
-		}
-		if t2p1Data.EloRating != 0 {
-			t2p1Elo = t2p1Data.EloRating
-		}
-		if t2p2Data.EloRating != 0 {
-			t2p2Elo = t2p2Data.EloRating
-		}
-		sa := rating.Win
-		sb := rating.Loss
-		if g.Point1 == g.Point2 {
-			sa = rating.Draw
-			sb = rating.Draw
-		} else if g.Point1 < g.Point2 {
-			sa = rating.Loss
-			sb = rating.Win
-		}
+	for _, t := range p.tournaments {
+		for _, g := range t.Converted.AllGames {
+			t1p1Data := data[g.Team1[0]]
+			t1p2Data := data[g.Team1[1]]
+			t2p1Data := data[g.Team2[0]]
+			t2p2Data := data[g.Team2[1]]
+			t1p1Data.Name = g.Team1[0]
+			t1p2Data.Name = g.Team1[1]
+			t2p1Data.Name = g.Team2[0]
+			t2p2Data.Name = g.Team2[1]
+			t1p1Data.Played++
+			t1p2Data.Played++
+			t2p1Data.Played++
+			t2p2Data.Played++
+			t1p1Data.TimePlayed += g.TimePlayed
+			t1p2Data.TimePlayed += g.TimePlayed
+			t2p1Data.TimePlayed += g.TimePlayed
+			t2p2Data.TimePlayed += g.TimePlayed
+			if g.Point1 > g.Point2 {
+				t1p1Data.Win++
+				t1p2Data.Win++
+				t2p1Data.Loss++
+				t2p2Data.Loss++
+				t1p1Data.HomeWin++
+				t1p2Data.HomeWin++
+				t2p1Data.AwayLoss++
+				t2p2Data.AwayLoss++
+				t1p1Data.GoalsWin += (g.Point1 - g.Point2)
+				t1p2Data.GoalsWin += (g.Point1 - g.Point2)
+				t2p1Data.GoalsInLoss += (g.Point1 - g.Point2)
+				t2p2Data.GoalsInLoss += (g.Point1 - g.Point2)
+			} else if g.Point2 > g.Point1 {
+				t1p1Data.Loss++
+				t1p2Data.Loss++
+				t2p1Data.Win++
+				t2p2Data.Win++
+				t1p1Data.HomeLoss++
+				t1p2Data.HomeLoss++
+				t2p1Data.AwayWin++
+				t2p2Data.AwayWin++
+				t2p1Data.GoalsWin += (g.Point2 - g.Point1)
+				t2p2Data.GoalsWin += (g.Point2 - g.Point1)
+				t1p1Data.GoalsInLoss += (g.Point2 - g.Point1)
+				t1p2Data.GoalsInLoss += (g.Point2 - g.Point1)
+			} else {
+				// basically not approachable
+				t1p1Data.Draw++
+				t1p2Data.Draw++
+				t2p1Data.Draw++
+				t2p2Data.Draw++
+			}
+			t1p1Data.Goals += g.Point1
+			t1p2Data.Goals += g.Point1
+			t2p1Data.Goals += g.Point2
+			t2p2Data.Goals += g.Point2
+			t1p1Data.GoalsIn += g.Point2
+			t1p2Data.GoalsIn += g.Point2
+			t2p1Data.GoalsIn += g.Point1
+			t2p2Data.GoalsIn += g.Point1
+			// ELO
+			t1p1Elo := elo.InitialScore
+			t1p2Elo := elo.InitialScore
+			t2p1Elo := elo.InitialScore
+			t2p2Elo := elo.InitialScore
+			if t1p1Data.EloRating != 0 {
+				t1p1Elo = t1p1Data.EloRating
+			}
+			if t1p2Data.EloRating != 0 {
+				t1p2Elo = t1p2Data.EloRating
+			}
+			if t2p1Data.EloRating != 0 {
+				t2p1Elo = t2p1Data.EloRating
+			}
+			if t2p2Data.EloRating != 0 {
+				t2p2Elo = t2p2Data.EloRating
+			}
+			sa := rating.Win
+			sb := rating.Loss
+			if g.Point1 == g.Point2 {
+				sa = rating.Draw
+				sb = rating.Draw
+			} else if g.Point1 < g.Point2 {
+				sa = rating.Loss
+				sb = rating.Win
+			}
 
-		team1elo := (t1p1Elo + t1p2Elo) / 2
-		team2elo := (t2p1Elo + t2p2Elo) / 2
+			team1elo := (t1p1Elo + t1p2Elo) / 2
+			team2elo := (t2p1Elo + t2p2Elo) / 2
 
-		rate := elo.Elo{K: float64(p.options.EloKFactor)}
-		rate.InitialScore(t1p1Elo, team2elo)
-		t1p1Data.EloRating = rate.Calculate(sa)
-		rate.InitialScore(t1p2Elo, team2elo)
-		t1p2Data.EloRating = rate.Calculate(sa)
+			rate := elo.Elo{K: float64(p.options.EloKFactor)}
+			rate.InitialScore(t1p1Elo, team2elo)
+			t1p1Data.EloRating = rate.Calculate(sa)
+			rate.InitialScore(t1p2Elo, team2elo)
+			t1p2Data.EloRating = rate.Calculate(sa)
 
-		rate.InitialScore(t2p1Elo, team1elo)
-		t2p1Data.EloRating = rate.Calculate(sb)
-		rate.InitialScore(t2p2Elo, team1elo)
-		t2p2Data.EloRating = rate.Calculate(sb)
+			rate.InitialScore(t2p1Elo, team1elo)
+			t2p1Data.EloRating = rate.Calculate(sb)
+			rate.InitialScore(t2p2Elo, team1elo)
+			t2p2Data.EloRating = rate.Calculate(sb)
 
-		data[g.Team1[0]] = t1p1Data
-		data[g.Team1[1]] = t1p2Data
-		data[g.Team2[0]] = t2p1Data
-		data[g.Team2[1]] = t2p2Data
+			data[g.Team1[0]] = t1p1Data
+			data[g.Team1[1]] = t1p2Data
+			data[g.Team2[0]] = t2p1Data
+			data[g.Team2[1]] = t2p2Data
+		}
 	}
 
 	var sliceData []entity.Player
@@ -204,7 +206,7 @@ func (p *PlayerRank) Output() [][]string {
 		sliceData = sliceData[len(sliceData)-p.options.Tail:]
 	}
 
-	header := []string{"#", "Name", "Num", "Win", "Loss", "Draw", "Elo", "WR%"}
+	header := []string{"#", "Name", "Num", "Win", "Loss", "Draw", "WR%", "Elo"}
 	pointHeader := []string{"G+", "G-", "G±", "PPG", "LPG", "DPW", "DPL"}
 	if p.options.WithGoals {
 		header = append(header, pointHeader...)
@@ -221,8 +223,8 @@ func (p *PlayerRank) Output() [][]string {
 			fmt.Sprintf("%d", d.Win),
 			fmt.Sprintf("%d", d.Loss),
 			fmt.Sprintf("%d", d.Draw),
-			fmt.Sprintf("%.0f", d.EloRating),
 			fmt.Sprintf("%.0f%%", d.WinRate),
+			fmt.Sprintf("%.0f", d.EloRating),
 		}
 		if p.options.WithGoals {
 			item = append(item, []string{

@@ -1,10 +1,10 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
+
+	"github.com/crispgm/kicker-cli/internal/util"
 )
 
 func init() {
@@ -32,21 +32,29 @@ func listPlayerCommand(cmd *cobra.Command, args []string) {
 	instance := initInstanceAndLoadConf()
 	// load tournaments
 	var table [][]string
-	header := []string{"ID", "Name", "Points", "Played", "Win", "Loss", "W%", "ELO"}
+	header := []string{"ID", "Name", "ITSF_ID", "ATSA_ID"}
 	if !globalNoHeaders {
 		table = append(table, header)
 	}
-	for _, p := range instance.Conf.Players {
+	needWrite := false
+	for i, p := range instance.Conf.Players {
+		if p.ID == "" {
+			p.ID = util.UUID()
+			instance.Conf.Players[i].ID = p.ID
+			needWrite = true
+		}
 		table = append(table, []string{
 			p.ID,
 			p.Name,
-			fmt.Sprintf("%d", p.Points),
-			fmt.Sprintf("%d", p.Played),
-			fmt.Sprintf("%d", p.Win),
-			fmt.Sprintf("%d", p.Loss),
-			fmt.Sprintf("%.0f%%", p.WinRate),
-			fmt.Sprintf("%.0f", p.EloRating),
+			p.ITSFID,
+			p.ATSAID,
 		})
 	}
 	pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
+	if needWrite {
+		err := instance.WriteConf()
+		if err != nil {
+			errorMessageAndExit(err)
+		}
+	}
 }

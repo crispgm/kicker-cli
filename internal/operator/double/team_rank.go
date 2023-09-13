@@ -13,8 +13,8 @@ var _ operator.Operator = (*TeamRank)(nil)
 
 // TeamRank generate statistics data of multiple double tournaments by team
 type TeamRank struct {
-	options operator.Option
-	games   []entity.Game
+	options     operator.Option
+	tournaments []entity.Tournament
 }
 
 // SupportedFormats .
@@ -31,71 +31,73 @@ func (t TeamRank) SupportedFormats(trn *model.Tournament) bool {
 }
 
 // Input .
-func (t *TeamRank) Input(games []entity.Game, players []entity.Player, options operator.Option) {
-	t.games = games
+func (t *TeamRank) Input(tournaments []entity.Tournament, players []entity.Player, options operator.Option) {
+	t.tournaments = tournaments
 	t.options = options
 }
 
 // Output .
 func (t *TeamRank) Output() [][]string {
 	data := make(map[string]entity.Team)
-	for _, g := range t.games {
-		t1p1Name := g.Team1[0]
-		t1p2Name := g.Team1[1]
-		t2p1Name := g.Team2[0]
-		t2p2Name := g.Team2[1]
-		team1Name := fmt.Sprintf("%s_%s", t1p1Name, t1p2Name)
-		if t1p1Name > t1p2Name {
-			team1Name = fmt.Sprintf("%s_%s", t1p2Name, t1p1Name)
-		}
-		team2Name := fmt.Sprintf("%s_%s", t2p1Name, t2p2Name)
-		if t2p1Name > t2p2Name {
-			team2Name = fmt.Sprintf("%s_%s", t2p2Name, t2p1Name)
-		}
-		var et1, et2 entity.Team
-		if t, ok := data[team1Name]; ok {
-			et1 = t
-		} else {
-			et1 = entity.Team{
-				Player1: t1p1Name,
-				Player2: t1p2Name,
+	for _, trn := range t.tournaments {
+		for _, g := range trn.Converted.AllGames {
+			t1p1Name := g.Team1[0]
+			t1p2Name := g.Team1[1]
+			t2p1Name := g.Team2[0]
+			t2p2Name := g.Team2[1]
+			team1Name := fmt.Sprintf("%s_%s", t1p1Name, t1p2Name)
+			if t1p1Name > t1p2Name {
+				team1Name = fmt.Sprintf("%s_%s", t1p2Name, t1p1Name)
 			}
-		}
-		if t, ok := data[team2Name]; ok {
-			et2 = t
-		} else {
-			et2 = entity.Team{
-				Player1: t2p1Name,
-				Player2: t2p2Name,
+			team2Name := fmt.Sprintf("%s_%s", t2p1Name, t2p2Name)
+			if t2p1Name > t2p2Name {
+				team2Name = fmt.Sprintf("%s_%s", t2p2Name, t2p1Name)
 			}
-		}
-		timePlayed := g.TimePlayed
-		et1.Played++
-		et2.Played++
-		et1.TimePlayed += timePlayed
-		et2.TimePlayed += timePlayed
+			var et1, et2 entity.Team
+			if t, ok := data[team1Name]; ok {
+				et1 = t
+			} else {
+				et1 = entity.Team{
+					Player1: t1p1Name,
+					Player2: t1p2Name,
+				}
+			}
+			if t, ok := data[team2Name]; ok {
+				et2 = t
+			} else {
+				et2 = entity.Team{
+					Player1: t2p1Name,
+					Player2: t2p2Name,
+				}
+			}
+			timePlayed := g.TimePlayed
+			et1.Played++
+			et2.Played++
+			et1.TimePlayed += timePlayed
+			et2.TimePlayed += timePlayed
 
-		if g.Point1 > g.Point2 {
-			et1.Win++
-			et2.Loss++
-			et1.GoalsWin += (g.Point1 - g.Point2)
-			et2.GoalsInLoss += (g.Point1 - g.Point2)
-		} else if g.Point1 < g.Point2 {
-			et1.Loss++
-			et2.Win++
-			et2.GoalsWin += (g.Point2 - g.Point1)
-			et1.GoalsInLoss += (g.Point2 - g.Point1)
-		} else {
-			et1.Draw++
-			et2.Draw++
-		}
-		et1.Goals += g.Point1
-		et2.Goals += g.Point2
-		et1.GoalsIn += g.Point2
-		et2.GoalsIn += g.Point1
+			if g.Point1 > g.Point2 {
+				et1.Win++
+				et2.Loss++
+				et1.GoalsWin += (g.Point1 - g.Point2)
+				et2.GoalsInLoss += (g.Point1 - g.Point2)
+			} else if g.Point1 < g.Point2 {
+				et1.Loss++
+				et2.Win++
+				et2.GoalsWin += (g.Point2 - g.Point1)
+				et1.GoalsInLoss += (g.Point2 - g.Point1)
+			} else {
+				et1.Draw++
+				et2.Draw++
+			}
+			et1.Goals += g.Point1
+			et2.Goals += g.Point2
+			et1.GoalsIn += g.Point2
+			et2.GoalsIn += g.Point1
 
-		data[team1Name] = et1
-		data[team2Name] = et2
+			data[team1Name] = et1
+			data[team2Name] = et2
+		}
 	}
 
 	var sliceData []entity.Team

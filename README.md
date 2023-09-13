@@ -56,7 +56,7 @@ kicker-cli init /path/to/workspace
 Import `.ktool` files:
 ```shell
 # download from Kickertool and then
-kicker-cli import --path=/path/to/ktool
+kicker-cli import /path/to/ktool
 ```
 
 Event management:
@@ -64,12 +64,12 @@ Event management:
 # list events
 kicker-cli event ls
 # show info
-kicker-cli event info "351e00bf-025c-4243-b381-2f5a135c3070"
+kicker-cli event info 351e00bf-025c-4243-b381-2f5a135c3070
 # get rank
 kicker-cli event rank -m double_player_rank -t byp
-kicker-cli event rank "351e00bf-025c-4243-b381-2f5a135c3070" -m double_player_rank
+kicker-cli event rank 351e00bf-025c-4243-b381-2f5a135c3070 -m double_player_rank
 # open event
-kicekr-cli event open "351e00bf-025c-4243-b381-2f5a135c3070"
+kicekr-cli event open 351e00bf-025c-4243-b381-2f5a135c3070
 #  => xdg-open event-url
 ```
 

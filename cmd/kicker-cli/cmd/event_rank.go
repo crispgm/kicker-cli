@@ -106,14 +106,16 @@ var rankCmd = &cobra.Command{
 			return
 		}
 
-		pterm.Println("Loading tournaments ...")
-		c := converter.NewConverter()
-		trn, err := c.Normalize(tournaments, instance.Conf.Players)
-		if err != nil {
-			errorMessageAndExit(err)
-		}
+		var eTournaments []entity.Tournament
+		for _, t := range tournaments {
+			c := converter.NewConverter()
+			trn, err := c.Normalize(instance.Conf.Players, t)
+			if err != nil {
+				errorMessageAndExit(err)
+			}
 
-		// calculating
+			eTournaments = append(eTournaments, entity.Tournament{Raw: t, Converted: *trn})
+		}
 		options := operator.Option{
 			OrderBy:       rankOrderBy,
 			MinimumPlayed: rankMinPlayed,
@@ -123,10 +125,7 @@ var rankCmd = &cobra.Command{
 			WithHeader:    !globalNoHeaders,
 			WithGoals:     rankWithGoals,
 		}
-
-		pterm.Println("Briefing:", c.Briefing())
-		pterm.Println()
-		op.Input(trn.AllGames, instance.Conf.Players, options)
+		op.Input(eTournaments, instance.Conf.Players, options)
 		table := op.Output()
 		pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
 	},

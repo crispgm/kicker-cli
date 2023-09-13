@@ -16,9 +16,9 @@ var _ operator.Operator = (*PlayerRank)(nil)
 
 // PlayerRank generate statistics data of double tournaments by player
 type PlayerRank struct {
-	options operator.Option
-	games   []entity.Game
-	players []entity.Player
+	options     operator.Option
+	tournaments []entity.Tournament
+	players     []entity.Player
 }
 
 // SupportedFormats .
@@ -35,8 +35,8 @@ func (p PlayerRank) SupportedFormats(trn *model.Tournament) bool {
 }
 
 // Input .
-func (p *PlayerRank) Input(games []entity.Game, players []entity.Player, options operator.Option) {
-	p.games = games
+func (p *PlayerRank) Input(tournaments []entity.Tournament, players []entity.Player, options operator.Option) {
+	p.tournaments = tournaments
 	p.players = players
 	p.options = options
 }
@@ -47,62 +47,64 @@ func (p *PlayerRank) Output() [][]string {
 	for _, p := range p.players {
 		data[p.Name] = p
 	}
-	for _, g := range p.games {
-		p1Data := data[g.Team1[0]]
-		p2Data := data[g.Team2[0]]
-		p1Data.Name = g.Team1[0]
-		p2Data.Name = g.Team2[0]
-		p1Data.Played++
-		p2Data.Played++
-		p1Data.TimePlayed += g.TimePlayed
-		p2Data.TimePlayed += g.TimePlayed
-		if g.Point1 > g.Point2 {
-			p1Data.Win++
-			p2Data.Loss++
-			p1Data.HomeWin++
-			p2Data.AwayLoss++
-			p1Data.GoalsWin += (g.Point1 - g.Point2)
-			p2Data.GoalsInLoss += (g.Point1 - g.Point2)
-		} else if g.Point2 > g.Point1 {
-			p1Data.Loss++
-			p2Data.Win++
-			p1Data.HomeLoss++
-			p2Data.AwayWin++
-			p2Data.GoalsWin += (g.Point2 - g.Point1)
-			p1Data.GoalsInLoss += (g.Point2 - g.Point1)
-		} else {
-			// basically not approachable
-			p1Data.Draw++
-			p2Data.Draw++
+	for _, t := range p.tournaments {
+		for _, g := range t.Converted.AllGames {
+			p1Data := data[g.Team1[0]]
+			p2Data := data[g.Team2[0]]
+			p1Data.Name = g.Team1[0]
+			p2Data.Name = g.Team2[0]
+			p1Data.Played++
+			p2Data.Played++
+			p1Data.TimePlayed += g.TimePlayed
+			p2Data.TimePlayed += g.TimePlayed
+			if g.Point1 > g.Point2 {
+				p1Data.Win++
+				p2Data.Loss++
+				p1Data.HomeWin++
+				p2Data.AwayLoss++
+				p1Data.GoalsWin += (g.Point1 - g.Point2)
+				p2Data.GoalsInLoss += (g.Point1 - g.Point2)
+			} else if g.Point2 > g.Point1 {
+				p1Data.Loss++
+				p2Data.Win++
+				p1Data.HomeLoss++
+				p2Data.AwayWin++
+				p2Data.GoalsWin += (g.Point2 - g.Point1)
+				p1Data.GoalsInLoss += (g.Point2 - g.Point1)
+			} else {
+				// basically not approachable
+				p1Data.Draw++
+				p2Data.Draw++
+			}
+			p1Data.Goals += g.Point1
+			p2Data.Goals += g.Point2
+			p1Data.GoalsIn += g.Point2
+			p2Data.GoalsIn += g.Point1
+			p1Elo := elo.InitialScore
+			p2Elo := elo.InitialScore
+			if p1Data.EloRating != 0 {
+				p1Elo = p1Data.EloRating
+			}
+			if p2Data.EloRating != 0 {
+				p2Elo = p2Data.EloRating
+			}
+			sa := rating.Win
+			sb := rating.Loss
+			if g.Point1 == g.Point2 {
+				sa = rating.Draw
+				sb = rating.Draw
+			} else if g.Point1 < g.Point2 {
+				sa = rating.Loss
+				sb = rating.Win
+			}
+			rate := elo.Elo{K: float64(p.options.EloKFactor)}
+			rate.InitialScore(p1Elo, p2Elo)
+			p1Data.EloRating = rate.Calculate(sa)
+			rate.InitialScore(p2Elo, p1Elo)
+			p2Data.EloRating = rate.Calculate(sb)
+			data[g.Team1[0]] = p1Data
+			data[g.Team2[0]] = p2Data
 		}
-		p1Data.Goals += g.Point1
-		p2Data.Goals += g.Point2
-		p1Data.GoalsIn += g.Point2
-		p2Data.GoalsIn += g.Point1
-		p1Elo := elo.InitialScore
-		p2Elo := elo.InitialScore
-		if p1Data.EloRating != 0 {
-			p1Elo = p1Data.EloRating
-		}
-		if p2Data.EloRating != 0 {
-			p2Elo = p2Data.EloRating
-		}
-		sa := rating.Win
-		sb := rating.Loss
-		if g.Point1 == g.Point2 {
-			sa = rating.Draw
-			sb = rating.Draw
-		} else if g.Point1 < g.Point2 {
-			sa = rating.Loss
-			sb = rating.Win
-		}
-		rate := elo.Elo{K: float64(p.options.EloKFactor)}
-		rate.InitialScore(p1Elo, p2Elo)
-		p1Data.EloRating = rate.Calculate(sa)
-		rate.InitialScore(p2Elo, p1Elo)
-		p2Data.EloRating = rate.Calculate(sb)
-		data[g.Team1[0]] = p1Data
-		data[g.Team2[0]] = p2Data
 	}
 
 	var sliceData []entity.Player
@@ -157,7 +159,7 @@ func (p *PlayerRank) Output() [][]string {
 		sliceData = sliceData[len(sliceData)-p.options.Tail:]
 	}
 
-	header := []string{"#", "Name", "Num", "Win", "Loss", "Draw", "Elo", "WR%"}
+	header := []string{"#", "Name", "Num", "Win", "Loss", "Draw", "WR%", "Elo"}
 	table := [][]string{}
 	if p.options.WithHeader {
 		table = append(table, header)
@@ -170,8 +172,8 @@ func (p *PlayerRank) Output() [][]string {
 			fmt.Sprintf("%d", d.Win),
 			fmt.Sprintf("%d", d.Loss),
 			fmt.Sprintf("%d", d.Draw),
-			fmt.Sprintf("%.0f", d.EloRating),
 			fmt.Sprintf("%.0f%%", d.WinRate),
+			fmt.Sprintf("%.0f", d.EloRating),
 		}
 		table = append(table, item)
 	}

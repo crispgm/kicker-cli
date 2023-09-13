@@ -9,7 +9,7 @@ import (
 // Operator .
 type Operator interface {
 	SupportedFormats(trn *model.Tournament) bool
-	Input(games []entity.Game, players []entity.Player, options Option)
+	Input(tournaments []entity.Tournament, players []entity.Player, options Option)
 	Output() [][]string
 }
 

@@ -27,7 +27,7 @@ func NewConverter() *Converter {
 }
 
 // Normalize convert double games to entity formats
-func (c *Converter) Normalize(tournaments []model.Tournament, ePlayers []entity.Player) (*entity.Record, error) {
+func (c *Converter) Normalize(ePlayers []entity.Player, tournaments ...model.Tournament) (*entity.Record, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 

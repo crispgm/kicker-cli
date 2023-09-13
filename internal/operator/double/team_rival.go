@@ -13,8 +13,8 @@ var _ operator.Operator = (*TeamRival)(nil)
 
 // TeamRival generate statistics data of multiple monster DYP tournaments by team
 type TeamRival struct {
-	options operator.Option
-	games   []entity.Game
+	options     operator.Option
+	tournaments []entity.Tournament
 }
 
 // SupportedFormats .
@@ -31,90 +31,92 @@ func (t TeamRival) SupportedFormats(trn *model.Tournament) bool {
 }
 
 // Input .
-func (t *TeamRival) Input(games []entity.Game, players []entity.Player, options operator.Option) {
-	t.games = games
+func (t *TeamRival) Input(tournaments []entity.Tournament, players []entity.Player, options operator.Option) {
+	t.tournaments = tournaments
 	t.options = options
 }
 
 // Output .
 func (t *TeamRival) Output() [][]string {
 	data := make(map[string]entity.Rival)
-	for _, g := range t.games {
-		t1p1Name := g.Team1[0]
-		t1p2Name := g.Team1[1]
-		t2p1Name := g.Team2[0]
-		t2p2Name := g.Team2[1]
-		team1Name := fmt.Sprintf("%s/%s", t1p1Name, t1p2Name)
-		if t1p1Name > t1p2Name {
-			team1Name = fmt.Sprintf("%s/%s", t1p2Name, t1p1Name)
-		}
-		team2Name := fmt.Sprintf("%s/%s", t2p1Name, t2p2Name)
-		if t2p1Name > t2p2Name {
-			team2Name = fmt.Sprintf("%s/%s", t2p2Name, t2p1Name)
-		}
-
-		rivalName := fmt.Sprintf("%s_vs_%s", team1Name, team2Name)
-		rivalNameAlt := fmt.Sprintf("%s_vs_%s", team2Name, team1Name)
-		reversed := false
-
-		var rival entity.Rival
-		if _, ok := data[rivalName]; ok {
-			rival = data[rivalName]
-		} else if _, ok := data[rivalNameAlt]; ok {
-			rivalName = rivalNameAlt
-			rival = data[rivalNameAlt]
-			reversed = true
-		} else {
-			rival = entity.Rival{
-				Team1: entity.Team{
-					Player1: t1p1Name,
-					Player2: t1p2Name,
-				},
-				Team2: entity.Team{
-					Player1: t2p1Name,
-					Player2: t2p2Name,
-				},
+	for _, trn := range t.tournaments {
+		for _, g := range trn.Converted.AllGames {
+			t1p1Name := g.Team1[0]
+			t1p2Name := g.Team1[1]
+			t2p1Name := g.Team2[0]
+			t2p2Name := g.Team2[1]
+			team1Name := fmt.Sprintf("%s/%s", t1p1Name, t1p2Name)
+			if t1p1Name > t1p2Name {
+				team1Name = fmt.Sprintf("%s/%s", t1p2Name, t1p1Name)
 			}
-		}
+			team2Name := fmt.Sprintf("%s/%s", t2p1Name, t2p2Name)
+			if t2p1Name > t2p2Name {
+				team2Name = fmt.Sprintf("%s/%s", t2p2Name, t2p1Name)
+			}
 
-		rival.Played++
-		rival.Team1.Played++
-		rival.Team2.Played++
+			rivalName := fmt.Sprintf("%s_vs_%s", team1Name, team2Name)
+			rivalNameAlt := fmt.Sprintf("%s_vs_%s", team2Name, team1Name)
+			reversed := false
 
-		if !reversed {
-			if g.Point1 > g.Point2 {
-				rival.Win++
-				rival.Team1.Win++
-				rival.Team2.Loss++
-				rival.Team1.GoalsWin += (g.Point1 - g.Point2)
-				rival.Team2.GoalsInLoss += (g.Point1 - g.Point2)
-			} else if g.Point1 < g.Point2 {
-				rival.Loss++
-				rival.Team2.Win++
-				rival.Team1.Loss++
-				rival.Team2.GoalsWin += (g.Point2 - g.Point1)
-				rival.Team1.GoalsInLoss += (g.Point2 - g.Point1)
+			var rival entity.Rival
+			if _, ok := data[rivalName]; ok {
+				rival = data[rivalName]
+			} else if _, ok := data[rivalNameAlt]; ok {
+				rivalName = rivalNameAlt
+				rival = data[rivalNameAlt]
+				reversed = true
 			} else {
-				rival.Draw++
-				rival.Team1.Draw++
-				rival.Team2.Draw++
+				rival = entity.Rival{
+					Team1: entity.Team{
+						Player1: t1p1Name,
+						Player2: t1p2Name,
+					},
+					Team2: entity.Team{
+						Player1: t2p1Name,
+						Player2: t2p2Name,
+					},
+				}
 			}
-		} else {
-			if g.Point1 < g.Point2 {
-				rival.Win++
-				rival.Team1.Win++
-				rival.Team2.Loss++
-			} else if g.Point1 > g.Point2 {
-				rival.Loss++
-				rival.Team2.Win++
-				rival.Team1.Loss++
+
+			rival.Played++
+			rival.Team1.Played++
+			rival.Team2.Played++
+
+			if !reversed {
+				if g.Point1 > g.Point2 {
+					rival.Win++
+					rival.Team1.Win++
+					rival.Team2.Loss++
+					rival.Team1.GoalsWin += (g.Point1 - g.Point2)
+					rival.Team2.GoalsInLoss += (g.Point1 - g.Point2)
+				} else if g.Point1 < g.Point2 {
+					rival.Loss++
+					rival.Team2.Win++
+					rival.Team1.Loss++
+					rival.Team2.GoalsWin += (g.Point2 - g.Point1)
+					rival.Team1.GoalsInLoss += (g.Point2 - g.Point1)
+				} else {
+					rival.Draw++
+					rival.Team1.Draw++
+					rival.Team2.Draw++
+				}
 			} else {
-				rival.Draw++
-				rival.Team1.Draw++
-				rival.Team2.Draw++
+				if g.Point1 < g.Point2 {
+					rival.Win++
+					rival.Team1.Win++
+					rival.Team2.Loss++
+				} else if g.Point1 > g.Point2 {
+					rival.Loss++
+					rival.Team2.Win++
+					rival.Team1.Loss++
+				} else {
+					rival.Draw++
+					rival.Team1.Draw++
+					rival.Team2.Draw++
+				}
 			}
+			data[rivalName] = rival
 		}
-		data[rivalName] = rival
 	}
 
 	var sliceData []entity.Rival

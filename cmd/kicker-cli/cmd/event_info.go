@@ -9,7 +9,6 @@ import (
 
 	"github.com/crispgm/kicker-cli/internal/converter"
 	"github.com/crispgm/kicker-cli/internal/entity"
-	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 	"github.com/crispgm/kicker-cli/pkg/ktool/parser"
 )
 
@@ -40,7 +39,7 @@ var eventInfoCmd = &cobra.Command{
 			errorMessageAndExit(err)
 		}
 		c := converter.NewConverter()
-		trn, err := c.Normalize([]model.Tournament{*t}, instance.Conf.Players)
+		trn, err := c.Normalize(instance.Conf.Players, *t)
 		if err != nil {
 			errorMessageAndExit(err)
 		}
@@ -49,8 +48,8 @@ var eventInfoCmd = &cobra.Command{
 		table = showGames(trn.PreliminaryRounds)
 		if len(table) > 0 {
 			pterm.Println("Rounds:")
+			pterm.DefaultTable.WithHasHeader(false).WithData(table).WithBoxed(!globalNoBoxes).Render()
 		}
-		pterm.DefaultTable.WithHasHeader(false).WithData(table).WithBoxed(!globalNoBoxes).Render()
 		table = showGames(trn.LoserBracket)
 		if len(table) > 0 {
 			pterm.Println("Loser Bracket:")
