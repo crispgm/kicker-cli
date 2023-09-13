@@ -30,6 +30,10 @@ func TestAppLoadConf(t *testing.T) {
 	assert.Equal(t, fmt.Sprintf("%s/%s", path, "data"), app.DataPath())
 	assert.NotNil(t, app.GetEvent("978d68fa-5f9e-49df-b576-12b29299c215"))
 	assert.Nil(t, app.GetEvent("d68fa-5f9e-49df-b576-12b29299c215"))
+	numOfEvents := len(app.Conf.Events)
+	assert.Error(t, app.DeleteEvent("d68fa-5f9e-49df-b576-12b29299c215"))
+	assert.Nil(t, app.DeleteEvent("978d68fa-5f9e-49df-b576-12b29299c215"))
+	assert.Len(t, app.Conf.Events, numOfEvents-1)
 }
 
 func TestAppWriteConf(t *testing.T) {

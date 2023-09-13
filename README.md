@@ -49,6 +49,7 @@ Init a workspace:
 ```shell
 # init with current folder
 kicker-cli init
+
 # init with existing folder
 kicker-cli init /path/to/workspace
 ```
@@ -63,17 +64,23 @@ Event management:
 ```shell
 # list events
 kicker-cli event ls
+
 # show info
 kicker-cli event info 351e00bf-025c-4243-b381-2f5a135c3070
+
 # get rank
 kicker-cli event rank -m double_player_rank -t byp
 kicker-cli event rank 351e00bf-025c-4243-b381-2f5a135c3070 -m double_player_rank
+
 # open event
-kicekr-cli event open 351e00bf-025c-4243-b381-2f5a135c3070
+kicker-cli event open 351e00bf-025c-4243-b381-2f5a135c3070
 #  => xdg-open event-url
+
+# delete event
+kicker-cli event delete 351e00bf-025c-4243-b381-2f5a135c3070
 ```
 
-Show players:
+Player management:
 ```shell
 kicker-cli player
 ```

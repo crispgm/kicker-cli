@@ -2,6 +2,7 @@
 package app
 
 import (
+	"errors"
 	"path/filepath"
 
 	"github.com/crispgm/kicker-cli/internal/entity"
@@ -42,5 +43,21 @@ func (app App) GetEvent(id string) *entity.Event {
 		}
 	}
 
+	return nil
+}
+
+// DeleteEvent delete an event
+func (app *App) DeleteEvent(id string) error {
+	s := -1
+	for i, e := range app.Conf.Events {
+		if id == e.ID {
+			s = i
+		}
+	}
+	if s < 0 {
+		return errors.New("Event not found")
+	}
+
+	app.Conf.Events = append(app.Conf.Events[:s], app.Conf.Events[s+1:]...)
 	return nil
 }

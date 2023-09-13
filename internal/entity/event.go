@@ -1,6 +1,8 @@
 package entity
 
-import "github.com/crispgm/kicker-cli/internal/util"
+import (
+	"github.com/crispgm/kicker-cli/internal/util"
+)
 
 // DefaultPoints for a event
 const DefaultPoints = 50
