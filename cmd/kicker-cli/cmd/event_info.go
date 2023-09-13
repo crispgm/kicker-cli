@@ -2,14 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"path/filepath"
 
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 
-	"github.com/crispgm/kicker-cli/internal/converter"
 	"github.com/crispgm/kicker-cli/internal/entity"
-	"github.com/crispgm/kicker-cli/pkg/ktool/parser"
 )
 
 func init() {
@@ -27,35 +24,24 @@ var eventInfoCmd = &cobra.Command{
 		}
 		arg := args[0]
 		instance := initInstanceAndLoadConf()
-		var table [][]string
-		header := []string{"ID", "Name", "Date Time", "Points", "Name Type", "Mode", "URL"}
-		table = append(table, header)
 		e := instance.GetEvent(arg)
 		if e == nil {
 			errorMessageAndExit("No event(s) found")
 		}
-		t, err := parser.ParseFile(filepath.Join(instance.DataPath(), e.Path))
-		if err != nil {
-			errorMessageAndExit(err)
-		}
-		c := converter.NewConverter()
-		trn, err := c.Normalize(instance.Conf.Players, *t)
-		if err != nil {
-			errorMessageAndExit(err)
-		}
-		showEvent(instance.DataPath(), e, &table)
+		table := initEventInfoHeader()
+		_, r, _ := loadAndShowEventInfo(&table, instance.DataPath(), instance.Conf.Players, e)
 		pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
-		table = showGames(trn.PreliminaryRounds)
+		table = showGames(r.PreliminaryRounds)
 		if len(table) > 0 {
 			pterm.Println("Rounds:")
 			pterm.DefaultTable.WithHasHeader(false).WithData(table).WithBoxed(!globalNoBoxes).Render()
 		}
-		table = showGames(trn.LoserBracket)
+		table = showGames(r.LoserBracket)
 		if len(table) > 0 {
 			pterm.Println("Loser Bracket:")
 			pterm.DefaultTable.WithHasHeader(false).WithData(table).WithBoxed(!globalNoBoxes).Render()
 		}
-		table = showGames(trn.WinnerBracket)
+		table = showGames(r.WinnerBracket)
 		if len(table) > 0 {
 			pterm.Println("Winner Bracket:")
 			pterm.DefaultTable.WithHasHeader(false).WithData(table).WithBoxed(!globalNoBoxes).Render()
