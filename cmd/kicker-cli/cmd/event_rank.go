@@ -55,7 +55,8 @@ var rankCmd = &cobra.Command{
 			op = &double.TeamRival{}
 		case entity.ModeSinglePlayerRank:
 			op = &single.PlayerRank{}
-		// case entity.ModeSinglePlayerRival:
+		case entity.ModeSinglePlayerRival:
+			op = &single.PlayerRival{}
 		default:
 			errorMessageAndExit("Please present a valid rank mode")
 		}

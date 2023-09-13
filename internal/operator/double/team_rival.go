@@ -55,6 +55,7 @@ func (t *TeamRival) Output() [][]string {
 
 		rivalName := fmt.Sprintf("%s_vs_%s", team1Name, team2Name)
 		rivalNameAlt := fmt.Sprintf("%s_vs_%s", team2Name, team1Name)
+		reversed := false
 
 		var rival entity.Rival
 		if _, ok := data[rivalName]; ok {
@@ -62,6 +63,7 @@ func (t *TeamRival) Output() [][]string {
 		} else if _, ok := data[rivalNameAlt]; ok {
 			rivalName = rivalNameAlt
 			rival = data[rivalNameAlt]
+			reversed = true
 		} else {
 			rival = entity.Rival{
 				Team1: entity.Team{
@@ -78,33 +80,40 @@ func (t *TeamRival) Output() [][]string {
 		rival.Played++
 		rival.Team1.Played++
 		rival.Team2.Played++
-		timePlayed := g.TimePlayed
-		rival.TimePlayed += timePlayed
-		rival.Team1.TimePlayed += timePlayed
-		rival.Team2.TimePlayed += timePlayed
 
-		if g.Point1 > g.Point2 {
-			rival.Win++
-			rival.Team1.Win++
-			rival.Team2.Loss++
-			rival.Team1.GoalsWin += (g.Point1 - g.Point2)
-			rival.Team2.GoalsInLoss += (g.Point1 - g.Point2)
-		} else if g.Point1 < g.Point2 {
-			rival.Loss++
-			rival.Team2.Win++
-			rival.Team1.Loss++
-			rival.Team2.GoalsWin += (g.Point2 - g.Point1)
-			rival.Team1.GoalsInLoss += (g.Point2 - g.Point1)
+		if !reversed {
+			if g.Point1 > g.Point2 {
+				rival.Win++
+				rival.Team1.Win++
+				rival.Team2.Loss++
+				rival.Team1.GoalsWin += (g.Point1 - g.Point2)
+				rival.Team2.GoalsInLoss += (g.Point1 - g.Point2)
+			} else if g.Point1 < g.Point2 {
+				rival.Loss++
+				rival.Team2.Win++
+				rival.Team1.Loss++
+				rival.Team2.GoalsWin += (g.Point2 - g.Point1)
+				rival.Team1.GoalsInLoss += (g.Point2 - g.Point1)
+			} else {
+				rival.Draw++
+				rival.Team1.Draw++
+				rival.Team2.Draw++
+			}
 		} else {
-			rival.Draw++
-			rival.Team1.Draw++
-			rival.Team2.Draw++
+			if g.Point1 < g.Point2 {
+				rival.Win++
+				rival.Team1.Win++
+				rival.Team2.Loss++
+			} else if g.Point1 > g.Point2 {
+				rival.Loss++
+				rival.Team2.Win++
+				rival.Team1.Loss++
+			} else {
+				rival.Draw++
+				rival.Team1.Draw++
+				rival.Team2.Draw++
+			}
 		}
-		rival.Team1.Goals += g.Point1
-		rival.Team2.Goals += g.Point2
-		rival.Team1.GoalsIn += g.Point2
-		rival.Team2.GoalsIn += g.Point1
-
 		data[rivalName] = rival
 	}
 

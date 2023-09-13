@@ -36,7 +36,7 @@ by which organizers could manage, analyze and rank inside an organization across
 - Double Team Ranks: BYP, DYP, and MonsterDYP
 - Single Player Ranks: Single
 - Double Team Rivals: BYP, DYP, and MonsterDYP
-- [ ] Single Player Rivals: Single
+- Single Player Rivals: Single
 
 ## Installation
 
