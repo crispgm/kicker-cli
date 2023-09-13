@@ -66,11 +66,7 @@ var rankCmd = &cobra.Command{
 		instance := initInstanceAndLoadConf()
 
 		var events []entity.Event
-		if allEvents {
-			for _, e := range instance.Conf.Events {
-				events = append(events, e)
-			}
-		} else if len(args) > 0 {
+		if len(args) > 0 {
 			for _, arg := range args {
 				e := instance.GetEvent(arg)
 				if e != nil {
@@ -78,6 +74,10 @@ var rankCmd = &cobra.Command{
 				} else {
 					errorMessageAndExit("Event", arg, "not found")
 				}
+			}
+		} else {
+			for _, e := range instance.Conf.Events {
+				events = append(events, e)
 			}
 		}
 
@@ -88,11 +88,11 @@ var rankCmd = &cobra.Command{
 			if err != nil {
 				errorMessageAndExit(err)
 			}
-			if eventNameType == "" {
+			if len(eventNameTypes) == 0 {
 				// choose the first file as name type if it's not set
-				eventNameType = t.NameType
+				eventNameTypes = []string{t.NameType}
 			}
-			if t.NameType != eventNameType {
+			if !nameTypeIncluded(t.NameType) {
 				continue
 			}
 			if !op.SupportedFormats(t) {

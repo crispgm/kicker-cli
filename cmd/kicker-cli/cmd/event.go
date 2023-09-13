@@ -13,16 +13,13 @@ import (
 )
 
 var (
-	eventIDOrName string
-	eventNameType string
-	allEvents     bool
+	eventIDOrName  string
+	eventNameTypes []string
 )
 
 func init() {
-	eventCmd.PersistentFlags().BoolVarP(&allEvents, "all", "a", false, "rank all events")
-	eventCmd.PersistentFlags().StringVarP(&eventNameType, "name-type", "t", "", "name type (single, byp, dyp or monster_dyp)")
+	eventCmd.PersistentFlags().StringArrayVarP(&eventNameTypes, "name-type", "t", []string{}, "name type (single, byp, dyp or monster_dyp)")
 	eventCmd.AddCommand(eventListCmd)
-	eventCmd.MarkFlagsMutuallyExclusive("all", "name-type")
 	rootCmd.AddCommand(eventCmd)
 }
 
@@ -65,12 +62,21 @@ func eventListCommand(cmd *cobra.Command, args []string) {
 	pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
 }
 
+func nameTypeIncluded(input string) bool {
+	for _, t := range eventNameTypes {
+		if t == input {
+			return true
+		}
+	}
+	return false
+}
+
 func showEvent(dataPath string, e *entity.Event, table *[][]string) {
 	t, err := parser.ParseFile(filepath.Join(dataPath, e.Path))
 	if err != nil {
 		errorMessageAndExit(err)
 	}
-	if !allEvents && (len(eventNameType) > 0 && t.NameType != eventNameType) {
+	if len(eventNameTypes) > 0 && !nameTypeIncluded(t.NameType) {
 		return
 	}
 

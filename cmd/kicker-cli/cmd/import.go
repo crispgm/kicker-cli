@@ -36,6 +36,7 @@ var importCmd = &cobra.Command{
 			return
 		}
 
+		eventsAdded := 0
 		for _, importPath := range args {
 			if strings.HasPrefix(importPath, "~") {
 				importPath = util.ExpandUserHomeDir(importPath)
@@ -80,11 +81,12 @@ var importCmd = &cobra.Command{
 				errorMessageAndExit(err)
 			}
 			instance.AddEvent(event)
+			eventsAdded++
 		}
 		err := instance.WriteConf()
 		if err != nil {
 			errorMessageAndExit(err)
 		}
-		pterm.Printfln("%d event(s) imported", len(instance.Conf.Events))
+		pterm.Printfln("%d event(s) imported", eventsAdded)
 	},
 }
