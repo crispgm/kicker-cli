@@ -2,23 +2,19 @@ package converter
 
 import (
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
 	"github.com/crispgm/kicker-cli/internal/entity"
+	"github.com/crispgm/kicker-cli/internal/util"
 	"github.com/crispgm/kicker-cli/pkg/ktool/parser"
 )
 
 func TestConvertDoubleGames(t *testing.T) {
-	ciMode := os.Getenv("KICKER_CLI_CI_MODE")
-	path := "../.."
-	if ciMode == "1" {
-		path = "."
-	}
+	path := util.GetCIPath("../..")
 
-	fn := fmt.Sprintf("%s/test/data/test_%s.ktool", path, "swiss")
+	fn := fmt.Sprintf("%s/data/test_%s.ktool", path, "swiss")
 	trn, err := parser.ParseFile(fn)
 	if assert.NoError(t, err) && assert.NotNil(t, trn) {
 		var ePlayers []entity.Player

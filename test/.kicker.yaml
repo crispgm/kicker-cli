@@ -1,56 +1,61 @@
 manifest_version: "1"
 organization:
-  id: ""
-  name: My Foosball Community
-  kicker_tool_id: ""
+    id: 978d68fa-5f9e-49df-b576-12b29299c215
+    name: My Foosball Community
+    kicker_tool_id: ""
 events:
-  - id: 191321a4-a709-4ff2-8ad2-ce8c20bb8265
-    name: test swiss
-    path: test_swiss.ktool
-    points: 50
-    url: ""
-  - id: 4cd925fb-c0e5-4dce-8802-83cefbad080f
-    name: test rounds
-    path: test_rounds.ktool
-    points: 50
-    url: ""
-  - id: 013baa38-0ad0-4855-93c9-e87d37e2ed4a
-    name: test round robin
-    path: test_round_robin.ktool
-    points: 50
-    url: ""
+    - id: 191321a4-a709-4ff2-8ad2-ce8c20bb8265
+      name: test swiss
+      path: test_swiss.ktool
+      md5: ""
+      points: 50
+      itsf_points: 0
+      atsa_points: 0
+      url: ""
+    - id: 4cd925fb-c0e5-4dce-8802-83cefbad080f
+      name: test rounds
+      path: test_rounds.ktool
+      md5: ""
+      points: 50
+      itsf_points: 0
+      atsa_points: 0
+      url: ""
+    - id: 013baa38-0ad0-4855-93c9-e87d37e2ed4a
+      name: test round robin
+      path: test_round_robin.ktool
+      md5: ""
+      points: 50
+      itsf_points: 0
+      atsa_points: 0
+      url: ""
 players:
-  - name: Tzila Tendai
-    alias:
-      - tz
-      - tt
-    level: beginner
-  - name: Dagrún Jadranko
-    alias:
-      - Dagrún
-    level: amateur
-  - name: Eija Alexei
-    alias: []
-    level: pro
-  - name: Martynas Martin
-    alias:
-      - Martynas A. Martin
-    level: pro
-  - name: Kaidi Estebe
-    alias: []
-    level: beginner
-  - name: Noortje Milen
-    alias: []
-    level: pro
-  - name: Raja Mayamiko
-    alias: []
-    level: pro
-  - name: Jay Atli
-    alias: []
-    level: pro
-  - name: Koji Rebeka
-    alias: []
-    level: amateur
-  - name: Zé Manel Swati
-    alias: []
-    level: beginner
+    - id: dbb556e1-ecb2-4aad-bbc7-ed240a1b9bfc
+      name: Tzila Tendai
+      aliases: []
+    - id: a9b76b94-d35f-419d-8f52-a494f9eeccef
+      name: Dagrún Jadranko
+      aliases: []
+    - id: 70f57262-8c64-4e0c-9394-4715736fbe4d
+      name: Eija Alexei
+      aliases: []
+    - id: 0ddd1849-a24a-4817-930e-5e2411cc8db5
+      name: Martynas Martin
+      aliases: []
+    - id: f2da81eb-899a-471b-adaf-596df95aa995
+      name: Kaidi Estebe
+      aliases: []
+    - id: 9e52b9ec-9e13-4514-81a5-0995015b7691
+      name: Noortje Milen
+      aliases: []
+    - id: f716386d-ebea-45a4-ab79-39d45e0d8dcd
+      name: Raja Mayamiko
+      aliases: []
+    - id: 6e4c1f6c-c5e5-480a-8d65-a61c6cc34bbb
+      name: Jay Atli
+      aliases: []
+    - id: 638e12ca-e82c-4a86-90e7-05c291427498
+      name: Koji Rebeka
+      aliases: []
+    - id: 7f38a717-079e-4319-8186-63d84fe8f83c
+      name: Zé Manel Swati
+      aliases: []

@@ -2,19 +2,15 @@ package parser
 
 import (
 	"fmt"
-	"os"
 	"testing"
 
+	"github.com/crispgm/kicker-cli/internal/util"
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestParseGame(t *testing.T) {
-	ciMode := os.Getenv("KICKER_CLI_CI_MODE")
-	path := "../../.."
-	if ciMode == "1" {
-		path = "."
-	}
+	path := util.GetCIPath("../../..")
 
 	testCases := []struct {
 		mode      string
@@ -29,7 +25,7 @@ func TestParseGame(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("%s", tc.mode), func(t *testing.T) {
-			fn := fmt.Sprintf("%s/test/data/test_%s.ktool", path, tc.mode)
+			fn := fmt.Sprintf("%s/data/test_%s.ktool", path, tc.mode)
 			trn, err := ParseFile(fn)
 			if assert.NoError(t, err) {
 				assert.Equal(t, "table_soccer", trn.Sport.Name)
@@ -60,11 +56,8 @@ func TestParseGame(t *testing.T) {
 func TestParseGameFail(t *testing.T) {
 	_, err := ParseFile("not-existed-path")
 	assert.Error(t, err)
-	ciMode := os.Getenv("KICKER_CLI_CI_MODE")
-	path := "../../.."
-	if ciMode == "1" {
-		path = "."
-	}
+	path := util.GetCIPath("../../..")
+	path += "/.."
 	_, err = ParseFile(path + "/README.md")
 	t.Log(err)
 	assert.Error(t, err)
