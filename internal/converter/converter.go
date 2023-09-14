@@ -3,6 +3,7 @@ package converter
 
 import (
 	"fmt"
+	"sort"
 	"sync"
 
 	"github.com/crispgm/kicker-cli/internal/entity"
@@ -60,7 +61,7 @@ func (c *Converter) Normalize(ePlayers []entity.Player, tournaments ...model.Tou
 
 		// preliminary rounds
 		for _, r := range t.Rounds {
-			games, err := c.convertPlayToGame(r.Plays, teams, players)
+			games, err := c.convertPlayToGame(r.Name, r.Plays, teams, players)
 			if err != nil {
 				return nil, err
 			}
@@ -69,20 +70,20 @@ func (c *Converter) Normalize(ePlayers []entity.Player, tournaments ...model.Tou
 
 		for _, ko := range t.KnockOffs {
 			for _, level := range ko.Levels {
-				games, err := c.convertPlayToGame(level.Plays, teams, players)
+				games, err := c.convertPlayToGame(level.Name, level.Plays, teams, players)
 				if err != nil {
 					return nil, err
 				}
 				rec.WinnerBracket = append(rec.WinnerBracket, games...)
 			}
 			for _, level := range ko.LeftLevels {
-				games, err := c.convertPlayToGame(level.Plays, teams, players)
+				games, err := c.convertPlayToGame(level.Name, level.Plays, teams, players)
 				if err != nil {
 					return nil, err
 				}
 				rec.LoserBracket = append(rec.LoserBracket, games...)
 			}
-			games, err := c.convertPlayToGame(ko.Third.Plays, teams, players)
+			games, err := c.convertPlayToGame(ko.Third.Name, ko.Third.Plays, teams, players)
 			if err != nil {
 				return nil, err
 			}
@@ -95,20 +96,32 @@ func (c *Converter) Normalize(ePlayers []entity.Player, tournaments ...model.Tou
 	if len(rec.PreliminaryRounds) > 0 {
 		rec.AllGames = append(rec.AllGames, rec.PreliminaryRounds...)
 	}
-	if len(rec.WinnerBracket) > 0 {
+	numOfWB, numOfLB := len(rec.WinnerBracket), len(rec.LoserBracket)
+	if numOfWB > 0 && numOfLB == 0 {
+		// single elimination
 		rec.AllGames = append(rec.AllGames, rec.WinnerBracket...)
-	}
-	if len(rec.LoserBracket) > 0 {
+		// ThirdPlace is included in loser LoserBracket of double elimination
+		// so only append in single elimination
+		if rec.ThirdPlace != nil {
+			rec.AllGames = append(rec.AllGames, *rec.ThirdPlace)
+		}
+	} else {
+		rec.AllGames = append(rec.AllGames, rec.WinnerBracket...)
 		rec.AllGames = append(rec.AllGames, rec.LoserBracket...)
+		sort.SliceStable(
+			rec.AllGames,
+			func(i int, j int) bool {
+				return rec.AllGames[i].TimeEnd < rec.AllGames[j].TimeEnd
+			},
+		)
 	}
-	if rec.ThirdPlace != nil {
-		rec.AllGames = append(rec.AllGames, *rec.ThirdPlace)
-	}
+
 	c.record = *rec
 	return rec, nil
 }
 
 func (Converter) convertPlayToGame(
+	name string,
 	plays []model.Play,
 	teams map[string]model.Team,
 	players map[string]model.Player) ([]entity.Game, error) {
@@ -138,6 +151,8 @@ func (Converter) convertPlayToGame(
 		} else {
 			continue
 		}
+		game.TimeStart = p.TimeStart
+		game.TimeEnd = p.TimeEnd
 		game.TimePlayed = (p.TimeEnd - p.TimeStart) / 1000
 		var sets []entity.Set
 		for _, d := range p.Disciplines {
@@ -153,6 +168,7 @@ func (Converter) convertPlayToGame(
 			}
 			break // only support one discipline right now
 		}
+		game.Name = name
 		game.Sets = sets
 		games = append(games, game)
 	}

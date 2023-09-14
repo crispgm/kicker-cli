@@ -54,12 +54,14 @@ func showGames(games []entity.Game) [][]string {
 	for _, g := range games {
 		if len(g.Team1) == 1 {
 			roundTable = append(roundTable, []string{
+				g.Name,
 				fmt.Sprintf("%s", g.Team1[0]),
 				fmt.Sprintf("%d:%d", g.Point1, g.Point2),
 				fmt.Sprintf("%s", g.Team2[0]),
 			})
 		} else {
 			roundTable = append(roundTable, []string{
+				g.Name,
 				fmt.Sprintf("%s/%s", g.Team1[0], g.Team1[1]),
 				fmt.Sprintf("%d:%d", g.Point1, g.Point2),
 				fmt.Sprintf("%s/%s", g.Team2[0], g.Team2[1]),

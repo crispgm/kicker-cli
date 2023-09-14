@@ -13,5 +13,6 @@ type KnockOff struct {
 type Level struct {
 	Model
 
+	Name  string `json:"name"`
 	Plays []Play `json:"plays"`
 }

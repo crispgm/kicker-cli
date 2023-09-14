@@ -30,6 +30,11 @@ func TestConvertDoubleGames(t *testing.T) {
 			assert.Nil(t, rec.ThirdPlace)
 			assert.Len(t, rec.AllGames, 18)
 			assert.NotEmpty(t, nc.Briefing())
+			for i := 0; i < len(rec.AllGames)-1; i++ {
+				g := rec.AllGames[i]
+				ng := rec.AllGames[i+1]
+				assert.True(t, g.TimeEnd < ng.TimeEnd)
+			}
 		}
 	}
 }

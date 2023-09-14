@@ -98,7 +98,6 @@ kicker-cli eval -a elo -k 20 1103 1203 1289 1013
 
 ## Known Issues & Limitations
 
-- Games are not ordered exactly the same as playing order. Thus, ELO rating is not accurate.
 - Game duration is inaccurate because we actually don't input the result as soon as the game is finished. So we abandoned all time factors.
 
 ## License
