@@ -12,4 +12,7 @@ func TestMD5(t *testing.T) {
 	md5, err := MD5CheckSum(path)
 	assert.NoError(t, err)
 	assert.Equal(t, "3ba7c806a52baf4efbfb4962f62a36d1", md5)
+
+	_, err = MD5CheckSum("/tmp/some/123/3ba7c806a52baf4efbfb4962f62a36d1")
+	assert.Error(t, err)
 }

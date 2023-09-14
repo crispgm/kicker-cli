@@ -1,6 +1,7 @@
 package elo
 
 import (
+	"math"
 	"testing"
 
 	"github.com/crispgm/kicker-cli/pkg/rating"
@@ -38,12 +39,22 @@ func TestEloScore(t *testing.T) {
 			},
 			want: 1020,
 		},
+		{
+			name: "diff rating loss",
+			args: args{
+				Ra:          1400,
+				Rb:          1500,
+				K:           40,
+				WinDrawLoss: rating.Loss,
+			},
+			want: 1386,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			er := Elo{K: float64(tt.args.K)}
 			er.InitialScore(float64(tt.args.Ra), float64(tt.args.Rb))
-			if got := er.Calculate(tt.args.WinDrawLoss); got != tt.want {
+			if got := er.Calculate(tt.args.WinDrawLoss); math.Round(got) != tt.want {
 				t.Errorf("Calculate() = %v, want %v", got, tt.want)
 			}
 		})
