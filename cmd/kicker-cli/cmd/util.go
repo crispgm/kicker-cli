@@ -28,3 +28,10 @@ func convertToFloat(in string) float64 {
 	out, _ := strconv.Atoi(in)
 	return float64(out)
 }
+
+func dashIfEmpty(s string) string {
+	if s == "" {
+		s = "-"
+	}
+	return s
+}

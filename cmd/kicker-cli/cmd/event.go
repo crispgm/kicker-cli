@@ -26,7 +26,7 @@ func init() {
 
 var eventCmd = &cobra.Command{
 	Use:     "event",
-	Aliases: []string{"events"},
+	Aliases: []string{"events", "ev"},
 	Short:   "Manage events organized by your organization",
 	Long:    "Manage events organized by your organization",
 	Run:     eventListCommand,
@@ -56,7 +56,7 @@ func eventListCommand(cmd *cobra.Command, args []string) {
 			loadAndShowEventInfo(&table, dataPath, instance.Conf.Players, &e)
 		}
 	}
-	if len(table) == 1 {
+	if len(table) <= 1 {
 		errorMessageAndExit("No event(s) found")
 	}
 	pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
@@ -113,10 +113,6 @@ func showEvent(table *[][]string, e *entity.Event, t *model.Tournament, r *entit
 }
 
 func showInfo(table *[][]string, e *entity.Event, t *model.Tournament, r *entity.Record) {
-	url := e.URL
-	if url == "" {
-		url = "-"
-	}
 	*table = append(*table, []string{
 		e.ID,
 		e.Name,
@@ -125,6 +121,6 @@ func showInfo(table *[][]string, e *entity.Event, t *model.Tournament, r *entity
 		fmt.Sprintf("%d", len(r.AllGames)),
 		t.NameType,
 		t.Mode,
-		url,
+		dashIfEmpty(e.URL),
 	})
 }

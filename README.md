@@ -48,10 +48,13 @@ go install github.com/crispgm/kicker-cli/cmd/kicker-cli@latest
 Init a workspace:
 ```shell
 # init with current folder
-kicker-cli init
+kicker-cli init --name "MyAwesomeFoos"
 
 # init with existing folder
-kicker-cli init /path/to/workspace
+kicker-cli init --name "MyAwesomeFoos" --path /path/to/workspace
+
+# show organization
+kicker-cli org
 ```
 
 Import `.ktool` files:
