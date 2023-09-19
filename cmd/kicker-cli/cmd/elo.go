@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/crispgm/kicker-cli/pkg/rating"
-	"github.com/crispgm/kicker-cli/pkg/rating/elo"
 )
 
 var (
@@ -18,7 +17,7 @@ var (
 
 func init() {
 	evaluateCmd.Flags().StringVarP(&evalAlgo, "algorithm", "a", "elo", "rating algorithm")
-	evaluateCmd.Flags().IntVarP(&evalEloKFactor, "elo-k", "k", elo.K, "K factor")
+	evaluateCmd.Flags().IntVarP(&evalEloKFactor, "elo-k", "k", 40, "K factor")
 	rootCmd.AddCommand(evaluateCmd)
 }
 
@@ -73,23 +72,57 @@ func eloMain(t1p1Score, t1p2Score, t2p1Score, t2p2Score float64) {
 	)
 	t1AvgScore = (t1p1Score + t1p2Score) / 2
 	t2AvgScore = (t2p1Score + t2p2Score) / 2
-	er := elo.Elo{K: float64(evalEloKFactor)}
-	er.InitialScore(t1p1Score, t2AvgScore)
-	t1p1Win := er.Calculate(rating.Win)
-	er.InitialScore(t1p2Score, t2AvgScore)
-	t1p1Loss := er.Calculate(rating.Loss)
-	er.InitialScore(t1p2Score, t2AvgScore)
-	t1p2Win := er.Calculate(rating.Win)
-	er.InitialScore(t1p2Score, t2AvgScore)
-	t1p2Loss := er.Calculate(rating.Loss)
-	er.InitialScore(t2p1Score, t1AvgScore)
-	t2p1Win := er.Calculate(rating.Win)
-	er.InitialScore(t2p1Score, t1AvgScore)
-	t2p1Loss := er.Calculate(rating.Loss)
-	er.InitialScore(t2p2Score, t1AvgScore)
-	t2p2Win := er.Calculate(rating.Win)
-	er.InitialScore(t2p2Score, t1AvgScore)
-	t2p2Loss := er.Calculate(rating.Loss)
+	er := rating.Elo{
+		K: evalEloKFactor,
+	}
+	t1p1Win := er.Calculate(rating.Factor{
+		PlayerScore:   t1p1Score,
+		OpponentScore: t2AvgScore,
+		Result:        rating.Win,
+		Played:        0,
+	})
+	t1p1Loss := er.Calculate(rating.Factor{
+		PlayerScore:   t1p1Score,
+		OpponentScore: t2AvgScore,
+		Result:        rating.Loss,
+		Played:        0,
+	})
+	t1p2Win := er.Calculate(rating.Factor{
+		PlayerScore:   t1p2Score,
+		OpponentScore: t2AvgScore,
+		Result:        rating.Win,
+		Played:        0,
+	})
+	t1p2Loss := er.Calculate(rating.Factor{
+		PlayerScore:   t1p2Score,
+		OpponentScore: t2AvgScore,
+		Result:        rating.Loss,
+		Played:        0,
+	})
+	t2p1Win := er.Calculate(rating.Factor{
+		PlayerScore:   t2p1Score,
+		OpponentScore: t1AvgScore,
+		Result:        rating.Win,
+		Played:        0,
+	})
+	t2p1Loss := er.Calculate(rating.Factor{
+		PlayerScore:   t2p1Score,
+		OpponentScore: t1AvgScore,
+		Result:        rating.Loss,
+		Played:        0,
+	})
+	t2p2Win := er.Calculate(rating.Factor{
+		PlayerScore:   t2p2Score,
+		OpponentScore: t1AvgScore,
+		Result:        rating.Win,
+		Played:        0,
+	})
+	t2p2Loss := er.Calculate(rating.Factor{
+		PlayerScore:   t2p2Score,
+		OpponentScore: t1AvgScore,
+		Result:        rating.Loss,
+		Played:        0,
+	})
 
 	if teamMode {
 		fmt.Println("- If team1 won:")

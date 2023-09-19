@@ -19,7 +19,6 @@ type Option struct {
 	MinimumPlayed int
 	Head          int
 	Tail          int
-	EloKFactor    int
 	WithHeader    bool
 	WithGoals     bool
 }

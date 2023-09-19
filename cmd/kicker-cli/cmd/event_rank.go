@@ -13,17 +13,15 @@ import (
 	"github.com/crispgm/kicker-cli/internal/operator/single"
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 	"github.com/crispgm/kicker-cli/pkg/ktool/parser"
-	"github.com/crispgm/kicker-cli/pkg/rating/elo"
 )
 
 var (
-	rankGameMode   string
-	rankMinPlayed  int
-	rankHead       int
-	rankTail       int
-	rankELOKFactor int
-	rankOrderBy    string
-	rankWithGoals  bool
+	rankGameMode  string
+	rankMinPlayed int
+	rankHead      int
+	rankTail      int
+	rankOrderBy   string
+	rankWithGoals bool
 )
 
 func init() {
@@ -31,7 +29,6 @@ func init() {
 	rankCmd.Flags().StringVarP(&rankOrderBy, "order-by", "o", "wr", "order by (wr/elo)")
 	rankCmd.Flags().IntVarP(&rankMinPlayed, "minimum-played", "p", 0, "minimum matches played")
 	rankCmd.Flags().BoolVarP(&rankWithGoals, "with-goals", "", false, "rank with goals")
-	rankCmd.Flags().IntVarP(&rankELOKFactor, "elo-k", "k", elo.K, "K factor")
 	rankCmd.Flags().IntVarP(&rankHead, "head", "", 0, "display the head part of rank")
 	rankCmd.Flags().IntVarP(&rankTail, "tail", "", 0, "display the last part of rank")
 	rankCmd.MarkFlagRequired("mode")
@@ -121,7 +118,6 @@ var rankCmd = &cobra.Command{
 			MinimumPlayed: rankMinPlayed,
 			Head:          rankHead,
 			Tail:          rankTail,
-			EloKFactor:    rankELOKFactor,
 			WithHeader:    !globalNoHeaders,
 			WithGoals:     rankWithGoals,
 		}

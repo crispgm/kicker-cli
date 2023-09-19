@@ -28,8 +28,18 @@ const (
 	Win
 )
 
+// Factor calculation variables
+type Factor struct {
+	PlayerScore   float64 // player score
+	OpponentScore float64 // opponent player/team score
+	Result        int     // game result
+	Level         string  // tournament/game level
+	Place         int     // place in tournament
+	Played        int     // game played
+}
+
 // Rating interface of rating system
 type Rating interface {
-	InitialScore(float64, float64)
-	Calculate(int) float64
+	InitialScore() float64
+	Calculate(factors Factor) float64
 }

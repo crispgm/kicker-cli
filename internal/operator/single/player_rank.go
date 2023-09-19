@@ -9,7 +9,6 @@ import (
 	"github.com/crispgm/kicker-cli/internal/operator"
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 	"github.com/crispgm/kicker-cli/pkg/rating"
-	"github.com/crispgm/kicker-cli/pkg/rating/elo"
 )
 
 var _ operator.Operator = (*PlayerRank)(nil)
@@ -80,8 +79,9 @@ func (p *PlayerRank) Output() [][]string {
 			p2Data.Goals += g.Point2
 			p1Data.GoalsIn += g.Point2
 			p2Data.GoalsIn += g.Point1
-			p1Elo := elo.InitialScore
-			p2Elo := elo.InitialScore
+			elo := rating.Elo{}
+			p1Elo := elo.InitialScore()
+			p2Elo := elo.InitialScore()
 			if p1Data.EloRating != 0 {
 				p1Elo = p1Data.EloRating
 			}
@@ -97,11 +97,8 @@ func (p *PlayerRank) Output() [][]string {
 				sa = rating.Loss
 				sb = rating.Win
 			}
-			rate := elo.Elo{K: float64(p.options.EloKFactor)}
-			rate.InitialScore(p1Elo, p2Elo)
-			p1Data.EloRating = rate.Calculate(sa)
-			rate.InitialScore(p2Elo, p1Elo)
-			p2Data.EloRating = rate.Calculate(sb)
+			p1Data.EloRating = p.calculateELO(p1Data.Played, p1Elo, p2Elo, sa)
+			p2Data.EloRating = p.calculateELO(p2Data.Played, p2Elo, p1Elo, sb)
 			data[g.Team1[0]] = p1Data
 			data[g.Team2[0]] = p2Data
 		}
@@ -178,4 +175,16 @@ func (p *PlayerRank) Output() [][]string {
 		table = append(table, item)
 	}
 	return table
+}
+
+// calculateELO calculate ELO for player
+func (p PlayerRank) calculateELO(played int, p1Elo, p2Elo float64, result int) float64 {
+	eloCalc := rating.Elo{}
+	factors := rating.Factor{
+		Played:        played,
+		PlayerScore:   p1Elo,
+		OpponentScore: p2Elo,
+		Result:        result,
+	}
+	return eloCalc.Calculate(factors)
 }

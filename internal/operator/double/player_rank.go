@@ -9,7 +9,6 @@ import (
 	"github.com/crispgm/kicker-cli/internal/operator"
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 	"github.com/crispgm/kicker-cli/pkg/rating"
-	"github.com/crispgm/kicker-cli/pkg/rating/elo"
 )
 
 var _ operator.Operator = (*PlayerRank)(nil)
@@ -107,10 +106,11 @@ func (p *PlayerRank) Output() [][]string {
 			t2p1Data.GoalsIn += g.Point1
 			t2p2Data.GoalsIn += g.Point1
 			// ELO
-			t1p1Elo := elo.InitialScore
-			t1p2Elo := elo.InitialScore
-			t2p1Elo := elo.InitialScore
-			t2p2Elo := elo.InitialScore
+			elo := rating.Elo{}
+			t1p1Elo := elo.InitialScore()
+			t1p2Elo := elo.InitialScore()
+			t2p1Elo := elo.InitialScore()
+			t2p2Elo := elo.InitialScore()
 			if t1p1Data.EloRating != 0 {
 				t1p1Elo = t1p1Data.EloRating
 			}
@@ -132,20 +132,12 @@ func (p *PlayerRank) Output() [][]string {
 				sa = rating.Loss
 				sb = rating.Win
 			}
-
 			team1elo := (t1p1Elo + t1p2Elo) / 2
 			team2elo := (t2p1Elo + t2p2Elo) / 2
-
-			rate := elo.Elo{K: float64(p.options.EloKFactor)}
-			rate.InitialScore(t1p1Elo, team2elo)
-			t1p1Data.EloRating = rate.Calculate(sa)
-			rate.InitialScore(t1p2Elo, team2elo)
-			t1p2Data.EloRating = rate.Calculate(sa)
-
-			rate.InitialScore(t2p1Elo, team1elo)
-			t2p1Data.EloRating = rate.Calculate(sb)
-			rate.InitialScore(t2p2Elo, team1elo)
-			t2p2Data.EloRating = rate.Calculate(sb)
+			t1p1Data.EloRating = p.calculateELO(t1p1Data.Played, t1p1Elo, team2elo, sa)
+			t1p2Data.EloRating = p.calculateELO(t1p2Data.Played, t1p2Elo, team2elo, sa)
+			t2p1Data.EloRating = p.calculateELO(t2p1Data.Played, t2p1Elo, team1elo, sb)
+			t2p2Data.EloRating = p.calculateELO(t2p2Data.Played, t2p2Elo, team1elo, sb)
 
 			data[g.Team1[0]] = t1p1Data
 			data[g.Team1[1]] = t1p2Data
@@ -240,4 +232,16 @@ func (p *PlayerRank) Output() [][]string {
 		table = append(table, item)
 	}
 	return table
+}
+
+// calculateELO calculate ELO for player
+func (p PlayerRank) calculateELO(played int, p1Elo, p2Elo float64, result int) float64 {
+	eloCalc := rating.Elo{}
+	factors := rating.Factor{
+		Played:        played,
+		PlayerScore:   p1Elo,
+		OpponentScore: p2Elo,
+		Result:        result,
+	}
+	return eloCalc.Calculate(factors)
 }
