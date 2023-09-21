@@ -47,11 +47,14 @@ func (p *PlayerRank) Output() [][]string {
 		data[p.Name] = p
 	}
 	for _, t := range p.tournaments {
+		var played = make(map[string]bool)
 		for _, g := range t.Converted.AllGames {
 			p1Data := data[g.Team1[0]]
 			p2Data := data[g.Team2[0]]
 			p1Data.Name = g.Team1[0]
 			p2Data.Name = g.Team2[0]
+
+			// {{{ game data
 			p1Data.GamesPlayed++
 			p2Data.GamesPlayed++
 			p1Data.TimePlayed += g.TimePlayed
@@ -79,6 +82,8 @@ func (p *PlayerRank) Output() [][]string {
 			p2Data.Goals += g.Point2
 			p1Data.GoalsIn += g.Point2
 			p2Data.GoalsIn += g.Point1
+			// }}}
+			// {{{ ELO
 			elo := rating.Elo{}
 			p1Elo := elo.InitialScore()
 			p2Elo := elo.InitialScore()
@@ -99,10 +104,22 @@ func (p *PlayerRank) Output() [][]string {
 			}
 			p1Data.EloRating = p.calculateELO(p1Data.GamesPlayed, p1Elo, p2Elo, sa)
 			p2Data.EloRating = p.calculateELO(p2Data.GamesPlayed, p2Elo, p1Elo, sb)
+			// }}}
+			// {{{ mark tournament played
+			if _, ok := played[p1Data.Name]; !ok {
+				p1Data.EventsPlayed++
+				played[p1Data.Name] = true
+			}
+			if _, ok := played[p2Data.Name]; !ok {
+				p2Data.EventsPlayed++
+				played[p2Data.Name] = true
+			}
+			// }}}
+
 			data[g.Team1[0]] = p1Data
 			data[g.Team2[0]] = p2Data
 		}
-		// ranking points
+		// {{{ ranking points
 		curRank := 0
 		for i := len(t.Converted.Ranks) - 1; i >= 0; i-- {
 			rank := t.Converted.Ranks[i]
@@ -128,12 +145,13 @@ func (p *PlayerRank) Output() [][]string {
 					factors.Level = t.Event.ITSFLevel
 					d.ITSFPoints = int(ranker.Calculate(factors))
 				}
-				d.EventsPlayed++
 				data[r.Name] = d
 			}
 		}
+		// }}}
 	}
 
+	// {{{ map to slice
 	var sliceData []entity.Player
 	for _, d := range data {
 		if d.GamesPlayed != 0 {
@@ -160,6 +178,8 @@ func (p *PlayerRank) Output() [][]string {
 		}
 	}
 	p.players = sliceData
+	// }}}
+	// {{{ sort
 	sort.SliceStable(sliceData, func(i, j int) bool {
 		if p.options.OrderBy == "wr" || p.options.OrderBy == "elo" {
 			if sliceData[i].GamesPlayed >= p.options.MinimumPlayed && sliceData[j].GamesPlayed < p.options.MinimumPlayed {
@@ -193,7 +213,9 @@ func (p *PlayerRank) Output() [][]string {
 		}
 		return false
 	})
+	// }}}
 
+	// {{{ build result
 	if p.options.Head > 0 && len(sliceData) > p.options.Head {
 		sliceData = sliceData[:p.options.Head]
 	} else if p.options.Tail > 0 && len(sliceData) > p.options.Tail {
@@ -223,6 +245,7 @@ func (p *PlayerRank) Output() [][]string {
 		table = append(table, item)
 	}
 	return table
+	// }}}
 }
 
 // calculateELO calculate ELO for player

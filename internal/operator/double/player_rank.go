@@ -47,6 +47,7 @@ func (p *PlayerRank) Output() [][]string {
 		data[p.Name] = p
 	}
 	for _, t := range p.tournaments {
+		var played = make(map[string]bool)
 		for _, g := range t.Converted.AllGames {
 			t1p1Data := data[g.Team1[0]]
 			t1p2Data := data[g.Team1[1]]
@@ -56,6 +57,8 @@ func (p *PlayerRank) Output() [][]string {
 			t1p2Data.Name = g.Team1[1]
 			t2p1Data.Name = g.Team2[0]
 			t2p2Data.Name = g.Team2[1]
+
+			// {{{ game data
 			t1p1Data.GamesPlayed++
 			t1p2Data.GamesPlayed++
 			t2p1Data.GamesPlayed++
@@ -105,7 +108,8 @@ func (p *PlayerRank) Output() [][]string {
 			t1p2Data.GoalsIn += g.Point2
 			t2p1Data.GoalsIn += g.Point1
 			t2p2Data.GoalsIn += g.Point1
-			// ELO
+			// }}}
+			// {{{ ELO
 			elo := rating.Elo{}
 			t1p1Elo := elo.InitialScore()
 			t1p2Elo := elo.InitialScore()
@@ -138,13 +142,32 @@ func (p *PlayerRank) Output() [][]string {
 			t1p2Data.EloRating = p.calculateELO(t1p2Data.GamesPlayed, t1p2Elo, team2elo, sa)
 			t2p1Data.EloRating = p.calculateELO(t2p1Data.GamesPlayed, t2p1Elo, team1elo, sb)
 			t2p2Data.EloRating = p.calculateELO(t2p2Data.GamesPlayed, t2p2Elo, team1elo, sb)
+			// }}}
+			// {{{ mark tournament played
+			if _, ok := played[t1p1Data.Name]; !ok {
+				t1p1Data.EventsPlayed++
+				played[t1p1Data.Name] = true
+			}
+			if _, ok := played[t1p2Data.Name]; !ok {
+				t1p2Data.EventsPlayed++
+				played[t1p2Data.Name] = true
+			}
+			if _, ok := played[t2p1Data.Name]; !ok {
+				t2p1Data.EventsPlayed++
+				played[t2p1Data.Name] = true
+			}
+			if _, ok := played[t2p2Data.Name]; !ok {
+				t2p2Data.EventsPlayed++
+				played[t2p2Data.Name] = true
+			}
+			// }}}
 
 			data[g.Team1[0]] = t1p1Data
 			data[g.Team1[1]] = t1p2Data
 			data[g.Team2[0]] = t2p1Data
 			data[g.Team2[1]] = t2p2Data
 		}
-		// ranking points
+		// {{{ ranking points
 		curRank := 0
 		for i := len(t.Converted.Ranks) - 1; i >= 0; i-- {
 			rank := t.Converted.Ranks[i]
@@ -170,12 +193,13 @@ func (p *PlayerRank) Output() [][]string {
 					factors.Level = t.Event.ITSFLevel
 					d.ITSFPoints = int(ranker.Calculate(factors))
 				}
-				d.EventsPlayed++
 				data[r.Name] = d
 			}
 		}
+		// }}}
 	}
 
+	// {{{ map to slice
 	var sliceData []entity.Player
 	for _, d := range data {
 		d.GoalDiff = d.Goals - d.GoalsIn
@@ -202,6 +226,8 @@ func (p *PlayerRank) Output() [][]string {
 		}
 	}
 	p.players = sliceData
+	// }}}
+	// {{{ sort
 	sort.SliceStable(sliceData, func(i, j int) bool {
 		if p.options.OrderBy == "wr" || p.options.OrderBy == "elo" {
 			if sliceData[i].GamesPlayed >= p.options.MinimumPlayed && sliceData[j].GamesPlayed < p.options.MinimumPlayed {
@@ -235,7 +261,9 @@ func (p *PlayerRank) Output() [][]string {
 		}
 		return false
 	})
+	// }}}
 
+	// {{{ build result
 	if p.options.Head > 0 && len(sliceData) > p.options.Head {
 		sliceData = sliceData[:p.options.Head]
 	} else if p.options.Tail > 0 && len(sliceData) > p.options.Tail {
@@ -280,6 +308,7 @@ func (p *PlayerRank) Output() [][]string {
 		table = append(table, item)
 	}
 	return table
+	// }}}
 }
 
 // calculateELO calculate ELO for player
