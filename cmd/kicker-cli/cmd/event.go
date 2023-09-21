@@ -73,7 +73,7 @@ func nameTypeIncluded(input string) bool {
 
 func initEventInfoHeader() [][]string {
 	var table [][]string
-	header := []string{"ID", "Name", "Date Time", "Points", "Games", "Name Type", "Mode", "URL"}
+	header := []string{"ID", "Name", "Date Time", "Points", "Players", "Games", "Name Type", "Mode", "URL"}
 	if !globalNoHeaders {
 		table = append(table, header)
 	}
@@ -118,6 +118,7 @@ func showInfo(table *[][]string, e *entity.Event, t *model.Tournament, r *entity
 		e.Name,
 		t.Created.Format("2006-01-02 15:04"),
 		fmt.Sprintf("%d", e.Points),
+		fmt.Sprintf("%d", len(r.Players)),
 		fmt.Sprintf("%d", len(r.AllGames)),
 		t.NameType,
 		t.Mode,

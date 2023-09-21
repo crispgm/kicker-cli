@@ -29,6 +29,8 @@ func TestConvertDoubleGames(t *testing.T) {
 			assert.Len(t, rec.WinnerBracket, 5)
 			assert.Nil(t, rec.ThirdPlace)
 			assert.Len(t, rec.AllGames, 18)
+			assert.Len(t, rec.Players, 10)
+			assert.Len(t, rec.Ranks, 5)
 			assert.NotEmpty(t, nc.Briefing())
 			for i := 0; i < len(rec.AllGames)-1; i++ {
 				g := rec.AllGames[i]

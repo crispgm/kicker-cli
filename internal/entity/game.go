@@ -8,6 +8,7 @@ type Game struct {
 	TimeStart  int
 	TimeEnd    int
 	TimePlayed int
+	Winner     int
 	Point1     int
 	Point2     int
 

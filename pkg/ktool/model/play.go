@@ -17,6 +17,9 @@ type Play struct {
 	Skipped     bool `json:"skipped"`
 	TimeStart   int  `json:"timeStart"`
 	TimeEnd     int  `json:"timeEnd"`
+	Winner      int  `json:"winner"`
+	Team1Result int  `json:"team1Result"`
+	Team2Result int  `json:"team2Result"`
 	Team1       struct {
 		ID   string `json:"_id"`
 		Type string `json:"type"`

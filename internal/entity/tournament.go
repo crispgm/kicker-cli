@@ -16,4 +16,6 @@ type Record struct {
 	ThirdPlace        *Game
 
 	AllGames []Game
+	Ranks    [][]Player
+	Players  []Player
 }
