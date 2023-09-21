@@ -11,17 +11,18 @@ import (
 	"github.com/crispgm/kicker-cli/internal/entity"
 	"github.com/crispgm/kicker-cli/internal/util"
 	"github.com/crispgm/kicker-cli/pkg/ktool/parser"
+	"github.com/crispgm/kicker-cli/pkg/rating"
 )
 
 var (
 	importEventName                 string
-	importEventPoints               int
+	importEventLevel                string
 	importEventCreateUnknownPlayers bool
 )
 
 func init() {
 	importCmd.Flags().StringVarP(&importEventName, "name", "n", "", "event name")
-	importCmd.Flags().IntVarP(&importEventPoints, "points", "", entity.DefaultPoints, "points for the event")
+	importCmd.Flags().StringVarP(&importEventLevel, "points", "", rating.KLocal, "points for the event")
 	importCmd.Flags().BoolVarP(&importEventCreateUnknownPlayers, "create-unknown-players", "c", false, "create unknown players during importing")
 	rootCmd.AddCommand(importCmd)
 }
@@ -73,7 +74,7 @@ var importCmd = &cobra.Command{
 			}
 
 			pterm.Printfln("Importing \"%s\" `%s` ...", importEventName, importPath)
-			event := *entity.NewEvent("temp", importEventName, importEventPoints)
+			event := *entity.NewEvent("temp", importEventName, importEventLevel)
 			fn := fmt.Sprintf("%s.ktool", event.ID)
 			event.Path = fn
 			md5, err := util.MD5CheckSum(importPath)

@@ -4,6 +4,7 @@ import "github.com/crispgm/kicker-cli/pkg/ktool/model"
 
 // Tournament .
 type Tournament struct {
+	Event     Event
 	Raw       model.Tournament
 	Converted Record
 }

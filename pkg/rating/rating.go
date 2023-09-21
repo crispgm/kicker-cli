@@ -1,14 +1,32 @@
 // Package rating multiple algorithms for rating
 package rating
 
+import "strings"
+
+// ranking system
+const (
+	RSysITSF   = "ITSF"
+	RSysATSA   = "ATSA"
+	RSysKicker = "KRS"
+)
+
 // NotSanctioned represents event that not sanctioned by this organization
 const NotSanctioned = "NS"
+
+// Kicker Points
+const (
+	KWorld       = "KWorld"
+	KContinental = "KContinental"
+	KDomestic    = "KDomestic"
+	KLocal       = "KLocal"
+	KCasual      = "KCasual"
+)
 
 // ITSF Points
 const (
 	ITSFWorldSeries   = "ITSFWorldSeries"
 	ITSFInternational = "ITSFInternational"
-	ITSFMasterSeries  = "ITSFWorldSeries"
+	ITSFMasterSeries  = "ITSFMasterSeries"
 	ITSFProTour       = "ITSFProTour"
 )
 
@@ -18,7 +36,6 @@ const (
 	ATSA1000 = "ATSA1000"
 	ATSA500  = "ATSA500"
 	ATSA50   = "ATSA50"
-	ATSA25   = "ATSA25"
 )
 
 // literally win/draw/loss
@@ -36,6 +53,27 @@ type Factor struct {
 	Level         string  // tournament/game level
 	Place         int     // place in tournament
 	Played        int     // game played
+}
+
+// IsATSA .
+func (f Factor) IsATSA() bool {
+	return strings.HasPrefix(f.Level, "ATSA")
+}
+
+// IsITSF .
+func (f Factor) IsITSF() bool {
+	return strings.HasPrefix(f.Level, "ITSF")
+}
+
+// GetRankSystem .
+func (f Factor) GetRankSystem() string {
+	if f.IsITSF() {
+		return RSysITSF
+	} else if f.IsATSA() {
+		return RSysATSA
+	}
+
+	return RSysKicker
 }
 
 // Rating interface of rating system

@@ -52,8 +52,8 @@ func (p *PlayerRank) Output() [][]string {
 			p2Data := data[g.Team2[0]]
 			p1Data.Name = g.Team1[0]
 			p2Data.Name = g.Team2[0]
-			p1Data.Played++
-			p2Data.Played++
+			p1Data.GamesPlayed++
+			p2Data.GamesPlayed++
 			p1Data.TimePlayed += g.TimePlayed
 			p2Data.TimePlayed += g.TimePlayed
 			if g.Point1 > g.Point2 {
@@ -97,27 +97,57 @@ func (p *PlayerRank) Output() [][]string {
 				sa = rating.Loss
 				sb = rating.Win
 			}
-			p1Data.EloRating = p.calculateELO(p1Data.Played, p1Elo, p2Elo, sa)
-			p2Data.EloRating = p.calculateELO(p2Data.Played, p2Elo, p1Elo, sb)
+			p1Data.EloRating = p.calculateELO(p1Data.GamesPlayed, p1Elo, p2Elo, sa)
+			p2Data.EloRating = p.calculateELO(p2Data.GamesPlayed, p2Elo, p1Elo, sb)
 			data[g.Team1[0]] = p1Data
 			data[g.Team2[0]] = p2Data
+		}
+		// ranking points
+		curRank := 0
+		for i := len(t.Converted.Ranks) - 1; i >= 0; i-- {
+			rank := t.Converted.Ranks[i]
+			curRank += len(rank)
+			factors := rating.Factor{
+				Place: curRank,
+			}
+			for _, r := range rank {
+				ranker := rating.Rank{}
+				d := data[r.Name]
+				if len(t.Event.KickerLevel) > 0 {
+					factors.PlayerScore = float64(d.KickerPoints)
+					factors.Level = t.Event.KickerLevel
+					d.KickerPoints = int(ranker.Calculate(factors))
+				}
+				if len(t.Event.ATSALevel) > 0 {
+					factors.Level = t.Event.ATSALevel
+					factors.PlayerScore = float64(d.ATSAPoints)
+					d.ATSAPoints = int(ranker.Calculate(factors))
+				}
+				if len(t.Event.ITSFLevel) > 0 {
+					factors.PlayerScore = float64(d.ITSFPoints)
+					factors.Level = t.Event.ITSFLevel
+					d.ITSFPoints = int(ranker.Calculate(factors))
+				}
+				d.EventsPlayed++
+				data[r.Name] = d
+			}
 		}
 	}
 
 	var sliceData []entity.Player
 	for _, d := range data {
-		if d.Played != 0 {
+		if d.GamesPlayed != 0 {
 			d.GoalDiff = d.Goals - d.GoalsIn
-			d.WinRate = float32(d.Win) / float32(d.Played) * 100.0
+			d.WinRate = float32(d.Win) / float32(d.GamesPlayed) * 100.0
 			if d.HomeWin+d.HomeLoss > 0 {
 				d.HomeWinRate = float32(d.HomeWin) / float32(d.HomeWin+d.HomeLoss) * 100.0
 			}
 			if d.AwayWin+d.AwayLoss > 0 {
 				d.AwayWinRate = float32(d.AwayWin) / float32(d.AwayWin+d.AwayLoss) * 100.0
 			}
-			d.PointsPerGame = float32(d.Goals) / float32(d.Played)
-			d.PointsInPerGame = float32(d.GoalsIn) / float32(d.Played)
-			d.TimePerGame = d.TimePlayed / d.Played / 1000
+			d.PointsPerGame = float32(d.Goals) / float32(d.GamesPlayed)
+			d.PointsInPerGame = float32(d.GoalsIn) / float32(d.GamesPlayed)
+			d.TimePerGame = d.TimePlayed / d.GamesPlayed / 1000
 			d.LongestGameTime /= 1000
 			d.ShortestGameTime /= 1000
 			if d.Win > 0 {
@@ -131,14 +161,28 @@ func (p *PlayerRank) Output() [][]string {
 	}
 	p.players = sliceData
 	sort.SliceStable(sliceData, func(i, j int) bool {
-		if sliceData[i].Played >= p.options.MinimumPlayed && sliceData[j].Played < p.options.MinimumPlayed {
-			return true
-		}
-		if sliceData[i].Played < p.options.MinimumPlayed && sliceData[j].Played >= p.options.MinimumPlayed {
-			return false
+		if p.options.OrderBy == "wr" || p.options.OrderBy == "elo" {
+			if sliceData[i].GamesPlayed >= p.options.MinimumPlayed && sliceData[j].GamesPlayed < p.options.MinimumPlayed {
+				return true
+			}
+			if sliceData[i].GamesPlayed < p.options.MinimumPlayed && sliceData[j].GamesPlayed >= p.options.MinimumPlayed {
+				return false
+			}
 		}
 
-		if p.options.OrderBy == "elo" {
+		if p.options.OrderBy == "krs" {
+			if sliceData[i].KickerPoints > sliceData[j].KickerPoints {
+				return true
+			}
+		} else if p.options.OrderBy == "atsa" {
+			if sliceData[i].ATSAPoints > sliceData[j].ATSAPoints {
+				return true
+			}
+		} else if p.options.OrderBy == "itsf" {
+			if sliceData[i].ITSFPoints > sliceData[j].ITSFPoints {
+				return true
+			}
+		} else if p.options.OrderBy == "elo" {
 			if sliceData[i].EloRating > sliceData[j].EloRating {
 				return true
 			}
@@ -156,7 +200,7 @@ func (p *PlayerRank) Output() [][]string {
 		sliceData = sliceData[len(sliceData)-p.options.Tail:]
 	}
 
-	header := []string{"#", "Name", "Num", "Win", "Loss", "Draw", "WR%", "Elo"}
+	header := []string{"#", "Name", "Events", "Games", "Win", "Loss", "Draw", "WR%", "Elo", "KRS", "ATSA", "ITSF"}
 	table := [][]string{}
 	if p.options.WithHeader {
 		table = append(table, header)
@@ -165,12 +209,16 @@ func (p *PlayerRank) Output() [][]string {
 		item := []string{
 			fmt.Sprintf("%d", i+1),
 			d.Name,
-			fmt.Sprintf("%d", d.Played),
+			fmt.Sprintf("%d", d.EventsPlayed),
+			fmt.Sprintf("%d", d.GamesPlayed),
 			fmt.Sprintf("%d", d.Win),
 			fmt.Sprintf("%d", d.Loss),
 			fmt.Sprintf("%d", d.Draw),
 			fmt.Sprintf("%.0f%%", d.WinRate),
 			fmt.Sprintf("%.0f", d.EloRating),
+			fmt.Sprintf("%d", d.KickerPoints),
+			fmt.Sprintf("%d", d.ATSAPoints),
+			fmt.Sprintf("%d", d.ITSFPoints),
 		}
 		table = append(table, item)
 	}

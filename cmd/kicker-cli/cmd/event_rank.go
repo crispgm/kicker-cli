@@ -20,13 +20,13 @@ var (
 	rankMinPlayed int
 	rankHead      int
 	rankTail      int
-	rankOrderBy   string
+	rankSortBy    string
 	rankWithGoals bool
 )
 
 func init() {
 	rankCmd.Flags().StringVarP(&rankGameMode, "mode", "m", "", "rank mode")
-	rankCmd.Flags().StringVarP(&rankOrderBy, "order-by", "o", "wr", "order by (wr/elo)")
+	rankCmd.Flags().StringVarP(&rankSortBy, "sort-by", "o", "krs", "sort by (krs/itsf/atsa/elo/wr)")
 	rankCmd.Flags().IntVarP(&rankMinPlayed, "minimum-played", "p", 0, "minimum matches played")
 	rankCmd.Flags().BoolVarP(&rankWithGoals, "with-goals", "", false, "rank with goals")
 	rankCmd.Flags().IntVarP(&rankHead, "head", "", 0, "display the head part of rank")
@@ -80,6 +80,7 @@ var rankCmd = &cobra.Command{
 
 		// load tournaments
 		var tournaments []model.Tournament
+		var filteredEvents []entity.Event
 		for _, e := range events {
 			t, err := parser.ParseFile(filepath.Join(instance.DataPath(), e.Path))
 			if err != nil {
@@ -97,6 +98,7 @@ var rankCmd = &cobra.Command{
 				continue
 			}
 			tournaments = append(tournaments, *t)
+			filteredEvents = append(filteredEvents, e)
 		}
 		if len(tournaments) == 0 {
 			pterm.Warning.Println("No matched tournament(s)")
@@ -104,17 +106,21 @@ var rankCmd = &cobra.Command{
 		}
 
 		var eTournaments []entity.Tournament
-		for _, t := range tournaments {
+		for i, t := range tournaments {
 			c := converter.NewConverter()
 			trn, err := c.Normalize(instance.Conf.Players, t)
 			if err != nil {
 				errorMessageAndExit(err)
 			}
 
-			eTournaments = append(eTournaments, entity.Tournament{Raw: t, Converted: *trn})
+			eTournaments = append(eTournaments, entity.Tournament{
+				Event:     filteredEvents[i],
+				Raw:       t,
+				Converted: *trn,
+			})
 		}
 		options := operator.Option{
-			OrderBy:       rankOrderBy,
+			OrderBy:       rankSortBy,
 			MinimumPlayed: rankMinPlayed,
 			Head:          rankHead,
 			Tail:          rankTail,

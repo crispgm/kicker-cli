@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
 
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -73,7 +74,7 @@ func nameTypeIncluded(input string) bool {
 
 func initEventInfoHeader() [][]string {
 	var table [][]string
-	header := []string{"ID", "Name", "Date Time", "Points", "Players", "Games", "Name Type", "Mode", "URL"}
+	header := []string{"ID", "Name", "Date Time", "Level", "Players", "Games", "Name Type", "Mode", "URL"}
 	if !globalNoHeaders {
 		table = append(table, header)
 	}
@@ -113,11 +114,21 @@ func showEvent(table *[][]string, e *entity.Event, t *model.Tournament, r *entit
 }
 
 func showInfo(table *[][]string, e *entity.Event, t *model.Tournament, r *entity.Record) {
+	var levels []string
+	if len(e.ITSFLevel) > 0 {
+		levels = append(levels, e.ITSFLevel)
+	}
+	if len(e.ATSALevel) > 0 {
+		levels = append(levels, e.ATSALevel)
+	}
+	if len(e.KickerLevel) > 0 {
+		levels = append(levels, e.KickerLevel)
+	}
 	*table = append(*table, []string{
 		e.ID,
 		e.Name,
 		t.Created.Format("2006-01-02 15:04"),
-		fmt.Sprintf("%d", e.Points),
+		fmt.Sprintf("%s", strings.Join(levels, "|")),
 		fmt.Sprintf("%d", len(r.Players)),
 		fmt.Sprintf("%d", len(r.AllGames)),
 		t.NameType,

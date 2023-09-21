@@ -15,13 +15,14 @@ type Player struct {
 	ITSFID  string   `yaml:"itsf_id,omitempty"`
 
 	// statistics data, not write
-	Played           int     `yaml:"-"`
+	EventsPlayed     int     `yaml:"-"`
+	GamesPlayed      int     `yaml:"-"`
 	Win              int     `yaml:"-"`
 	Loss             int     `yaml:"-"`
 	Draw             int     `yaml:"-"`
 	WinRate          float32 `yaml:"-"`
-	Points           int     `yaml:"-"` // kicker ranking points
 	EloRating        float64 `yaml:"-"` // kicker ELO scores
+	KickerPoints     int     `yaml:"-"` // kicker ranking points
 	ATSAPoints       int     `yaml:"-"` // ATSA points
 	ITSFPoints       int     `yaml:"-"` // ITSF points
 	TimePlayed       int     `yaml:"-"`
