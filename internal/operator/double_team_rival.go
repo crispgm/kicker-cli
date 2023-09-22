@@ -1,24 +1,23 @@
-package double
+package operator
 
 import (
 	"fmt"
 	"sort"
 
 	"github.com/crispgm/kicker-cli/internal/entity"
-	"github.com/crispgm/kicker-cli/internal/operator"
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 )
 
-var _ operator.Operator = (*TeamRival)(nil)
+var _ Operator = (*DoubleTeamRival)(nil)
 
-// TeamRival generate statistics data of multiple monster DYP tournaments by team
-type TeamRival struct {
-	options     operator.Option
+// DoubleTeamRival generate statistics data of multiple monster DYP tournaments by team
+type DoubleTeamRival struct {
+	options     Option
 	tournaments []entity.Tournament
 }
 
 // SupportedFormats .
-func (t TeamRival) SupportedFormats(trn *model.Tournament) bool {
+func (t DoubleTeamRival) SupportedFormats(trn *model.Tournament) bool {
 	if trn.IsDouble() {
 		if trn.Mode == model.ModeMonsterDYP ||
 			trn.Mode == model.ModeSwissSystem || trn.Mode == model.ModeRounds || trn.Mode == model.ModeRoundRobin ||
@@ -31,13 +30,13 @@ func (t TeamRival) SupportedFormats(trn *model.Tournament) bool {
 }
 
 // Input .
-func (t *TeamRival) Input(tournaments []entity.Tournament, players []entity.Player, options operator.Option) {
+func (t *DoubleTeamRival) Input(tournaments []entity.Tournament, players []entity.Player, options Option) {
 	t.tournaments = tournaments
 	t.options = options
 }
 
 // Output .
-func (t *TeamRival) Output() [][]string {
+func (t *DoubleTeamRival) Output() [][]string {
 	data := make(map[string]entity.Rival)
 	for _, trn := range t.tournaments {
 		for _, g := range trn.Converted.AllGames {
@@ -87,14 +86,10 @@ func (t *TeamRival) Output() [][]string {
 					rival.Win++
 					rival.Team1.Win++
 					rival.Team2.Loss++
-					rival.Team1.GoalsWin += (g.Point1 - g.Point2)
-					rival.Team2.GoalsInLoss += (g.Point1 - g.Point2)
 				} else if g.Point1 < g.Point2 {
 					rival.Loss++
 					rival.Team2.Win++
 					rival.Team1.Loss++
-					rival.Team2.GoalsWin += (g.Point2 - g.Point1)
-					rival.Team1.GoalsInLoss += (g.Point2 - g.Point1)
 				} else {
 					rival.Draw++
 					rival.Team1.Draw++

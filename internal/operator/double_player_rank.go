@@ -1,28 +1,26 @@
-// Package single is operators for single games
-package single
+package operator
 
 import (
 	"fmt"
 	"sort"
 
 	"github.com/crispgm/kicker-cli/internal/entity"
-	"github.com/crispgm/kicker-cli/internal/operator"
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 	"github.com/crispgm/kicker-cli/pkg/rating"
 )
 
-var _ operator.Operator = (*PlayerRank)(nil)
+var _ Operator = (*DoublePlayerRank)(nil)
 
-// PlayerRank generate statistics data of double tournaments by player
-type PlayerRank struct {
-	options     operator.Option
+// DoublePlayerRank generate statistics data of double tournaments by player
+type DoublePlayerRank struct {
+	options     Option
 	tournaments []entity.Tournament
 	players     []entity.Player
 }
 
 // SupportedFormats .
-func (p PlayerRank) SupportedFormats(trn *model.Tournament) bool {
-	if trn.IsSingle() {
+func (p DoublePlayerRank) SupportedFormats(trn *model.Tournament) bool {
+	if trn.IsDouble() {
 		if trn.Mode == model.ModeMonsterDYP ||
 			trn.Mode == model.ModeSwissSystem || trn.Mode == model.ModeRounds || trn.Mode == model.ModeRoundRobin ||
 			trn.Mode == model.ModeDoubleElimination || trn.Mode == model.ModeElimination {
@@ -34,14 +32,14 @@ func (p PlayerRank) SupportedFormats(trn *model.Tournament) bool {
 }
 
 // Input .
-func (p *PlayerRank) Input(tournaments []entity.Tournament, players []entity.Player, options operator.Option) {
+func (p *DoublePlayerRank) Input(tournaments []entity.Tournament, players []entity.Player, options Option) {
 	p.tournaments = tournaments
 	p.players = players
 	p.options = options
 }
 
 // Output .
-func (p *PlayerRank) Output() [][]string {
+func (p *DoublePlayerRank) Output() [][]string {
 	data := make(map[string]entity.Player)
 	for _, p := range p.players {
 		data[p.Name] = p
@@ -49,49 +47,63 @@ func (p *PlayerRank) Output() [][]string {
 	for _, t := range p.tournaments {
 		var played = make(map[string]bool)
 		for _, g := range t.Converted.AllGames {
-			p1Data := data[g.Team1[0]]
-			p2Data := data[g.Team2[0]]
-			p1Data.Name = g.Team1[0]
-			p2Data.Name = g.Team2[0]
+			t1p1Data := data[g.Team1[0]]
+			t1p2Data := data[g.Team1[1]]
+			t2p1Data := data[g.Team2[0]]
+			t2p2Data := data[g.Team2[1]]
+			t1p1Data.Name = g.Team1[0]
+			t1p2Data.Name = g.Team1[1]
+			t2p1Data.Name = g.Team2[0]
+			t2p2Data.Name = g.Team2[1]
 
 			// {{{ game data
-			p1Data.GamesPlayed++
-			p2Data.GamesPlayed++
-			p1Data.TimePlayed += g.TimePlayed
-			p2Data.TimePlayed += g.TimePlayed
+			t1p1Data.GamesPlayed++
+			t1p2Data.GamesPlayed++
+			t2p1Data.GamesPlayed++
+			t2p2Data.GamesPlayed++
 			if g.Point1 > g.Point2 {
-				p1Data.Win++
-				p2Data.Loss++
-				p1Data.HomeWin++
-				p2Data.AwayLoss++
-				p1Data.GoalsWin += (g.Point1 - g.Point2)
-				p2Data.GoalsInLoss += (g.Point1 - g.Point2)
+				t1p1Data.Win++
+				t1p2Data.Win++
+				t2p1Data.Loss++
+				t2p2Data.Loss++
+				t1p1Data.HomeWin++
+				t1p2Data.HomeWin++
+				t2p1Data.AwayLoss++
+				t2p2Data.AwayLoss++
 			} else if g.Point2 > g.Point1 {
-				p1Data.Loss++
-				p2Data.Win++
-				p1Data.HomeLoss++
-				p2Data.AwayWin++
-				p2Data.GoalsWin += (g.Point2 - g.Point1)
-				p1Data.GoalsInLoss += (g.Point2 - g.Point1)
+				t1p1Data.Loss++
+				t1p2Data.Loss++
+				t2p1Data.Win++
+				t2p2Data.Win++
+				t1p1Data.HomeLoss++
+				t1p2Data.HomeLoss++
+				t2p1Data.AwayWin++
+				t2p2Data.AwayWin++
 			} else {
 				// basically not approachable
-				p1Data.Draw++
-				p2Data.Draw++
+				t1p1Data.Draw++
+				t1p2Data.Draw++
+				t2p1Data.Draw++
+				t2p2Data.Draw++
 			}
-			p1Data.Goals += g.Point1
-			p2Data.Goals += g.Point2
-			p1Data.GoalsIn += g.Point2
-			p2Data.GoalsIn += g.Point1
 			// }}}
 			// {{{ ELO
 			elo := rating.Elo{}
-			p1Elo := elo.InitialScore()
-			p2Elo := elo.InitialScore()
-			if p1Data.EloRating != 0 {
-				p1Elo = p1Data.EloRating
+			t1p1Elo := elo.InitialScore()
+			t1p2Elo := elo.InitialScore()
+			t2p1Elo := elo.InitialScore()
+			t2p2Elo := elo.InitialScore()
+			if t1p1Data.EloRating != 0 {
+				t1p1Elo = t1p1Data.EloRating
 			}
-			if p2Data.EloRating != 0 {
-				p2Elo = p2Data.EloRating
+			if t1p2Data.EloRating != 0 {
+				t1p2Elo = t1p2Data.EloRating
+			}
+			if t2p1Data.EloRating != 0 {
+				t2p1Elo = t2p1Data.EloRating
+			}
+			if t2p2Data.EloRating != 0 {
+				t2p2Elo = t2p2Data.EloRating
 			}
 			sa := rating.Win
 			sb := rating.Loss
@@ -102,28 +114,42 @@ func (p *PlayerRank) Output() [][]string {
 				sa = rating.Loss
 				sb = rating.Win
 			}
-			p1Data.EloRating = p.calculateELO(p1Data.GamesPlayed, p1Elo, p2Elo, sa)
-			p2Data.EloRating = p.calculateELO(p2Data.GamesPlayed, p2Elo, p1Elo, sb)
+			team1elo := (t1p1Elo + t1p2Elo) / 2
+			team2elo := (t2p1Elo + t2p2Elo) / 2
+			t1p1Data.EloRating = p.calculateELO(t1p1Data.GamesPlayed, t1p1Elo, team2elo, sa)
+			t1p2Data.EloRating = p.calculateELO(t1p2Data.GamesPlayed, t1p2Elo, team2elo, sa)
+			t2p1Data.EloRating = p.calculateELO(t2p1Data.GamesPlayed, t2p1Elo, team1elo, sb)
+			t2p2Data.EloRating = p.calculateELO(t2p2Data.GamesPlayed, t2p2Elo, team1elo, sb)
 			// }}}
 			// {{{ mark tournament played
-			if _, ok := played[p1Data.Name]; !ok {
-				p1Data.EventsPlayed++
-				played[p1Data.Name] = true
+			if _, ok := played[t1p1Data.Name]; !ok {
+				t1p1Data.EventsPlayed++
+				played[t1p1Data.Name] = true
 			}
-			if _, ok := played[p2Data.Name]; !ok {
-				p2Data.EventsPlayed++
-				played[p2Data.Name] = true
+			if _, ok := played[t1p2Data.Name]; !ok {
+				t1p2Data.EventsPlayed++
+				played[t1p2Data.Name] = true
+			}
+			if _, ok := played[t2p1Data.Name]; !ok {
+				t2p1Data.EventsPlayed++
+				played[t2p1Data.Name] = true
+			}
+			if _, ok := played[t2p2Data.Name]; !ok {
+				t2p2Data.EventsPlayed++
+				played[t2p2Data.Name] = true
 			}
 			// }}}
 
-			data[g.Team1[0]] = p1Data
-			data[g.Team2[0]] = p2Data
+			data[g.Team1[0]] = t1p1Data
+			data[g.Team1[1]] = t1p2Data
+			data[g.Team2[0]] = t2p1Data
+			data[g.Team2[1]] = t2p2Data
 		}
 		// {{{ ranking points
 		curRank := 0
 		for i := len(t.Converted.Ranks) - 1; i >= 0; i-- {
 			rank := t.Converted.Ranks[i]
-			curRank += len(rank)
+			curRank += len(rank) / 2
 			factors := rating.Factor{
 				Place: curRank,
 			}
@@ -155,24 +181,12 @@ func (p *PlayerRank) Output() [][]string {
 	var sliceData []entity.Player
 	for _, d := range data {
 		if d.GamesPlayed != 0 {
-			d.GoalDiff = d.Goals - d.GoalsIn
 			d.WinRate = float32(d.Win) / float32(d.GamesPlayed) * 100.0
 			if d.HomeWin+d.HomeLoss > 0 {
 				d.HomeWinRate = float32(d.HomeWin) / float32(d.HomeWin+d.HomeLoss) * 100.0
 			}
 			if d.AwayWin+d.AwayLoss > 0 {
 				d.AwayWinRate = float32(d.AwayWin) / float32(d.AwayWin+d.AwayLoss) * 100.0
-			}
-			d.PointsPerGame = float32(d.Goals) / float32(d.GamesPlayed)
-			d.PointsInPerGame = float32(d.GoalsIn) / float32(d.GamesPlayed)
-			d.TimePerGame = d.TimePlayed / d.GamesPlayed / 1000
-			d.LongestGameTime /= 1000
-			d.ShortestGameTime /= 1000
-			if d.Win > 0 {
-				d.DiffPerWin = float32(d.GoalsWin) / float32(d.Win)
-			}
-			if d.Loss > 0 {
-				d.DiffPerLoss = float32(d.GoalsInLoss) / float32(d.Loss)
 			}
 			sliceData = append(sliceData, d)
 		}
@@ -249,7 +263,7 @@ func (p *PlayerRank) Output() [][]string {
 }
 
 // calculateELO calculate ELO for player
-func (p PlayerRank) calculateELO(played int, p1Elo, p2Elo float64, result int) float64 {
+func (p DoublePlayerRank) calculateELO(played int, p1Elo, p2Elo float64, result int) float64 {
 	eloCalc := rating.Elo{}
 	factors := rating.Factor{
 		Played:        played,

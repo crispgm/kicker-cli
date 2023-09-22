@@ -9,8 +9,6 @@ import (
 	"github.com/crispgm/kicker-cli/internal/converter"
 	"github.com/crispgm/kicker-cli/internal/entity"
 	"github.com/crispgm/kicker-cli/internal/operator"
-	"github.com/crispgm/kicker-cli/internal/operator/double"
-	"github.com/crispgm/kicker-cli/internal/operator/single"
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 	"github.com/crispgm/kicker-cli/pkg/ktool/parser"
 )
@@ -21,14 +19,12 @@ var (
 	rankHead      int
 	rankTail      int
 	rankSortBy    string
-	rankWithGoals bool
 )
 
 func init() {
 	rankCmd.Flags().StringVarP(&rankGameMode, "mode", "m", "", "rank mode")
 	rankCmd.Flags().StringVarP(&rankSortBy, "sort-by", "o", "krs", "sort by (krs/itsf/atsa/elo/wr)")
 	rankCmd.Flags().IntVarP(&rankMinPlayed, "minimum-played", "p", 0, "minimum matches played")
-	rankCmd.Flags().BoolVarP(&rankWithGoals, "with-goals", "", false, "rank with goals")
 	rankCmd.Flags().IntVarP(&rankHead, "head", "", 0, "display the head part of rank")
 	rankCmd.Flags().IntVarP(&rankTail, "tail", "", 0, "display the last part of rank")
 	rankCmd.MarkFlagRequired("mode")
@@ -38,8 +34,8 @@ func init() {
 
 var rankCmd = &cobra.Command{
 	Use:   "rank",
-	Short: "Get rank",
-	Long:  "Get rank",
+	Short: "Get player ranks",
+	Long:  "Get player ranks of played tournaments and games",
 	Run: func(cmd *cobra.Command, args []string) {
 		if rankHead < 0 || rankTail < 0 {
 			errorMessageAndExit("Only non-negitive number is allowed for head or tail")
@@ -47,15 +43,15 @@ var rankCmd = &cobra.Command{
 		var op operator.Operator
 		switch rankGameMode {
 		case entity.ModeDoublePlayerRank:
-			op = &double.PlayerRank{}
+			op = &operator.DoublePlayerRank{}
 		case entity.ModeDoubleTeamRank:
-			op = &double.TeamRank{}
+			op = &operator.DoubleTeamRank{}
 		case entity.ModeDoubleTeamRival:
-			op = &double.TeamRival{}
+			op = &operator.DoubleTeamRival{}
 		case entity.ModeSinglePlayerRank:
-			op = &single.PlayerRank{}
+			op = &operator.SinglePlayerRank{}
 		case entity.ModeSinglePlayerRival:
-			op = &single.PlayerRival{}
+			op = &operator.SinglePlayerRival{}
 		default:
 			errorMessageAndExit("Please present a valid rank mode")
 		}
@@ -128,7 +124,6 @@ var rankCmd = &cobra.Command{
 			Head:          rankHead,
 			Tail:          rankTail,
 			WithHeader:    !globalNoHeaders,
-			WithGoals:     rankWithGoals,
 		}
 		op.Input(eTournaments, instance.Conf.Players, options)
 		table := op.Output()

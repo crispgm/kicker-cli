@@ -1,24 +1,23 @@
-package single
+package operator
 
 import (
 	"fmt"
 	"sort"
 
 	"github.com/crispgm/kicker-cli/internal/entity"
-	"github.com/crispgm/kicker-cli/internal/operator"
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 )
 
-var _ operator.Operator = (*PlayerRival)(nil)
+var _ Operator = (*SinglePlayerRival)(nil)
 
-// PlayerRival generate statistics data of multiple monster DYP tournaments by team
-type PlayerRival struct {
-	options     operator.Option
+// SinglePlayerRival generate statistics data of multiple monster DYP tournaments by team
+type SinglePlayerRival struct {
+	options     Option
 	tournaments []entity.Tournament
 }
 
 // SupportedFormats .
-func (p PlayerRival) SupportedFormats(trn *model.Tournament) bool {
+func (p SinglePlayerRival) SupportedFormats(trn *model.Tournament) bool {
 	if trn.IsSingle() {
 		if trn.Mode == model.ModeMonsterDYP ||
 			trn.Mode == model.ModeSwissSystem || trn.Mode == model.ModeRounds || trn.Mode == model.ModeRoundRobin ||
@@ -31,13 +30,13 @@ func (p PlayerRival) SupportedFormats(trn *model.Tournament) bool {
 }
 
 // Input .
-func (p *PlayerRival) Input(tournaments []entity.Tournament, players []entity.Player, options operator.Option) {
+func (p *SinglePlayerRival) Input(tournaments []entity.Tournament, players []entity.Player, options Option) {
 	p.tournaments = tournaments
 	p.options = options
 }
 
 // Output .
-func (p *PlayerRival) Output() [][]string {
+func (p *SinglePlayerRival) Output() [][]string {
 	data := make(map[string]entity.Rival)
 	for _, t := range p.tournaments {
 		for _, g := range t.Converted.AllGames {

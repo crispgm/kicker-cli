@@ -13,28 +13,29 @@ type Player struct {
 	Aliases []string `yaml:"aliases"`
 	ATSAID  string   `yaml:"atsa_id,omitempty"`
 	ITSFID  string   `yaml:"itsf_id,omitempty"`
-
-	// statistics data, not write
-	EventsPlayed     int     `yaml:"-"`
-	GamesPlayed      int     `yaml:"-"`
-	Win              int     `yaml:"-"`
-	Loss             int     `yaml:"-"`
-	Draw             int     `yaml:"-"`
-	WinRate          float32 `yaml:"-"`
-	EloRating        float64 `yaml:"-"` // kicker ELO scores
-	KickerPoints     int     `yaml:"-"` // kicker ranking points
-	ATSAPoints       int     `yaml:"-"` // ATSA points
-	ITSFPoints       int     `yaml:"-"` // ITSF points
+	// major statistical data, not write
+	EventsPlayed int     `yaml:"-"`
+	GamesPlayed  int     `yaml:"-"`
+	Win          int     `yaml:"-"`
+	Loss         int     `yaml:"-"`
+	Draw         int     `yaml:"-"`
+	WinRate      float32 `yaml:"-"`
+	EloRating    float64 `yaml:"-"` // kicker ELO scores
+	KickerPoints int     `yaml:"-"` // kicker ranking points
+	ATSAPoints   int     `yaml:"-"` // ATSA points
+	ITSFPoints   int     `yaml:"-"` // ITSF points
+	// minor statistical data
+	HomeWin     int     `yaml:"-"`
+	HomeLoss    int     `yaml:"-"`
+	HomeWinRate float32 `yaml:"-"`
+	AwayWin     int     `yaml:"-"`
+	AwayLoss    int     `yaml:"-"`
+	AwayWinRate float32 `yaml:"-"`
+	// data not implemented right now
 	TimePlayed       int     `yaml:"-"`
 	LongestGameTime  int     `yaml:"-"`
 	ShortestGameTime int     `yaml:"-"`
 	TimePerGame      int     `yaml:"-"`
-	HomeWin          int     `yaml:"-"`
-	HomeLoss         int     `yaml:"-"`
-	HomeWinRate      float32 `yaml:"-"`
-	AwayWin          int     `yaml:"-"`
-	AwayLoss         int     `yaml:"-"`
-	AwayWinRate      float32 `yaml:"-"`
 	Goals            int     `yaml:"-"`
 	GoalsIn          int     `yaml:"-"`
 	GoalDiff         int     `yaml:"-"`

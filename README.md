@@ -67,6 +67,8 @@ Event management:
 ```shell
 # list events
 kicker-cli event ls
+kicker-cli event ls --before 2023-08-23
+kicker-cli event ls --name-type dyp
 
 # show info
 kicker-cli event info 351e00bf-025c-4243-b381-2f5a135c3070

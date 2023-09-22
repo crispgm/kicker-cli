@@ -20,5 +20,4 @@ type Option struct {
 	Head          int
 	Tail          int
 	WithHeader    bool
-	WithGoals     bool
 }
