@@ -93,6 +93,9 @@ var rankCmd = &cobra.Command{
 			if !nameTypeIncluded(t.NameType) {
 				continue
 			}
+			if !createdBetween(t.Created) {
+				continue
+			}
 			if !op.SupportedFormats(t) {
 				pterm.Warning.Println("Not supported by operator. Ignoring", e.ID)
 				continue

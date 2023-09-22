@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+	"time"
 
+	"github.com/araddon/dateparse"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 
@@ -15,12 +17,15 @@ import (
 )
 
 var (
-	eventIDOrName  string
 	eventNameTypes []string
+	eventAfter     string
+	eventBefore    string
 )
 
 func init() {
 	eventCmd.PersistentFlags().StringArrayVarP(&eventNameTypes, "name-type", "t", []string{}, "name type (single, byp, dyp or monster_dyp)")
+	eventCmd.PersistentFlags().StringVarP(&eventAfter, "after", "a", "", "show events created after a specific date")
+	eventCmd.PersistentFlags().StringVarP(&eventBefore, "before", "b", "", "show events created before a specific date")
 	eventCmd.AddCommand(eventListCmd)
 	rootCmd.AddCommand(eventCmd)
 }
@@ -72,6 +77,29 @@ func nameTypeIncluded(input string) bool {
 	return false
 }
 
+func createdBetween(created time.Time) bool {
+	if len(eventAfter) > 0 {
+		after, err := dateparse.ParseLocal(eventAfter)
+		if err != nil {
+			errorMessageAndExit(err)
+		}
+		if created.Before(after) {
+			return false
+		}
+	}
+	if len(eventBefore) > 0 {
+		before, err := dateparse.ParseLocal(eventBefore)
+		if err != nil {
+			errorMessageAndExit(err)
+		}
+		if created.After(before) {
+			return false
+		}
+	}
+
+	return true
+}
+
 func initEventInfoHeader() [][]string {
 	var table [][]string
 	header := []string{"ID", "Name", "Date Time", "Level", "Players", "Games", "Name Type", "Mode", "URL"}
@@ -107,6 +135,9 @@ func loadEventInfo(dataPath string, players []entity.Player, e *entity.Event) (*
 
 func showEvent(table *[][]string, e *entity.Event, t *model.Tournament, r *entity.Record) {
 	if len(eventNameTypes) > 0 && !nameTypeIncluded(t.NameType) {
+		return
+	}
+	if !createdBetween(t.Created) {
 		return
 	}
 
