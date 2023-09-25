@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -39,6 +40,9 @@ var eventInfoCmd = &cobra.Command{
 			pterm.Println("Rounds:")
 			pterm.DefaultTable.WithHasHeader(false).WithData(table).WithBoxed(!globalNoBoxes).Render()
 		}
+		sort.SliceStable(r.LoserBracket, func(i, j int) bool {
+			return true
+		})
 		table = showGames(r.LoserBracket)
 		if len(table) > 0 {
 			pterm.Println("Loser Bracket:")
