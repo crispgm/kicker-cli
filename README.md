@@ -13,9 +13,17 @@ by which organizers could manage, analyze and rank inside an organization across
 
 - Organization, Events, and Players database
 - Multiple files data aggregation
-- Rank for players and teams with [points](/docs/ranking_system.md), win rate and ELO score
+- Ranks for players and teams with performance (win rate) and [ranking systems (points, & ELO score)](/docs/ranking_system.md)
 
-### Game Modes
+### Analyzers
+
+- Double Player Ranks
+- Double Team Ranks
+- Single Player Ranks
+- Double Team Rivals
+- Single Player Rivals
+
+### Supported Game Modes
 
 #### Round Games
 
@@ -28,14 +36,6 @@ by which organizers could manage, analyze and rank inside an organization across
 
 - Double Elimination
 - Elimination
-
-### Operators
-
-- Double Player Ranks: BYP, DYP, and MonsterDYP
-- Double Team Ranks: BYP, DYP, and MonsterDYP
-- Single Player Ranks: Single
-- Double Team Rivals: BYP, DYP, and MonsterDYP
-- Single Player Rivals: Single
 
 ## Installation
 

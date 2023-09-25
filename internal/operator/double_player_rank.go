@@ -236,7 +236,7 @@ func (p *DoublePlayerRank) Output() [][]string {
 		sliceData = sliceData[len(sliceData)-p.options.Tail:]
 	}
 
-	header := []string{"#", "Name", "Events", "Games", "Win", "Loss", "Draw", "WR%", "Elo", "KRS", "ATSA", "ITSF"}
+	header := []string{"#", "Name", "Events", "Games", "Win", "Loss", "Draw", "WR%", "ELO", "KRP", "ATSA", "ITSF"}
 	table := [][]string{}
 	if p.options.WithHeader {
 		table = append(table, header)

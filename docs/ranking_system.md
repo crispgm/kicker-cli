@@ -1,8 +1,8 @@
 # Ranking System
 
-## Kicker Ranking System (KRS)
+## Kicker Ranking System
 
-KCS provides both traditional points-based ranking (KRP) and ELO-based (KELO) ranking.
+KCS provides both merit-based ranking (KRP) and ELO-based (KES) ranking.
 
 ### Kicker Ranking Points (KRP)
 
@@ -23,9 +23,9 @@ KRP follows ITSF points but with our own interpretation of event class:
 | 257   | 12    | 9           | 6        | 3     | 0      |
 | 513   | 4     | 3           | 2        | 1     | 0      |
 
-### Kicker ELO Scores (KELO)
+### Kicker ELO Scores (KES)
 
-KELO follows FIDE K-factor's choice:
+KES follows FIDE K-factor's choice:
 
 | K-factor | Used for players with ratings ...   |
 | -------- | ----------------------------------- |
