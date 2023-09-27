@@ -5,6 +5,7 @@ go 1.21
 require (
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/google/uuid v1.3.1
+	github.com/guptarohit/asciigraph v0.5.6
 	github.com/pterm/pterm v0.12.45
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/spf13/cobra v1.7.0

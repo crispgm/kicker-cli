@@ -19,7 +19,7 @@ type Player struct {
 	Win          int     `yaml:"-"`
 	Loss         int     `yaml:"-"`
 	Draw         int     `yaml:"-"`
-	WinRate      float32 `yaml:"-"`
+	WinRate      float64 `yaml:"-"`
 	EloRating    float64 `yaml:"-"` // kicker ELO scores
 	KickerPoints int     `yaml:"-"` // kicker ranking points
 	ATSAPoints   int     `yaml:"-"` // ATSA points
@@ -27,10 +27,10 @@ type Player struct {
 	// minor statistical data
 	HomeWin     int     `yaml:"-"`
 	HomeLoss    int     `yaml:"-"`
-	HomeWinRate float32 `yaml:"-"`
+	HomeWinRate float64 `yaml:"-"`
 	AwayWin     int     `yaml:"-"`
 	AwayLoss    int     `yaml:"-"`
-	AwayWinRate float32 `yaml:"-"`
+	AwayWinRate float64 `yaml:"-"`
 	// data not implemented right now
 	TimePlayed       int     `yaml:"-"`
 	LongestGameTime  int     `yaml:"-"`
@@ -39,12 +39,12 @@ type Player struct {
 	Goals            int     `yaml:"-"`
 	GoalsIn          int     `yaml:"-"`
 	GoalDiff         int     `yaml:"-"`
-	PointsPerGame    float32 `yaml:"-"`
-	PointsInPerGame  float32 `yaml:"-"`
+	PointsPerGame    float64 `yaml:"-"`
+	PointsInPerGame  float64 `yaml:"-"`
 	GoalsWin         int     `yaml:"-"`
-	DiffPerWin       float32 `yaml:"-"`
+	DiffPerWin       float64 `yaml:"-"`
 	GoalsInLoss      int     `yaml:"-"`
-	DiffPerLoss      float32 `yaml:"-"`
+	DiffPerLoss      float64 `yaml:"-"`
 }
 
 // NewPlayer creates a player

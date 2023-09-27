@@ -10,7 +10,7 @@ import (
 type Operator interface {
 	SupportedFormats(trn *model.Tournament) bool
 	Input(tournaments []entity.Tournament, players []entity.Player, options Option)
-	Output() [][]string
+	Output()
 }
 
 // Option .
@@ -19,5 +19,8 @@ type Option struct {
 	MinimumPlayed int
 	Head          int
 	Tail          int
-	WithHeader    bool
+	PlayerName    string
+
+	WithHeader bool
+	WithBoxes  bool
 }

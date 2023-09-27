@@ -14,28 +14,31 @@ import (
 )
 
 var (
-	rankGameMode  string
-	rankMinPlayed int
-	rankHead      int
-	rankTail      int
-	rankSortBy    string
+	rankGameMode   string
+	rankMinPlayed  int
+	rankHead       int
+	rankTail       int
+	rankSortBy     string
+	rankPlayerName string
 )
 
 func init() {
-	rankCmd.Flags().StringVarP(&rankGameMode, "mode", "m", "", "rank mode")
-	rankCmd.Flags().StringVarP(&rankSortBy, "sort-by", "o", "krs", "sort by (krs/itsf/atsa/elo/wr)")
-	rankCmd.Flags().IntVarP(&rankMinPlayed, "minimum-played", "p", 0, "minimum matches played")
-	rankCmd.Flags().IntVarP(&rankHead, "head", "", 0, "display the head part of rank")
-	rankCmd.Flags().IntVarP(&rankTail, "tail", "", 0, "display the last part of rank")
-	rankCmd.MarkFlagRequired("mode")
-	rankCmd.MarkFlagsMutuallyExclusive("head", "tail")
-	eventCmd.AddCommand(rankCmd)
+	analyzeCmd.Flags().StringVarP(&rankGameMode, "mode", "m", "", "rank mode")
+	analyzeCmd.Flags().StringVarP(&rankSortBy, "sort-by", "o", "krs", "sort by (krs/itsf/atsa/elo/wr)")
+	analyzeCmd.Flags().IntVarP(&rankMinPlayed, "minimum-played", "p", 0, "minimum matches played")
+	analyzeCmd.Flags().IntVarP(&rankHead, "head", "", 0, "display the head part of rank")
+	analyzeCmd.Flags().IntVarP(&rankTail, "tail", "", 0, "display the last part of rank")
+	analyzeCmd.Flags().StringVarP(&rankPlayerName, "player", "", "", "Player name for detail only modes")
+	analyzeCmd.MarkFlagRequired("mode")
+	analyzeCmd.MarkFlagsMutuallyExclusive("head", "tail")
+	eventCmd.AddCommand(analyzeCmd)
 }
 
-var rankCmd = &cobra.Command{
-	Use:   "rank",
-	Short: "Get player ranks",
-	Long:  "Get player ranks of played tournaments and games",
+var analyzeCmd = &cobra.Command{
+	Use:     "analyze",
+	Aliases: []string{"analyse", "stat"},
+	Short:   "Analyze player data",
+	Long:    "Analyze player statistical data, e.g. get player ranks of played tournaments and games",
 	Run: func(cmd *cobra.Command, args []string) {
 		if rankHead < 0 || rankTail < 0 {
 			errorMessageAndExit("Only non-negitive number is allowed for head or tail")
@@ -46,10 +49,14 @@ var rankCmd = &cobra.Command{
 			op = &operator.DoublePlayerRank{}
 		case entity.ModeDoubleTeamRank:
 			op = &operator.DoubleTeamRank{}
+		case entity.ModeDoublePlayerHistory:
+			op = &operator.DoublePlayerHistory{}
 		case entity.ModeDoubleTeamRival:
 			op = &operator.DoubleTeamRival{}
 		case entity.ModeSinglePlayerRank:
 			op = &operator.SinglePlayerRank{}
+		case entity.ModeSinglePlayerHistory:
+			op = &operator.SinglePlayerHistory{}
 		case entity.ModeSinglePlayerRival:
 			op = &operator.SinglePlayerRival{}
 		default:
@@ -123,10 +130,11 @@ var rankCmd = &cobra.Command{
 			MinimumPlayed: rankMinPlayed,
 			Head:          rankHead,
 			Tail:          rankTail,
+			PlayerName:    rankPlayerName,
 			WithHeader:    !globalNoHeaders,
+			WithBoxes:     !globalNoBoxes,
 		}
 		op.Input(eTournaments, instance.Conf.Players, options)
-		table := op.Output()
-		pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
+		op.Output()
 	},
 }

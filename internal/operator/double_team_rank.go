@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/pterm/pterm"
+
 	"github.com/crispgm/kicker-cli/internal/entity"
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 )
@@ -17,28 +19,20 @@ type DoubleTeamRank struct {
 }
 
 // SupportedFormats .
-func (t DoubleTeamRank) SupportedFormats(trn *model.Tournament) bool {
-	if trn.IsDouble() {
-		if trn.Mode == model.ModeMonsterDYP ||
-			trn.Mode == model.ModeSwissSystem || trn.Mode == model.ModeRounds || trn.Mode == model.ModeRoundRobin ||
-			trn.Mode == model.ModeDoubleElimination || trn.Mode == model.ModeElimination {
-			return true
-		}
-	}
-
-	return false
+func (o DoubleTeamRank) SupportedFormats(trn *model.Tournament) bool {
+	return openDoubleTournament(trn)
 }
 
 // Input .
-func (t *DoubleTeamRank) Input(tournaments []entity.Tournament, players []entity.Player, options Option) {
-	t.tournaments = tournaments
-	t.options = options
+func (o *DoubleTeamRank) Input(tournaments []entity.Tournament, players []entity.Player, options Option) {
+	o.tournaments = tournaments
+	o.options = options
 }
 
 // Output .
-func (t *DoubleTeamRank) Output() [][]string {
+func (o *DoubleTeamRank) Output() {
 	data := make(map[string]entity.Team)
-	for _, trn := range t.tournaments {
+	for _, trn := range o.tournaments {
 		for _, g := range trn.Converted.AllGames {
 			t1p1Name := g.Team1[0]
 			t1p2Name := g.Team1[1]
@@ -96,10 +90,10 @@ func (t *DoubleTeamRank) Output() [][]string {
 		}
 	}
 	sort.SliceStable(sliceData, func(i, j int) bool {
-		if sliceData[i].Played >= t.options.MinimumPlayed && sliceData[j].Played < t.options.MinimumPlayed {
+		if sliceData[i].Played >= o.options.MinimumPlayed && sliceData[j].Played < o.options.MinimumPlayed {
 			return true
 		}
-		if sliceData[i].Played < t.options.MinimumPlayed && sliceData[j].Played >= t.options.MinimumPlayed {
+		if sliceData[i].Played < o.options.MinimumPlayed && sliceData[j].Played >= o.options.MinimumPlayed {
 			return false
 		}
 
@@ -115,15 +109,15 @@ func (t *DoubleTeamRank) Output() [][]string {
 		return false
 	})
 
-	if t.options.Head > 0 && len(sliceData) > t.options.Head {
-		sliceData = sliceData[:t.options.Head]
-	} else if t.options.Tail > 0 && len(sliceData) > t.options.Tail {
-		sliceData = sliceData[len(sliceData)-t.options.Tail:]
+	if o.options.Head > 0 && len(sliceData) > o.options.Head {
+		sliceData = sliceData[:o.options.Head]
+	} else if o.options.Tail > 0 && len(sliceData) > o.options.Tail {
+		sliceData = sliceData[len(sliceData)-o.options.Tail:]
 	}
 
 	header := []string{"#", "Name", "Num", "Win", "Loss", "Draw", "WR%"}
 	table := [][]string{}
-	if t.options.WithHeader {
+	if o.options.WithHeader {
 		table = append(table, header)
 	}
 	for i, d := range sliceData {
@@ -142,5 +136,5 @@ func (t *DoubleTeamRank) Output() [][]string {
 		}
 		table = append(table, item)
 	}
-	return table
+	pterm.DefaultTable.WithHasHeader(o.options.WithHeader).WithData(table).WithBoxed(o.options.WithBoxes).Render()
 }

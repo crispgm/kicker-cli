@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/pterm/pterm"
+
 	"github.com/crispgm/kicker-cli/internal/entity"
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 )
@@ -17,28 +19,20 @@ type SinglePlayerRival struct {
 }
 
 // SupportedFormats .
-func (p SinglePlayerRival) SupportedFormats(trn *model.Tournament) bool {
-	if trn.IsSingle() {
-		if trn.Mode == model.ModeMonsterDYP ||
-			trn.Mode == model.ModeSwissSystem || trn.Mode == model.ModeRounds || trn.Mode == model.ModeRoundRobin ||
-			trn.Mode == model.ModeDoubleElimination || trn.Mode == model.ModeElimination {
-			return true
-		}
-	}
-
-	return false
+func (o SinglePlayerRival) SupportedFormats(trn *model.Tournament) bool {
+	return openSingleTournament(trn)
 }
 
 // Input .
-func (p *SinglePlayerRival) Input(tournaments []entity.Tournament, players []entity.Player, options Option) {
-	p.tournaments = tournaments
-	p.options = options
+func (o *SinglePlayerRival) Input(tournaments []entity.Tournament, players []entity.Player, options Option) {
+	o.tournaments = tournaments
+	o.options = options
 }
 
 // Output .
-func (p *SinglePlayerRival) Output() [][]string {
+func (o *SinglePlayerRival) Output() {
 	data := make(map[string]entity.Rival)
-	for _, t := range p.tournaments {
+	for _, t := range o.tournaments {
 		for _, g := range t.Converted.AllGames {
 			p1Name := g.Team1[0]
 			p2Name := g.Team2[0]
@@ -107,10 +101,10 @@ func (p *SinglePlayerRival) Output() [][]string {
 	}
 
 	sort.SliceStable(sliceData, func(i, j int) bool {
-		if sliceData[i].Played >= p.options.MinimumPlayed && sliceData[j].Played < p.options.MinimumPlayed {
+		if sliceData[i].Played >= o.options.MinimumPlayed && sliceData[j].Played < o.options.MinimumPlayed {
 			return true
 		}
-		if sliceData[i].Played < p.options.MinimumPlayed && sliceData[j].Played >= p.options.MinimumPlayed {
+		if sliceData[i].Played < o.options.MinimumPlayed && sliceData[j].Played >= o.options.MinimumPlayed {
 			return false
 		}
 
@@ -120,15 +114,15 @@ func (p *SinglePlayerRival) Output() [][]string {
 		return false
 	})
 
-	if p.options.Head > 0 && len(sliceData) > p.options.Head {
-		sliceData = sliceData[:p.options.Head]
-	} else if p.options.Tail > 0 && len(sliceData) > p.options.Tail {
-		sliceData = sliceData[len(sliceData)-p.options.Tail:]
+	if o.options.Head > 0 && len(sliceData) > o.options.Head {
+		sliceData = sliceData[:o.options.Head]
+	} else if o.options.Tail > 0 && len(sliceData) > o.options.Tail {
+		sliceData = sliceData[len(sliceData)-o.options.Tail:]
 	}
 
 	header := []string{"#", "Team1", "Team2", "Num", "Win", "Loss", "Draw"}
 	table := [][]string{}
-	if p.options.WithHeader {
+	if o.options.WithHeader {
 		table = append(table, header)
 	}
 	for i, d := range sliceData {
@@ -146,5 +140,5 @@ func (p *SinglePlayerRival) Output() [][]string {
 		}
 		table = append(table, item)
 	}
-	return table
+	pterm.DefaultTable.WithHasHeader(o.options.WithHeader).WithData(table).WithBoxed(o.options.WithBoxes).Render()
 }

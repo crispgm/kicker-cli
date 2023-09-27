@@ -2,8 +2,8 @@ package operator
 
 import (
 	"fmt"
-	"sort"
 
+	"github.com/guptarohit/asciigraph"
 	"github.com/pterm/pterm"
 
 	"github.com/crispgm/kicker-cli/internal/entity"
@@ -11,33 +11,42 @@ import (
 	"github.com/crispgm/kicker-cli/pkg/rating"
 )
 
-var _ Operator = (*DoublePlayerRank)(nil)
+var _ Operator = (*DoublePlayerHistory)(nil)
 
-// DoublePlayerRank generate statistics data of double tournaments by player
-type DoublePlayerRank struct {
+// DoublePlayerHistory generate data details of double tournaments by player
+type DoublePlayerHistory struct {
 	options     Option
 	tournaments []entity.Tournament
 	players     []entity.Player
 }
 
 // SupportedFormats .
-func (o DoublePlayerRank) SupportedFormats(trn *model.Tournament) bool {
+func (o DoublePlayerHistory) SupportedFormats(trn *model.Tournament) bool {
 	return openDoubleTournament(trn)
 }
 
 // Input .
-func (o *DoublePlayerRank) Input(tournaments []entity.Tournament, players []entity.Player, options Option) {
+func (o *DoublePlayerHistory) Input(tournaments []entity.Tournament, players []entity.Player, options Option) {
 	o.tournaments = tournaments
 	o.players = players
 	o.options = options
 }
 
 // Output .
-func (o *DoublePlayerRank) Output() {
+func (o *DoublePlayerHistory) Output() {
+	found := false
+	header := []string{"#", "Event", "Team1", "Team2", "Result", "WR%", "ELO", "KRP", "ATSA", "ITSF"}
+	table := [][]string{}
+	if o.options.WithHeader {
+		table = append(table, header)
+	}
+	eloChart := []float64{}
+	winRateChart := []float64{}
 	data := make(map[string]entity.Player)
 	for _, p := range o.players {
 		data[p.Name] = p
 	}
+	seq := 1
 	for _, t := range o.tournaments {
 		var played = make(map[string]bool)
 		for _, g := range t.Converted.AllGames {
@@ -50,6 +59,11 @@ func (o *DoublePlayerRank) Output() {
 			t2p1Data.Name = g.Team2[0]
 			t2p2Data.Name = g.Team2[1]
 
+			playerBefore := o.choosePlayerData(t1p1Data, t1p2Data, t2p1Data, t2p2Data)
+			if playerBefore != nil {
+				playerBefore.WinRate = float64(playerBefore.Win) / float64(playerBefore.GamesPlayed)
+			}
+
 			// {{{ game data
 			t1p1Data.GamesPlayed++
 			t1p2Data.GamesPlayed++
@@ -60,21 +74,12 @@ func (o *DoublePlayerRank) Output() {
 				t1p2Data.Win++
 				t2p1Data.Loss++
 				t2p2Data.Loss++
-				t1p1Data.HomeWin++
-				t1p2Data.HomeWin++
-				t2p1Data.AwayLoss++
-				t2p2Data.AwayLoss++
 			} else if g.Point2 > g.Point1 {
 				t1p1Data.Loss++
 				t1p2Data.Loss++
 				t2p1Data.Win++
 				t2p2Data.Win++
-				t1p1Data.HomeLoss++
-				t1p2Data.HomeLoss++
-				t2p1Data.AwayWin++
-				t2p2Data.AwayWin++
 			} else {
-				// basically not approachable
 				t1p1Data.Draw++
 				t1p2Data.Draw++
 				t2p1Data.Draw++
@@ -138,6 +143,40 @@ func (o *DoublePlayerRank) Output() {
 			data[g.Team1[1]] = t1p2Data
 			data[g.Team2[0]] = t2p1Data
 			data[g.Team2[1]] = t2p2Data
+
+			if playerBefore != nil {
+				player := o.choosePlayerData(t1p1Data, t1p2Data, t2p1Data, t2p2Data)
+				player.WinRate = float64(player.Win) / float64(player.GamesPlayed)
+				pointText := fmt.Sprintf("%d:%d", g.Point1, g.Point2)
+				winRateText := fmt.Sprintf("%.2f%% -> %.2f%%", playerBefore.WinRate*100, player.WinRate*100)
+				eloText := fmt.Sprintf("%.0f -> %.0f", playerBefore.EloRating, player.EloRating)
+				if player.EloRating < playerBefore.EloRating {
+					eloText = pterm.FgRed.Sprintf("%.0f -> %.0f", playerBefore.EloRating, player.EloRating)
+				} else if player.EloRating > playerBefore.EloRating {
+					eloText = pterm.FgGreen.Sprintf("%.0f -> %.0f", playerBefore.EloRating, player.EloRating)
+				}
+				if player.WinRate < playerBefore.WinRate {
+					winRateText = pterm.FgRed.Sprintf("%.2f%% -> %.2f%%", playerBefore.WinRate*100, player.WinRate*100)
+				} else if player.WinRate > playerBefore.WinRate {
+					winRateText = pterm.FgGreen.Sprintf("%.2f%% -> %.2f%%", playerBefore.WinRate*100, player.WinRate*100)
+				}
+				table = append(table, []string{
+					fmt.Sprintf("%d", seq),
+					t.Event.Name,
+					fmt.Sprintf("%s/%s", t1p1Data.Name, t1p2Data.Name),
+					fmt.Sprintf("%s/%s", t2p1Data.Name, t2p2Data.Name),
+					pointText,
+					winRateText,
+					eloText,
+					fmt.Sprintf("%0d", player.KickerPoints),
+					fmt.Sprintf("%0d", player.ATSAPoints),
+					fmt.Sprintf("%0d", player.ITSFPoints),
+				})
+				found = true
+				eloChart = append(eloChart, player.EloRating)
+				winRateChart = append(winRateChart, player.WinRate*100)
+				seq++
+			}
 		}
 		// {{{ ranking points
 		curRank := 0
@@ -171,87 +210,32 @@ func (o *DoublePlayerRank) Output() {
 		// }}}
 	}
 
-	// {{{ map to slice
-	var sliceData []entity.Player
-	for _, d := range data {
-		if d.GamesPlayed != 0 {
-			d.WinRate = float64(d.Win) / float64(d.GamesPlayed) * 100.0
-			if d.HomeWin+d.HomeLoss > 0 {
-				d.HomeWinRate = float64(d.HomeWin) / float64(d.HomeWin+d.HomeLoss) * 100.0
-			}
-			if d.AwayWin+d.AwayLoss > 0 {
-				d.AwayWinRate = float64(d.AwayWin) / float64(d.AwayWin+d.AwayLoss) * 100.0
-			}
-			sliceData = append(sliceData, d)
-		}
-	}
-	o.players = sliceData
-	// }}}
-	// {{{ sort
-	sort.SliceStable(sliceData, func(i, j int) bool {
-		if o.options.OrderBy == "wr" || o.options.OrderBy == "elo" {
-			if sliceData[i].GamesPlayed >= o.options.MinimumPlayed && sliceData[j].GamesPlayed < o.options.MinimumPlayed {
-				return true
-			}
-			if sliceData[i].GamesPlayed < o.options.MinimumPlayed && sliceData[j].GamesPlayed >= o.options.MinimumPlayed {
-				return false
-			}
-		}
-
-		if o.options.OrderBy == "krs" {
-			if sliceData[i].KickerPoints > sliceData[j].KickerPoints {
-				return true
-			}
-		} else if o.options.OrderBy == "atsa" {
-			if sliceData[i].ATSAPoints > sliceData[j].ATSAPoints {
-				return true
-			}
-		} else if o.options.OrderBy == "itsf" {
-			if sliceData[i].ITSFPoints > sliceData[j].ITSFPoints {
-				return true
-			}
-		} else if o.options.OrderBy == "elo" {
-			if sliceData[i].EloRating > sliceData[j].EloRating {
-				return true
-			}
-		} else {
-			if sliceData[i].WinRate > sliceData[j].WinRate {
-				return true
-			}
-		}
-		return false
-	})
-	// }}}
-
-	// {{{ build result
-	if o.options.Head > 0 && len(sliceData) > o.options.Head {
-		sliceData = sliceData[:o.options.Head]
-	} else if o.options.Tail > 0 && len(sliceData) > o.options.Tail {
-		sliceData = sliceData[len(sliceData)-o.options.Tail:]
+	if found {
+		pterm.DefaultTable.WithHasHeader(o.options.WithHeader).WithData(table).WithBoxed(o.options.WithBoxes).Render()
 	}
 
-	header := []string{"#", "Name", "Events", "Games", "Win", "Loss", "Draw", "WR%", "ELO", "KRP", "ATSA", "ITSF"}
-	table := [][]string{}
-	if o.options.WithHeader {
-		table = append(table, header)
+	if len(eloChart) > 0 {
+		fmt.Println()
+		eloGraph := asciigraph.Plot(eloChart, asciigraph.Caption("ELO"), asciigraph.Height(20), asciigraph.Width(80))
+		fmt.Println(eloGraph)
 	}
-	for i, d := range sliceData {
-		item := []string{
-			fmt.Sprintf("%d", i+1),
-			d.Name,
-			fmt.Sprintf("%d", d.EventsPlayed),
-			fmt.Sprintf("%d", d.GamesPlayed),
-			fmt.Sprintf("%d", d.Win),
-			fmt.Sprintf("%d", d.Loss),
-			fmt.Sprintf("%d", d.Draw),
-			fmt.Sprintf("%.0f%%", d.WinRate),
-			fmt.Sprintf("%.0f", d.EloRating),
-			fmt.Sprintf("%d", d.KickerPoints),
-			fmt.Sprintf("%d", d.ATSAPoints),
-			fmt.Sprintf("%d", d.ITSFPoints),
-		}
-		table = append(table, item)
+	if len(winRateChart) > 0 {
+		fmt.Println()
+		winRateGraph := asciigraph.Plot(winRateChart, asciigraph.Caption("Win Rate"), asciigraph.Height(20), asciigraph.Width(80))
+		fmt.Println(winRateGraph)
 	}
-	pterm.DefaultTable.WithHasHeader(o.options.WithHeader).WithData(table).WithBoxed(o.options.WithBoxes).Render()
-	// }}}
+}
+
+func (o DoublePlayerHistory) choosePlayerData(t1p1Data, t1p2Data, t2p1Data, t2p2Data entity.Player) *entity.Player {
+	name := o.options.PlayerName
+	if t1p1Data.Name == name {
+		return &t1p1Data
+	} else if t1p2Data.Name == name {
+		return &t1p2Data
+	} else if t2p1Data.Name == name {
+		return &t2p1Data
+	} else if t2p2Data.Name == name {
+		return &t2p2Data
+	}
+	return nil
 }
