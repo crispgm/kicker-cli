@@ -97,12 +97,12 @@ kicker-cli player delete 13d4ea60-f6ff-48da-be1e-413d38328cb0
 Evaluation:
 ```shell
 # elo scores
-kicker-cli eval -a elo 1100 1200
-kicker-cli eval -a elo 1103 1203 1289 1013
-kicker-cli eval -a elo -k 20 1103 1203 1289 1013
+kicker-cli eval elo 1100 1200
+kicker-cli eval elo 1103 1203 1289 1013
+kicker-cli eval elo -k 20 1103 1203 1289 1013
 
 # points gained
-kicker-cli eval -a rank -s ATSA50 -s KLocal 1
+kicker-cli eval rank -s ATSA50 -s KLocal 1
 ```
 
 ## Known Issues & Limitations
