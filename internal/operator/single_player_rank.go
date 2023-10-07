@@ -151,7 +151,7 @@ func (o *SinglePlayerRank) Output() {
 	// }}}
 	// {{{ sort
 	sort.SliceStable(sliceData, func(i, j int) bool {
-		if o.options.OrderBy == "wr" || o.options.OrderBy == "elo" {
+		if o.options.OrderBy == rating.RSysWinRate || o.options.OrderBy == rating.RSysELO {
 			if sliceData[i].GamesPlayed >= o.options.MinimumPlayed && sliceData[j].GamesPlayed < o.options.MinimumPlayed {
 				return true
 			}
@@ -160,19 +160,19 @@ func (o *SinglePlayerRank) Output() {
 			}
 		}
 
-		if o.options.OrderBy == "krs" {
+		if o.options.OrderBy == rating.RSysKicker {
 			if sliceData[i].KickerPoints > sliceData[j].KickerPoints {
 				return true
 			}
-		} else if o.options.OrderBy == "atsa" {
+		} else if o.options.OrderBy == rating.RSysATSA {
 			if sliceData[i].ATSAPoints > sliceData[j].ATSAPoints {
 				return true
 			}
-		} else if o.options.OrderBy == "itsf" {
+		} else if o.options.OrderBy == rating.RSysITSF {
 			if sliceData[i].ITSFPoints > sliceData[j].ITSFPoints {
 				return true
 			}
-		} else if o.options.OrderBy == "elo" {
+		} else if o.options.OrderBy == rating.RSysELO {
 			if sliceData[i].EloRating > sliceData[j].EloRating {
 				return true
 			}

@@ -5,9 +5,11 @@ import "strings"
 
 // ranking system
 const (
-	RSysITSF   = "ITSF"
-	RSysATSA   = "ATSA"
-	RSysKicker = "KRS"
+	RSysWinRate = "WR"
+	RSysELO     = "ELO"
+	RSysITSF    = "ITSF"
+	RSysATSA    = "ATSA"
+	RSysKicker  = "KRP"
 )
 
 // NotSanctioned represents event that not sanctioned by this organization

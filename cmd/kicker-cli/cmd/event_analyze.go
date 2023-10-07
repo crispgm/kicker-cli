@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"path/filepath"
+	"strings"
 
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -24,7 +25,7 @@ var (
 
 func init() {
 	analyzeCmd.Flags().StringVarP(&rankGameMode, "mode", "m", "", "rank mode")
-	analyzeCmd.Flags().StringVarP(&rankSortBy, "sort-by", "o", "krs", "sort by (krs/itsf/atsa/elo/wr)")
+	analyzeCmd.Flags().StringVarP(&rankSortBy, "sort-by", "o", "KRP", "sort by (KRP/ITSF/ATSA/ELO/WR)")
 	analyzeCmd.Flags().IntVarP(&rankMinPlayed, "minimum-played", "p", 0, "minimum matches played")
 	analyzeCmd.Flags().IntVarP(&rankHead, "head", "", 0, "display the head part of rank")
 	analyzeCmd.Flags().IntVarP(&rankTail, "tail", "", 0, "display the last part of rank")
@@ -126,7 +127,7 @@ var analyzeCmd = &cobra.Command{
 			})
 		}
 		options := operator.Option{
-			OrderBy:       rankSortBy,
+			OrderBy:       strings.ToUpper(rankSortBy),
 			MinimumPlayed: rankMinPlayed,
 			Head:          rankHead,
 			Tail:          rankTail,
