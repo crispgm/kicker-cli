@@ -18,7 +18,14 @@ func calculateELO(played int, p1Elo, p2Elo float64, result int) float64 {
 }
 
 func openSingleTournament(trn *model.Tournament) bool {
-	return openSingleTournament(trn)
+	if trn.IsSingle() {
+		if trn.Mode == model.ModeSwissSystem || trn.Mode == model.ModeRounds || trn.Mode == model.ModeRoundRobin ||
+			trn.Mode == model.ModeDoubleElimination || trn.Mode == model.ModeElimination {
+			return true
+		}
+	}
+
+	return false
 }
 
 func openDoubleTournament(trn *model.Tournament) bool {
