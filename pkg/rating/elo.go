@@ -28,7 +28,7 @@ func (e Elo) InitialScore() float64 {
 }
 
 func (e Elo) chooseK(played int, score float64) float64 {
-	k := defaultK
+	var k float64
 	if played >= 30 {
 		if score >= 2400 {
 			k = 10.0
@@ -36,7 +36,7 @@ func (e Elo) chooseK(played int, score float64) float64 {
 			k = 20.0
 		}
 	} else {
-		k = 40.0
+		k = defaultK
 	}
 	return k
 }

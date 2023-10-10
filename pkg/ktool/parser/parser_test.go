@@ -24,7 +24,7 @@ func TestParseGame(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		t.Run(fmt.Sprintf("%s", tc.mode), func(t *testing.T) {
+		t.Run(tc.mode, func(t *testing.T) {
 			fn := fmt.Sprintf("%s/data/test_%s.ktool", path, tc.mode)
 			trn, err := ParseFile(fn)
 			if assert.NoError(t, err) {

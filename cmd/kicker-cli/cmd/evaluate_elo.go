@@ -25,7 +25,7 @@ var evaluateEloCmd = &cobra.Command{
 		numOfPlayers := len(args)
 		if numOfPlayers < 2 {
 			pterm.Error.Println("Invalid params")
-			cmd.Usage()
+			_ = cmd.Usage()
 			return
 		}
 		if numOfPlayers >= 4 {
@@ -123,7 +123,7 @@ func eloMain(args []string) {
 			{"B", "1", fmt.Sprintf("%.f", t2p1Score), fmt.Sprintf("%.f", t2p1Loss), pterm.Red(fmt.Sprintf("%.f", t2p1Loss-t2p1Score))},
 			{"B", "2", fmt.Sprintf("%.f", t2p2Score), fmt.Sprintf("%.f", t2p2Loss), pterm.Red(fmt.Sprintf("%.f", t2p2Loss-t2p2Score))},
 		}
-		pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(hostWinData).WithBoxed(!globalNoBoxes).Render()
+		_ = pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(hostWinData).WithBoxed(!globalNoBoxes).Render()
 		fmt.Println()
 
 		fmt.Println("- If team2 won:")
@@ -134,7 +134,7 @@ func eloMain(args []string) {
 			{"B", "1", fmt.Sprintf("%.f", t2p1Score), fmt.Sprintf("%.f", t2p1Win), pterm.Green(fmt.Sprintf("+%.f", t2p1Win-t2p1Score))},
 			{"B", "2", fmt.Sprintf("%.f", t2p2Score), fmt.Sprintf("%.f", t2p2Win), pterm.Green(fmt.Sprintf("+%.f", t2p2Win-t2p2Score))},
 		}
-		pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(awayWinData).WithBoxed(!globalNoBoxes).Render()
+		_ = pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(awayWinData).WithBoxed(!globalNoBoxes).Render()
 	} else {
 		fmt.Println("- If player1 won:")
 		hostWinData := [][]string{
@@ -142,7 +142,7 @@ func eloMain(args []string) {
 			{"1", fmt.Sprintf("%.f", t1p1Score), fmt.Sprintf("%.f", t1p1Win), pterm.Green(fmt.Sprintf("+%.f", t1p1Win-t1p1Score))},
 			{"2", fmt.Sprintf("%.f", t2p1Score), fmt.Sprintf("%.f", t2p1Loss), pterm.Red(fmt.Sprintf("%.f", t2p1Loss-t2p1Score))},
 		}
-		pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(hostWinData).WithBoxed(!globalNoBoxes).Render()
+		_ = pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(hostWinData).WithBoxed(!globalNoBoxes).Render()
 		fmt.Println()
 
 		fmt.Println("- If player2 won:")
@@ -151,6 +151,6 @@ func eloMain(args []string) {
 			{"1", fmt.Sprintf("%.f", t1p1Score), fmt.Sprintf("%.f", t1p1Loss), pterm.Red(fmt.Sprintf("%.f", t1p1Loss-t1p1Score))},
 			{"2", fmt.Sprintf("%.f", t2p1Score), fmt.Sprintf("%.f", t2p1Win), pterm.Green(fmt.Sprintf("+%.f", t2p1Win-t2p1Score))},
 		}
-		pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(awayWinData).WithBoxed(!globalNoBoxes).Render()
+		_ = pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(awayWinData).WithBoxed(!globalNoBoxes).Render()
 	}
 }

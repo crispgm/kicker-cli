@@ -19,7 +19,7 @@ var (
 func init() {
 	initCmd.Flags().StringVarP(&initPath, "path", "p", ".", "path to folder")
 	initCmd.Flags().StringVarP(&initOrgName, "name", "n", "Foosball", "organization name")
-	initCmd.MarkFlagDirname("path")
+	_ = initCmd.MarkFlagDirname("path")
 	rootCmd.AddCommand(initCmd)
 }
 

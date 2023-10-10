@@ -2,7 +2,7 @@ package app
 
 import (
 	"errors"
-	"io/ioutil"
+	"os"
 
 	"gopkg.in/yaml.v3"
 
@@ -24,7 +24,7 @@ type Conf struct {
 
 // LoadConf .
 func (app *App) LoadConf() error {
-	data, err := ioutil.ReadFile(app.FilePath)
+	data, err := os.ReadFile(app.FilePath)
 	if err != nil {
 		return err
 	}
@@ -42,7 +42,7 @@ func (app *App) WriteConf() error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(app.FilePath, b, 0o644)
+	err = os.WriteFile(app.FilePath, b, 0o644)
 	return err
 }
 

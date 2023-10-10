@@ -22,7 +22,7 @@ var evaluateRankCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
 			pterm.Error.Println("Invalid params")
-			cmd.Usage()
+			_ = cmd.Usage()
 			return
 		}
 		rank := rating.Rank{}
@@ -48,6 +48,6 @@ var evaluateRankCmd = &cobra.Command{
 				})
 			}
 		}
-		pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
+		_ = pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
 	},
 }

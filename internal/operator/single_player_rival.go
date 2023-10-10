@@ -131,8 +131,8 @@ func (o *SinglePlayerRival) Output() {
 		}
 		item := []string{
 			fmt.Sprintf("%d", i+1),
-			fmt.Sprintf("%s", d.Team1.Player1),
-			fmt.Sprintf("%s", d.Team2.Player1),
+			d.Team1.Player1,
+			d.Team2.Player1,
 			fmt.Sprintf("%d", d.Played),
 			fmt.Sprintf("%d", d.Win),
 			fmt.Sprintf("%d", d.Loss),
@@ -140,5 +140,5 @@ func (o *SinglePlayerRival) Output() {
 		}
 		table = append(table, item)
 	}
-	pterm.DefaultTable.WithHasHeader(o.options.WithHeader).WithData(table).WithBoxed(o.options.WithBoxes).Render()
+	_ = pterm.DefaultTable.WithHasHeader(o.options.WithHeader).WithData(table).WithBoxed(o.options.WithBoxes).Render()
 }

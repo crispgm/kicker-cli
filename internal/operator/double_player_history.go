@@ -211,7 +211,7 @@ func (o *DoublePlayerHistory) Output() {
 	}
 
 	if found {
-		pterm.DefaultTable.WithHasHeader(o.options.WithHeader).WithData(table).WithBoxed(o.options.WithBoxes).Render()
+		_ = pterm.DefaultTable.WithHasHeader(o.options.WithHeader).WithData(table).WithBoxed(o.options.WithBoxes).Render()
 	}
 
 	if len(eloChart) > 0 {

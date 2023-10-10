@@ -19,6 +19,6 @@ $ kicker-cli evaluate -a elo -k 20 1103 1203 1289 1013
 $ kicker-cli evaluate -a rank 1
 $ kicker-cli evaluate -a rank -s KLocal -s ATSA50 3`,
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Usage()
+		_ = cmd.Usage()
 	},
 }

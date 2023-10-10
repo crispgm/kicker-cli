@@ -30,7 +30,7 @@ func init() {
 	analyzeCmd.Flags().IntVarP(&rankHead, "head", "", 0, "display the head part of rank")
 	analyzeCmd.Flags().IntVarP(&rankTail, "tail", "", 0, "display the last part of rank")
 	analyzeCmd.Flags().StringVarP(&rankPlayerName, "player", "", "", "Player name for detail only modes")
-	analyzeCmd.MarkFlagRequired("mode")
+	_ = analyzeCmd.MarkFlagRequired("mode")
 	analyzeCmd.MarkFlagsMutuallyExclusive("head", "tail")
 	eventCmd.AddCommand(analyzeCmd)
 }
@@ -77,9 +77,7 @@ var analyzeCmd = &cobra.Command{
 				}
 			}
 		} else {
-			for _, e := range instance.Conf.Events {
-				events = append(events, e)
-			}
+			events = append(events, instance.Conf.Events...)
 		}
 
 		// load tournaments

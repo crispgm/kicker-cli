@@ -3,14 +3,14 @@ package parser
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"os"
 
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 )
 
 // ParseFile .
 func ParseFile(fn string) (*model.Tournament, error) {
-	data, err := ioutil.ReadFile(fn)
+	data, err := os.ReadFile(fn)
 	if err != nil {
 		return nil, err
 	}

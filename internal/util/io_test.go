@@ -14,13 +14,13 @@ func TestCopyFile(t *testing.T) {
 	seed := rand.Int()
 	src := path + "/../README.md"
 	dst := fmt.Sprintf("/tmp/README.md.%d", seed)
-	CopyFile(src, dst)
+	_ = CopyFile(src, dst)
 	if assert.FileExists(t, dst) {
 		os.Remove(dst)
 	}
 
 	assert.Panics(t, func() {
-		CopyFile("REAMDE.md", "/tmp/xxxx/xxxxx")
+		_ = CopyFile("REAMDE.md", "/tmp/xxxx/xxxxx")
 	})
 	assert.Error(t, CopyFile(src, "/tmp/xxx/xxx"))
 }

@@ -50,7 +50,7 @@ func listPlayerCommand(cmd *cobra.Command, args []string) {
 			p.ATSAID,
 		})
 	}
-	pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
+	_ = pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
 	if needWrite {
 		err := instance.WriteConf()
 		if err != nil {

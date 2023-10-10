@@ -33,12 +33,12 @@ var eventInfoCmd = &cobra.Command{
 			errorMessageAndExit("No event(s) found")
 		}
 		table := initEventInfoHeader()
-		t, r, _ := loadAndShowEventInfo(&table, instance.DataPath(), instance.Conf.Players, e)
-		pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
+		t, r := loadAndShowEventInfo(&table, instance.DataPath(), instance.Conf.Players, e)
+		_ = pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
 		table = showGames(r.PreliminaryRounds)
 		if len(table) > 0 {
 			pterm.Println("Rounds:")
-			pterm.DefaultTable.WithHasHeader(false).WithData(table).WithBoxed(!globalNoBoxes).Render()
+			_ = pterm.DefaultTable.WithHasHeader(false).WithData(table).WithBoxed(!globalNoBoxes).Render()
 		}
 		sort.SliceStable(r.LoserBracket, func(i, j int) bool {
 			return true
@@ -46,18 +46,18 @@ var eventInfoCmd = &cobra.Command{
 		table = showGames(r.LoserBracket)
 		if len(table) > 0 {
 			pterm.Println("Loser Bracket:")
-			pterm.DefaultTable.WithHasHeader(false).WithData(table).WithBoxed(!globalNoBoxes).Render()
+			_ = pterm.DefaultTable.WithHasHeader(false).WithData(table).WithBoxed(!globalNoBoxes).Render()
 		}
 		table = showGames(r.WinnerBracket)
 		if len(table) > 0 {
 			pterm.Println("Winner Bracket:")
-			pterm.DefaultTable.WithHasHeader(false).WithData(table).WithBoxed(!globalNoBoxes).Render()
+			_ = pterm.DefaultTable.WithHasHeader(false).WithData(table).WithBoxed(!globalNoBoxes).Render()
 		}
 		// show result
 		table = showResults(r.Ranks, t.IsSingle())
 		if len(table) > 0 {
 			pterm.Println("Result:")
-			pterm.DefaultTable.WithHasHeader(false).WithData(table).WithBoxed(!globalNoBoxes).Render()
+			_ = pterm.DefaultTable.WithHasHeader(false).WithData(table).WithBoxed(!globalNoBoxes).Render()
 		}
 	},
 }
@@ -78,9 +78,9 @@ func showGames(games []entity.Game) [][]string {
 			if numOfSets > 1 {
 				table = append(table, []string{
 					g.Name,
-					fmt.Sprintf("%s", g.Team1[0]),
+					g.Team1[0],
 					fmt.Sprintf("%d:%d", g.Point1, g.Point2),
-					fmt.Sprintf("%s", g.Team2[0]),
+					g.Team2[0],
 				})
 				for _, s := range g.Sets {
 					if len(g.Team1) == 1 {
@@ -104,9 +104,9 @@ func showGames(games []entity.Game) [][]string {
 					if len(g.Team1) == 1 {
 						table = append(table, []string{
 							g.Name,
-							fmt.Sprintf("%s", g.Team1[0]),
+							g.Team1[0],
 							fmt.Sprintf("%d:%d", s.Point1, s.Point2),
-							fmt.Sprintf("%s", g.Team2[0]),
+							g.Team2[0],
 						})
 					} else {
 						table = append(table, []string{
@@ -124,9 +124,9 @@ func showGames(games []entity.Game) [][]string {
 			if len(g.Team1) == 1 {
 				table = append(table, []string{
 					g.Name,
-					fmt.Sprintf("%s", g.Team1[0]),
+					g.Team1[0],
 					fmt.Sprintf("%d:%d", g.Point1, g.Point2),
-					fmt.Sprintf("%s", g.Team2[0]),
+					g.Team2[0],
 				})
 			} else {
 				table = append(table, []string{

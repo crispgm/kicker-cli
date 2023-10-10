@@ -214,6 +214,6 @@ func (o *SinglePlayerRank) Output() {
 		}
 		table = append(table, item)
 	}
-	pterm.DefaultTable.WithHasHeader(o.options.WithHeader).WithData(table).WithBoxed(o.options.WithBoxes).Render()
+	_ = pterm.DefaultTable.WithHasHeader(o.options.WithHeader).WithData(table).WithBoxed(o.options.WithBoxes).Render()
 	// }}}
 }

@@ -33,6 +33,6 @@ var orgCmd = &cobra.Command{
 		if len(table) <= 1 {
 			errorMessageAndExit("No organization found")
 		}
-		pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
+		_ = pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
 	},
 }

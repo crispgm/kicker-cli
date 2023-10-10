@@ -65,7 +65,7 @@ func eventListCommand(cmd *cobra.Command, args []string) {
 	if len(table) <= 1 {
 		errorMessageAndExit("No event(s) found")
 	}
-	pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
+	_ = pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
 }
 
 func nameTypeIncluded(input string) bool {
@@ -109,14 +109,14 @@ func initEventInfoHeader() [][]string {
 	return table
 }
 
-func loadAndShowEventInfo(table *[][]string, dataPath string, players []entity.Player, e *entity.Event) (*model.Tournament, *entity.Record, error) {
+func loadAndShowEventInfo(table *[][]string, dataPath string, players []entity.Player, e *entity.Event) (*model.Tournament, *entity.Record) {
 	t, r, err := loadEventInfo(dataPath, players, e)
 	if err != nil {
 		errorMessageAndExit(err)
 	}
 
 	showEvent(table, e, t, r)
-	return t, r, err
+	return t, r
 }
 
 func loadEventInfo(dataPath string, players []entity.Player, e *entity.Event) (*model.Tournament, *entity.Record, error) {
@@ -159,7 +159,7 @@ func showInfo(table *[][]string, e *entity.Event, t *model.Tournament, r *entity
 		e.ID,
 		e.Name,
 		t.Created.Format("2006-01-02 15:04"),
-		fmt.Sprintf("%s", strings.Join(levels, "|")),
+		strings.Join(levels, "|"),
 		fmt.Sprintf("%d", len(r.Players)),
 		fmt.Sprintf("%d", len(r.AllGames)),
 		t.NameType,
