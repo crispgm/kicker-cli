@@ -61,6 +61,7 @@ Import `.ktool` files:
 ```shell
 # download from Kickertool and then
 kicker-cli import /path/to/ktool
+#  => 1 event(s) imported
 ```
 
 Event management:
@@ -89,6 +90,11 @@ Player management:
 ```shell
 # list players
 kicker-cli player ls
+
+# create player
+# You may present multiple names. The very first name will be set as primary, others will be aliases.
+kicker-cli player create David
+#  => 1 player created
 
 # delete player
 kicker-cli player delete 13d4ea60-f6ff-48da-be1e-413d38328cb0
