@@ -47,6 +47,7 @@ func (o *SinglePlayerHistory) Output() {
 		data[p.Name] = p
 	}
 	seq := 1
+	firstGamePlayed := false
 	for _, t := range o.tournaments {
 		var played = make(map[string]bool)
 		for _, g := range t.Converted.AllGames {
@@ -111,20 +112,28 @@ func (o *SinglePlayerHistory) Output() {
 			data[g.Team2[0]] = p2Data
 
 			if playerBefore != nil {
+				if !firstGamePlayed && playerBefore.EloRating == 0.0 {
+					elo := rating.Elo{}
+					playerBefore.EloRating = elo.InitialScore()
+				}
 				player := o.choosePlayerData(p1Data, p2Data)
 				player.WinRate = float64(player.Win) / float64(player.GamesPlayed)
 				pointText := fmt.Sprintf("%d:%d", g.Point1, g.Point2)
 				winRateText := fmt.Sprintf("%.2f%% -> %.2f%%", playerBefore.WinRate*100, player.WinRate*100)
 				eloText := fmt.Sprintf("%.0f -> %.0f", playerBefore.EloRating, player.EloRating)
 				if player.EloRating < playerBefore.EloRating {
-					eloText = pterm.FgRed.Sprintf("%.0f -> %.0f", playerBefore.EloRating, player.EloRating)
+					eloText = pterm.FgRed.Sprintf("%.0f -> %.0f (%.0f)", playerBefore.EloRating, player.EloRating, player.EloRating-playerBefore.EloRating)
 				} else if player.EloRating > playerBefore.EloRating {
-					eloText = pterm.FgGreen.Sprintf("%.0f -> %.0f", playerBefore.EloRating, player.EloRating)
+					eloText = pterm.FgGreen.Sprintf("%.0f -> %.0f (+%.0f)", playerBefore.EloRating, player.EloRating, player.EloRating-playerBefore.EloRating)
 				}
-				if player.WinRate < playerBefore.WinRate {
-					winRateText = pterm.FgRed.Sprintf("%.2f%% -> %.2f%%", playerBefore.WinRate*100, player.WinRate*100)
-				} else if player.WinRate > playerBefore.WinRate {
-					winRateText = pterm.FgGreen.Sprintf("%.2f%% -> %.2f%%", playerBefore.WinRate*100, player.WinRate*100)
+				if !firstGamePlayed || player.WinRate == playerBefore.WinRate {
+					winRateText = pterm.Sprintf("%.2f%%", player.WinRate*100)
+				} else {
+					if player.WinRate < playerBefore.WinRate {
+						winRateText = pterm.FgRed.Sprintf("%.2f%% -> %.2f%% (%.2f%%)", playerBefore.WinRate*100, player.WinRate*100, (player.WinRate-playerBefore.WinRate)*100)
+					} else if player.WinRate > playerBefore.WinRate {
+						winRateText = pterm.FgGreen.Sprintf("%.2f%% -> %.2f%% (+%.2f%%)", playerBefore.WinRate*100, player.WinRate*100, (player.WinRate-playerBefore.WinRate)*100)
+					}
 				}
 				table = append(table, []string{
 					fmt.Sprintf("%d", seq),
@@ -138,9 +147,10 @@ func (o *SinglePlayerHistory) Output() {
 					fmt.Sprintf("%0d", player.ATSAPoints),
 					fmt.Sprintf("%0d", player.ITSFPoints),
 				})
-				found = true
 				eloChart = append(eloChart, player.EloRating)
 				winRateChart = append(winRateChart, player.WinRate*100)
+				found = true
+				firstGamePlayed = true
 				seq++
 			}
 		}
