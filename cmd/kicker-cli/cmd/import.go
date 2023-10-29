@@ -86,6 +86,7 @@ var importCmd = &cobra.Command{
 					errorMessageAndExit("Duplicated event found:", e.ID)
 				}
 			}
+			event.MD5 = md5
 			err = util.CopyFile(importPath, filepath.Join(instance.DataPath(), fn))
 			if err != nil {
 				errorMessageAndExit(err)
