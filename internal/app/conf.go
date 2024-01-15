@@ -16,9 +16,16 @@ const DefaultName = ".kicker.yaml"
 type Conf struct {
 	ManifestVersion string `yaml:"manifest_version"`
 
+	// Settings
+	// NoColors bool `yaml:"no_colors"`
+
+	// Organization
 	Organization entity.Organization `yaml:"organization"`
 
-	Events  []entity.Event  `yaml:"events"`
+	// Events
+	Events []entity.Event `yaml:"events"`
+
+	// Players
 	Players []entity.Player `yaml:"players"`
 }
 
@@ -87,6 +94,29 @@ func (app *App) AddPlayer(players ...entity.Player) {
 func (app App) GetPlayer(id string) *entity.Player {
 	for _, p := range app.Conf.Players {
 		if id == p.ID {
+			return &p
+		}
+	}
+
+	return nil
+}
+
+// SetPlayer sets player data with the given id.
+func (app App) SetPlayer(player *entity.Player) *entity.Player {
+	for idx, p := range app.Conf.Players {
+		if player.ID == p.ID {
+			app.Conf.Players[idx] = *player
+			return &p
+		}
+	}
+
+	return nil
+}
+
+// FindPlayer returns player with the given name
+func (app App) FindPlayer(name string) *entity.Player {
+	for _, p := range app.Conf.Players {
+		if name == p.Name {
 			return &p
 		}
 	}

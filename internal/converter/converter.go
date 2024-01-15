@@ -174,7 +174,7 @@ func (c *Converter) playerRank(
 					// remove third from fourth level
 					fourthPos := lastPos - 1
 					for i, p := range c.record.Ranks[fourthPos] {
-						if p.ID == third[0].ID {
+						if len(third) > 0 && p.ID == third[0].ID {
 							ranks := c.record.Ranks[fourthPos]
 							ranks = append(ranks[:i], ranks[i+1:]...)
 							c.record.Ranks[fourthPos] = ranks

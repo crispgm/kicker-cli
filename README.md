@@ -86,6 +86,15 @@ kicker-cli event open 351e00bf-025c-4243-b381-2f5a135c3070
 kicker-cli event delete 351e00bf-025c-4243-b381-2f5a135c3070
 ```
 
+Event analysis:
+```shell
+# analyze with "double_player_rank" operator for "byp" event order by ELO
+kicker-cli events analyze -m double_player_rank -t byp -o ELO
+
+# analyze with "single_player_rank" operator for "single" event order by win rate
+kicker-cli events analyze -m single_player_rank -t single --sort-by elo
+````
+
 Player management:
 ```shell
 # list players

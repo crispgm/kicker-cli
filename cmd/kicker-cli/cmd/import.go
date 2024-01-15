@@ -37,6 +37,10 @@ var importCmd = &cobra.Command{
 			return
 		}
 
+		var players []string
+		for _, p := range instance.Conf.Players {
+			players = append(players, p.Name)
+		}
 		eventsAdded := 0
 		for _, importPath := range args {
 			if strings.HasPrefix(importPath, "~") {
@@ -58,17 +62,39 @@ var importCmd = &cobra.Command{
 					}
 				}
 				if !found {
-					var needCreate bool
 					if !importEventCreateUnknownPlayers {
-						needCreate, _ = pterm.DefaultInteractiveConfirm.
-							WithDefaultText(fmt.Sprintf("Create a new player with name `%s`", p.Name)).
-							WithDefaultValue(true).
-							Show()
-					} else {
-						needCreate = true
-					}
-					if needCreate {
-						instance.AddPlayer(*entity.NewPlayer(p.Name))
+						text := fmt.Sprint("Unknown player: ", p.Name)
+						selectedOption, _ := pterm.
+							DefaultInteractiveSelect.
+							WithOptions([]string{
+								"Create a new player",
+								"Attach to an existed player",
+								"Cancel",
+							}).
+							Show(text)
+
+						if selectedOption == "Create a new player" {
+							instance.AddPlayer(*entity.NewPlayer(p.Name))
+							pterm.Printfln("Creating player %s", p.Name)
+						} else if selectedOption == "Attach to an existed player" {
+							selectedPlayer, _ := pterm.
+								DefaultInteractiveSelect.
+								WithOptions(players).
+								Show("Choose a player")
+							sp := instance.FindPlayer(selectedPlayer)
+							if sp == nil {
+								errorMessageAndExit("Find player failed:", selectedPlayer)
+							}
+							sp.AddAlias(p.Name)
+							res := instance.SetPlayer(sp)
+							if res == nil {
+								errorMessageAndExit("Attach player failed", selectedPlayer)
+							} else {
+								pterm.Printfln("Attaching alias %s to player %s", p.Name, sp.Name)
+							}
+						} else {
+							errorMessageAndExit("Cancelled")
+						}
 					}
 				}
 			}
