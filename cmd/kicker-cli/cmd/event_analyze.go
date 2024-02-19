@@ -15,12 +15,13 @@ import (
 )
 
 var (
-	rankGameMode   string
-	rankMinPlayed  int
-	rankHead       int
-	rankTail       int
-	rankSortBy     string
-	rankPlayerName string
+	rankGameMode     string
+	rankMinPlayed    int
+	rankHead         int
+	rankTail         int
+	rankSortBy       string
+	rankPlayerName   string
+	rankOutputFormat string
 )
 
 func init() {
@@ -30,6 +31,7 @@ func init() {
 	analyzeCmd.Flags().IntVarP(&rankHead, "head", "", 0, "display the head part of rank")
 	analyzeCmd.Flags().IntVarP(&rankTail, "tail", "", 0, "display the last part of rank")
 	analyzeCmd.Flags().StringVarP(&rankPlayerName, "player", "", "", "Player name for detail only modes")
+	analyzeCmd.Flags().StringVarP(&rankOutputFormat, "output-format", "f", "default", "Output formats: default, csv, & tsv. Notice: supported output formats may vary according to different operators.")
 	_ = analyzeCmd.MarkFlagRequired("mode")
 	analyzeCmd.MarkFlagsMutuallyExclusive("head", "tail")
 	eventCmd.AddCommand(analyzeCmd)
@@ -130,8 +132,13 @@ var analyzeCmd = &cobra.Command{
 			Head:          rankHead,
 			Tail:          rankTail,
 			PlayerName:    rankPlayerName,
-			WithHeader:    !globalNoHeaders,
-			WithBoxes:     !globalNoBoxes,
+
+			OutputFormat: strings.ToLower(rankOutputFormat),
+			WithHeader:   !globalNoHeaders,
+			WithBoxes:    !globalNoBoxes,
+		}
+		if options.OutputFormat != "default" {
+			pterm.DisableColor()
 		}
 		op.Input(eTournaments, instance.Conf.Players, options)
 		op.Output()

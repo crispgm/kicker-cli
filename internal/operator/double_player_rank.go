@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/pterm/pterm"
-
 	"github.com/crispgm/kicker-cli/internal/entity"
 	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 	"github.com/crispgm/kicker-cli/pkg/rating"
@@ -232,9 +230,6 @@ func (o *DoublePlayerRank) Output() {
 
 	header := []string{"#", "Name", "Events", "Games", "Win", "Loss", "Draw", "WR%", "ELO", "KRP", "ATSA", "ITSF"}
 	table := [][]string{}
-	if o.options.WithHeader {
-		table = append(table, header)
-	}
 	for i, d := range sliceData {
 		item := []string{
 			fmt.Sprintf("%d", i+1),
@@ -252,6 +247,7 @@ func (o *DoublePlayerRank) Output() {
 		}
 		table = append(table, item)
 	}
-	_ = pterm.DefaultTable.WithHasHeader(o.options.WithHeader).WithData(table).WithBoxed(o.options.WithBoxes).Render()
 	// }}}
+
+	output(o.options, header, table)
 }

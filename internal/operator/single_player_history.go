@@ -37,9 +37,6 @@ func (o *SinglePlayerHistory) Output() {
 	found := false
 	header := []string{"#", "Event", "Player 1", "Player 2", "Result", "WR%", "ELO", "KRP", "ATSA", "ITSF"}
 	table := [][]string{}
-	if o.options.WithHeader {
-		table = append(table, header)
-	}
 	eloChart := []float64{}
 	winRateChart := []float64{}
 	data := make(map[string]entity.Player)
@@ -187,18 +184,20 @@ func (o *SinglePlayerHistory) Output() {
 	}
 
 	if found {
-		_ = pterm.DefaultTable.WithHasHeader(o.options.WithHeader).WithData(table).WithBoxed(o.options.WithBoxes).Render()
-	}
+		output(o.options, header, table)
 
-	if len(eloChart) > 0 {
-		fmt.Println()
-		eloGraph := asciigraph.Plot(eloChart, asciigraph.Caption("ELO"), asciigraph.Height(20), asciigraph.Width(80))
-		fmt.Println(eloGraph)
-	}
-	if len(winRateChart) > 0 {
-		fmt.Println()
-		winRateGraph := asciigraph.Plot(winRateChart, asciigraph.Caption("Win Rate"), asciigraph.Height(20), asciigraph.Width(80))
-		fmt.Println(winRateGraph)
+		if o.options.OutputFormat == "default" {
+			if len(eloChart) > 0 {
+				fmt.Println()
+				eloGraph := asciigraph.Plot(eloChart, asciigraph.Caption("ELO"), asciigraph.Height(20), asciigraph.Width(80))
+				fmt.Println(eloGraph)
+			}
+			if len(winRateChart) > 0 {
+				fmt.Println()
+				winRateGraph := asciigraph.Plot(winRateChart, asciigraph.Caption("Win Rate"), asciigraph.Height(20), asciigraph.Width(80))
+				fmt.Println(winRateGraph)
+			}
+		}
 	}
 }
 
