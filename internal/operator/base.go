@@ -21,6 +21,7 @@ type Option struct {
 	Tail          int
 	PlayerName    string
 
-	WithHeader bool
-	WithBoxes  bool
+	WithHeader   bool
+	WithBoxes    bool
+	OutputFormat string
 }
