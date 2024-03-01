@@ -19,10 +19,10 @@ stdenv.mkDerivation buildGoModule rec {
     };
     vendorHash =  "sha256-sK+blqs5DDcF2Am6GNpkZhQ/AvoDqpxrWZa4rb3v5iE=";
     meta = with lib; {
-      description = "Simple command-line snippet manager, written in Go";
-      homepage = "https://github.com/knqyf263/pet";
+      description = "A Foosball data aggregator, analyzers, and manager based on Kickertool.";
+      homepage = "https://github.com/crispgm/kicker-cli/";
       license = licenses.mit;
-      maintainers = with maintainers; [ kalbasit ];
+      maintainers = with maintainers; [ crispgm ];
     };
 }
 
