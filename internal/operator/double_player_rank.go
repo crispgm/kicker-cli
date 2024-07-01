@@ -230,9 +230,13 @@ func (o *DoublePlayerRank) Output() {
 
 	header := []string{"#", "Name", "Events", "Games", "Win", "Loss", "Draw", "WR%", "ELO", "KRP", "ATSA", "ITSF"}
 	table := [][]string{}
-	for i, d := range sliceData {
+	index := 1
+	for _, d := range sliceData {
+		if !o.options.ShowInactive && d.Inactive {
+			continue
+		}
 		item := []string{
-			fmt.Sprintf("%d", i+1),
+			fmt.Sprintf("%d", index),
 			d.Name,
 			fmt.Sprintf("%d", d.EventsPlayed),
 			fmt.Sprintf("%d", d.GamesPlayed),
@@ -246,6 +250,7 @@ func (o *DoublePlayerRank) Output() {
 			fmt.Sprintf("%d", d.ITSFPoints),
 		}
 		table = append(table, item)
+		index++
 	}
 	// }}}
 
