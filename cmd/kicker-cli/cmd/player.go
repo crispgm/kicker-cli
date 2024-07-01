@@ -34,7 +34,7 @@ func listPlayerCommand(cmd *cobra.Command, args []string) {
 	instance := initInstanceAndLoadConf()
 	// load tournaments
 	var table [][]string
-	header := []string{"ID", "Name", "ITSF_ID", "ATSA_ID", "A.K.A"}
+	header := []string{"ID", "Name", "ITSF_ID", "ATSA_ID", "A.K.A", "Inactive?"}
 	if !globalNoHeaders {
 		table = append(table, header)
 	}
@@ -45,12 +45,17 @@ func listPlayerCommand(cmd *cobra.Command, args []string) {
 			instance.Conf.Players[i].ID = p.ID
 			needWrite = true
 		}
+		inactiveStatus := ""
+		if p.Inactive {
+			inactiveStatus = "Y"
+		}
 		table = append(table, []string{
 			p.ID,
 			p.Name,
 			dashIfEmpty(p.ITSFID),
 			dashIfEmpty(p.ATSAID),
 			dashIfEmpty(strings.Join(p.Aliases, ", ")),
+			inactiveStatus,
 		})
 	}
 	_ = pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()

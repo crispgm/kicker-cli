@@ -8,11 +8,12 @@ import (
 
 // Player is a real world player
 type Player struct {
-	ID      string   `yaml:"id"`
-	Name    string   `yaml:"name"`
-	Aliases []string `yaml:"aliases"`
-	ATSAID  string   `yaml:"atsa_id,omitempty"`
-	ITSFID  string   `yaml:"itsf_id,omitempty"`
+	ID       string   `yaml:"id"`
+	Name     string   `yaml:"name"`
+	Aliases  []string `yaml:"aliases"`
+	ATSAID   string   `yaml:"atsa_id,omitempty"`
+	ITSFID   string   `yaml:"itsf_id,omitempty"`
+	Inactive bool     `yaml:"inactive,omitempty"`
 	// major statistical data, not write
 	EventsPlayed int     `yaml:"-"`
 	GamesPlayed  int     `yaml:"-"`

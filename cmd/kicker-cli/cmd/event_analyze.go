@@ -19,6 +19,7 @@ var (
 	rankMinPlayed    int
 	rankHead         int
 	rankTail         int
+	rankShowInactive bool
 	rankSortBy       string
 	rankPlayerName   string
 	rankOutputFormat string
@@ -27,6 +28,7 @@ var (
 func init() {
 	analyzeCmd.Flags().StringVarP(&rankGameMode, "mode", "m", "", "rank mode")
 	analyzeCmd.Flags().StringVarP(&rankSortBy, "sort-by", "o", "KRP", "sort by (KRP/ITSF/ATSA/ELO/WR)")
+	analyzeCmd.Flags().BoolVarP(&rankShowInactive, "show-inactive", "i", false, "show inactive players")
 	analyzeCmd.Flags().IntVarP(&rankMinPlayed, "minimum-played", "p", 0, "minimum matches played")
 	analyzeCmd.Flags().IntVarP(&rankHead, "head", "", 0, "display the head part of rank")
 	analyzeCmd.Flags().IntVarP(&rankTail, "tail", "", 0, "display the last part of rank")
@@ -132,6 +134,7 @@ var analyzeCmd = &cobra.Command{
 			Head:          rankHead,
 			Tail:          rankTail,
 			PlayerName:    rankPlayerName,
+			ShowInactive:  rankShowInactive,
 
 			OutputFormat: strings.ToLower(rankOutputFormat),
 			WithHeader:   !globalNoHeaders,

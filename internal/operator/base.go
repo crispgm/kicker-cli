@@ -17,6 +17,7 @@ type Operator interface {
 type Option struct {
 	OrderBy       string
 	MinimumPlayed int
+	ShowInactive  bool
 	Head          int
 	Tail          int
 	PlayerName    string

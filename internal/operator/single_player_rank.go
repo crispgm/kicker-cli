@@ -193,6 +193,9 @@ func (o *SinglePlayerRank) Output() {
 	header := []string{"#", "Name", "Events", "Games", "Win", "Loss", "Draw", "WR%", "ELO", "KRP", "ATSA", "ITSF"}
 	table := [][]string{}
 	for i, d := range sliceData {
+		if o.options.ShowInactive && d.Inactive {
+			continue
+		}
 		item := []string{
 			fmt.Sprintf("%d", i+1),
 			d.Name,
