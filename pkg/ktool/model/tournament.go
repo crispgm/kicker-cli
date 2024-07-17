@@ -38,6 +38,7 @@ type Options struct {
 	NumPoints  int    `json:"numPoints"`
 	NumSets    int    `json:"numSets"`
 	TwoAhead   bool   `json:"twoAhead"`
+	FastInput  bool   `json:"fastInput"`
 	Draw       bool   `json:"draw"`
 	PointsWin  int    `json:"pointsWin"`
 	PointsDraw int    `json:"pointsDraw"`

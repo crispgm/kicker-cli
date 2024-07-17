@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/crispgm/kicker-cli/internal/entity"
+	"github.com/crispgm/kicker-cli/pkg/ktool/model"
 )
 
 var showScore bool
@@ -35,7 +36,7 @@ var eventInfoCmd = &cobra.Command{
 		table := initEventInfoHeader()
 		t, r := loadAndShowEventInfo(&table, instance.DataPath(), instance.Conf.Players, e)
 		_ = pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
-		table = showGames(r.PreliminaryRounds)
+		table = showGames(r.PreliminaryRounds, t.Options)
 		if len(table) > 0 {
 			pterm.Println("Rounds:")
 			_ = pterm.DefaultTable.WithHasHeader(false).WithData(table).WithBoxed(!globalNoBoxes).Render()
@@ -43,12 +44,12 @@ var eventInfoCmd = &cobra.Command{
 		sort.SliceStable(r.LoserBracket, func(i, j int) bool {
 			return true
 		})
-		table = showGames(r.LoserBracket)
+		table = showGames(r.LoserBracket, t.Options)
 		if len(table) > 0 {
 			pterm.Println("Loser Bracket:")
 			_ = pterm.DefaultTable.WithHasHeader(false).WithData(table).WithBoxed(!globalNoBoxes).Render()
 		}
-		table = showGames(r.WinnerBracket)
+		table = showGames(r.WinnerBracket, t.Options)
 		if len(table) > 0 {
 			pterm.Println("Winner Bracket:")
 			_ = pterm.DefaultTable.WithHasHeader(false).WithData(table).WithBoxed(!globalNoBoxes).Render()
@@ -62,14 +63,14 @@ var eventInfoCmd = &cobra.Command{
 	},
 }
 
-func showGames(games []entity.Game) [][]string {
+func showGames(games []entity.Game, options model.Options) [][]string {
 	var table [][]string
 	if len(games) == 0 {
 		return table
 	}
 	numOfSets := len(games[0].Sets)
-	if numOfSets == 1 {
-		showScore = true
+	if numOfSets == 1 && options.FastInput {
+		showScore = false
 	}
 
 	if showScore {

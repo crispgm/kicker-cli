@@ -341,6 +341,8 @@ func (c Converter) convertPlayToGame(
 					game.Point2++
 				} else {
 					// draw
+					game.Point1++
+					game.Point2++
 				}
 			}
 			break // only support one discipline right now

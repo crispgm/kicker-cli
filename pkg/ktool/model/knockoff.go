@@ -7,6 +7,12 @@ type KnockOff struct {
 	Levels     []Level `json:"levels"`
 	LeftLevels []Level `json:"leftLevels"`
 	Third      Level   `json:"third"`
+
+	Options    Options `json:"options"`
+	ThirdPlace bool    `json:"thirdPlace"`
+	Double     bool    `json:"double"`
+	Size       int     `json:"size"`
+	Finished   bool    `json:"bool"`
 }
 
 // Level .
