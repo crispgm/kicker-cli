@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"sort"
+	"strings"
 
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -24,10 +27,22 @@ var eventInfoCmd = &cobra.Command{
 	Short:   "Show event details",
 	Long:    "Show event details",
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) == 0 {
-			errorMessageAndExit("Please present an event ID")
+		var arg string
+		if isInputFromPipe() {
+			scanner := bufio.NewScanner(bufio.NewReader(bufio.NewReader(os.Stdin)))
+			for scanner.Scan() {
+				arg = strings.Trim(scanner.Text(), " \t\n")
+				break
+			}
+			if len(arg) == 0 {
+				errorMessageAndExit("Please present an event ID")
+			}
+		} else {
+			if len(args) == 0 {
+				errorMessageAndExit("Please present an event ID")
+			}
+			arg = args[0]
 		}
-		arg := args[0]
 		instance := initInstanceAndLoadConf()
 		e := instance.GetEvent(arg)
 		if e == nil {
