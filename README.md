@@ -1,7 +1,13 @@
 # kicker-cli
 
-[![build](https://github.com/crispgm/kicker-cli/actions/workflows/build.yml/badge.svg)](https://github.com/crispgm/kicker-cli/actions/workflows/build.yml)
-[![codecov](https://codecov.io/gh/crispgm/kicker-cli/graph/badge.svg?token=MMGE8I5YNI)](https://codecov.io/gh/crispgm/kicker-cli)
+<p align="center">
+  <img alt="Preview" src="https://i.imgur.com/5Zk0nfy.gif" />
+</p>
+
+<p align="center">
+  <img alt="GitHub CI" src="https://github.com/crispgm/kicker-cli/actions/workflows/build.yml/badge.svg" />
+  <img alt="codecov" src="https://codecov.io/gh/crispgm/kicker-cli/graph/badge.svg?token=MMGE8I5YNI" />
+</p>
 
 A Foosball data aggregator, analyzers, and manager based on [Kickertool](https://app.kickertool.de/).
 
