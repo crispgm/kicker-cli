@@ -5,6 +5,7 @@ type Game struct {
 	Team1 []string
 	Team2 []string
 
+	GameType   int // 1: qualification, 2: elimination
 	TimeStart  int
 	TimeEnd    int
 	TimePlayed int
@@ -15,6 +16,12 @@ type Game struct {
 	Name string
 	Sets []Set
 }
+
+// Game types
+const (
+	GameTypeQualification = iota + 1
+	GameTypeElimination
+)
 
 // Set is stat for single set
 type Set struct {

@@ -26,12 +26,13 @@ type Player struct {
 	ATSAPoints   int     `yaml:"-"` // ATSA points
 	ITSFPoints   int     `yaml:"-"` // ITSF points
 	// minor statistical data
-	HomeWin     int     `yaml:"-"`
-	HomeLoss    int     `yaml:"-"`
-	HomeWinRate float64 `yaml:"-"`
-	AwayWin     int     `yaml:"-"`
-	AwayLoss    int     `yaml:"-"`
-	AwayWinRate float64 `yaml:"-"`
+	QualificationWin     int     `yaml:"-"`
+	QualificationDraw    int     `yaml:"-"`
+	QualificationLoss    int     `yaml:"-"`
+	QualificationWinRate float64 `yaml:"-"`
+	EliminationWin       int     `yaml:"-"`
+	EliminationLoss      int     `yaml:"-"`
+	EliminationWinRate   float64 `yaml:"-"`
 	// data not implemented right now
 	TimePlayed       int     `yaml:"-"`
 	LongestGameTime  int     `yaml:"-"`

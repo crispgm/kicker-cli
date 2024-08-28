@@ -58,25 +58,44 @@ func (o *DoublePlayerRank) Output() {
 				t1p2Data.Win++
 				t2p1Data.Loss++
 				t2p2Data.Loss++
-				t1p1Data.HomeWin++
-				t1p2Data.HomeWin++
-				t2p1Data.AwayLoss++
-				t2p2Data.AwayLoss++
+				if g.GameType == entity.GameTypeQualification {
+					t1p1Data.QualificationWin++
+					t1p2Data.QualificationWin++
+					t2p1Data.QualificationLoss++
+					t2p2Data.QualificationLoss++
+				} else if g.GameType == entity.GameTypeElimination {
+					t1p1Data.EliminationWin++
+					t1p2Data.EliminationWin++
+					t2p1Data.EliminationLoss++
+					t2p2Data.EliminationLoss++
+				}
 			} else if g.Point2 > g.Point1 {
 				t1p1Data.Loss++
 				t1p2Data.Loss++
 				t2p1Data.Win++
 				t2p2Data.Win++
-				t1p1Data.HomeLoss++
-				t1p2Data.HomeLoss++
-				t2p1Data.AwayWin++
-				t2p2Data.AwayWin++
+				if g.GameType == entity.GameTypeQualification {
+					t1p1Data.QualificationLoss++
+					t1p2Data.QualificationLoss++
+					t2p1Data.QualificationWin++
+					t2p2Data.QualificationWin++
+				} else if g.GameType == entity.GameTypeElimination {
+					t1p1Data.EliminationLoss++
+					t1p2Data.EliminationLoss++
+					t2p1Data.EliminationWin++
+					t2p2Data.EliminationWin++
+				}
 			} else {
-				// basically not approachable
 				t1p1Data.Draw++
 				t1p2Data.Draw++
 				t2p1Data.Draw++
 				t2p2Data.Draw++
+				if g.GameType == entity.GameTypeElimination {
+					t1p1Data.QualificationDraw++
+					t1p2Data.QualificationDraw++
+					t2p1Data.QualificationDraw++
+					t2p2Data.QualificationDraw++
+				}
 			}
 			// }}}
 			// {{{ ELO
@@ -174,12 +193,8 @@ func (o *DoublePlayerRank) Output() {
 	for _, d := range data {
 		if d.GamesPlayed != 0 {
 			d.WinRate = float64(d.Win) / float64(d.GamesPlayed) * 100.0
-			if d.HomeWin+d.HomeLoss > 0 {
-				d.HomeWinRate = float64(d.HomeWin) / float64(d.HomeWin+d.HomeLoss) * 100.0
-			}
-			if d.AwayWin+d.AwayLoss > 0 {
-				d.AwayWinRate = float64(d.AwayWin) / float64(d.AwayWin+d.AwayLoss) * 100.0
-			}
+			d.QualificationWinRate = float64(d.QualificationWin) / float64(d.QualificationWin+d.QualificationDraw+d.QualificationLoss) * 100.0
+			d.EliminationWinRate = float64(d.EliminationWin) / float64(d.EliminationWin+d.EliminationLoss) * 100.0
 			sliceData = append(sliceData, d)
 		}
 	}
@@ -228,7 +243,7 @@ func (o *DoublePlayerRank) Output() {
 		sliceData = sliceData[len(sliceData)-o.options.Tail:]
 	}
 
-	header := []string{"#", "Name", "Events", "Games", "Win", "Loss", "Draw", "WR%", "ELO", "KRP", "ATSA", "ITSF"}
+	header := []string{"#", "Name", "Events", "Games", "Win", "Loss", "Draw", "WR%", "QWR%", "ELR%", "ELO", "KRP", "ATSA", "ITSF"}
 	table := [][]string{}
 	index := 1
 	for _, d := range sliceData {
@@ -244,6 +259,8 @@ func (o *DoublePlayerRank) Output() {
 			fmt.Sprintf("%d", d.Loss),
 			fmt.Sprintf("%d", d.Draw),
 			fmt.Sprintf("%.0f%%", d.WinRate),
+			fmt.Sprintf("%.0f%%", d.QualificationWinRate),
+			fmt.Sprintf("%.0f%%", d.EliminationWinRate),
 			fmt.Sprintf("%.0f", d.EloRating),
 			fmt.Sprintf("%d", d.KickerPoints),
 			fmt.Sprintf("%d", d.ATSAPoints),

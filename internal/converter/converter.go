@@ -86,7 +86,7 @@ func (c *Converter) convertGames(
 	rec := &c.record
 	// preliminary rounds
 	for _, r := range t.Rounds {
-		games, err := c.convertPlayToGame(r.Name, r.Plays, teams, players)
+		games, err := c.convertPlayToGame(r.Name, entity.GameTypeQualification, r.Plays, teams, players)
 		if err != nil {
 			return err
 		}
@@ -95,20 +95,20 @@ func (c *Converter) convertGames(
 
 	for _, ko := range t.KnockOffs {
 		for _, level := range ko.Levels {
-			games, err := c.convertPlayToGame(level.Name, level.Plays, teams, players)
+			games, err := c.convertPlayToGame(level.Name, entity.GameTypeElimination, level.Plays, teams, players)
 			if err != nil {
 				return err
 			}
 			rec.WinnerBracket = append(rec.WinnerBracket, games...)
 		}
 		for _, level := range ko.LeftLevels {
-			games, err := c.convertPlayToGame(level.Name, level.Plays, teams, players)
+			games, err := c.convertPlayToGame(level.Name, entity.GameTypeElimination, level.Plays, teams, players)
 			if err != nil {
 				return err
 			}
 			rec.LoserBracket = append(rec.LoserBracket, games...)
 		}
-		games, err := c.convertPlayToGame(ko.Third.Name, ko.Third.Plays, teams, players)
+		games, err := c.convertPlayToGame(ko.Third.Name, entity.GameTypeElimination, ko.Third.Plays, teams, players)
 		if err != nil {
 			return err
 		}
@@ -300,6 +300,7 @@ func (Converter) validPlay(p model.Play) bool {
 
 func (c Converter) convertPlayToGame(
 	name string,
+	gameType int,
 	plays []model.Play,
 	teams map[string]model.Team,
 	players map[string]model.Player) ([]entity.Game, error) {
@@ -324,6 +325,7 @@ func (c Converter) convertPlayToGame(
 		} else {
 			continue
 		}
+		game.GameType = gameType
 		game.TimeStart = p.TimeStart
 		game.TimeEnd = p.TimeEnd
 		game.TimePlayed = (p.TimeEnd - p.TimeStart) / 1000

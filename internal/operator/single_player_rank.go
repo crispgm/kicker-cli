@@ -50,17 +50,30 @@ func (o *SinglePlayerRank) Output() {
 			if g.Point1 > g.Point2 {
 				p1Data.Win++
 				p2Data.Loss++
-				p1Data.HomeWin++
-				p2Data.AwayLoss++
+				if g.GameType == entity.GameTypeQualification {
+					p1Data.QualificationWin++
+					p2Data.QualificationLoss++
+				} else if g.GameType == entity.GameTypeElimination {
+					p1Data.EliminationWin++
+					p2Data.EliminationLoss++
+				}
 			} else if g.Point2 > g.Point1 {
 				p1Data.Loss++
 				p2Data.Win++
-				p1Data.HomeLoss++
-				p2Data.AwayWin++
+				if g.GameType == entity.GameTypeQualification {
+					p1Data.QualificationLoss++
+					p2Data.QualificationWin++
+				} else if g.GameType == entity.GameTypeElimination {
+					p1Data.EliminationLoss++
+					p2Data.EliminationWin++
+				}
 			} else {
-				// basically not approachable
 				p1Data.Draw++
 				p2Data.Draw++
+				if g.GameType == entity.GameTypeElimination {
+					p1Data.QualificationDraw++
+					p2Data.QualificationDraw++
+				}
 			}
 			// }}}
 			// {{{ ELO
@@ -136,12 +149,8 @@ func (o *SinglePlayerRank) Output() {
 	for _, d := range data {
 		if d.GamesPlayed != 0 {
 			d.WinRate = float64(d.Win) / float64(d.GamesPlayed) * 100.0
-			if d.HomeWin+d.HomeLoss > 0 {
-				d.HomeWinRate = float64(d.HomeWin) / float64(d.HomeWin+d.HomeLoss) * 100.0
-			}
-			if d.AwayWin+d.AwayLoss > 0 {
-				d.AwayWinRate = float64(d.AwayWin) / float64(d.AwayWin+d.AwayLoss) * 100.0
-			}
+			d.QualificationWinRate = float64(d.QualificationWin) / float64(d.QualificationWin+d.QualificationDraw+d.QualificationLoss) * 100.0
+			d.EliminationWinRate = float64(d.EliminationWin) / float64(d.EliminationWin+d.EliminationLoss) * 100.0
 			sliceData = append(sliceData, d)
 		}
 	}
@@ -190,7 +199,7 @@ func (o *SinglePlayerRank) Output() {
 		sliceData = sliceData[len(sliceData)-o.options.Tail:]
 	}
 
-	header := []string{"#", "Name", "Events", "Games", "Win", "Loss", "Draw", "WR%", "ELO", "KRP", "ATSA", "ITSF"}
+	header := []string{"#", "Name", "Events", "Games", "Win", "Loss", "Draw", "WR%", "QWR%", "EWR%", "ELO", "KRP", "ATSA", "ITSF"}
 	table := [][]string{}
 	index := 1
 	for _, d := range sliceData {
@@ -206,6 +215,8 @@ func (o *SinglePlayerRank) Output() {
 			fmt.Sprintf("%d", d.Loss),
 			fmt.Sprintf("%d", d.Draw),
 			fmt.Sprintf("%.0f%%", d.WinRate),
+			fmt.Sprintf("%.0f%%", d.QualificationWinRate),
+			fmt.Sprintf("%.0f%%", d.EliminationWinRate),
 			fmt.Sprintf("%.0f", d.EloRating),
 			fmt.Sprintf("%d", d.KickerPoints),
 			fmt.Sprintf("%d", d.ATSAPoints),
