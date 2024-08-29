@@ -2,7 +2,9 @@
 
 ## Kicker Ranking System
 
-KCS provides both merit-based ranking (KRP) and ELO-based (KES) ranking.
+We provides and implemented both merit-based ranking (KRP) and ELO-based (KES) ranking.
+Otherwise, ITSF and ATSA ranking systems are already built-in.
+All the points and scores can be used simultenously.
 
 ### Kicker Ranking Points (KRP)
 
