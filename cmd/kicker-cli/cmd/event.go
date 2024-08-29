@@ -102,7 +102,7 @@ func createdBetween(created time.Time) bool {
 
 func initEventInfoHeader() [][]string {
 	var table [][]string
-	header := []string{"ID", "Name", "Date Time", "Level", "Players", "Games", "Name Type", "Mode", "URL"}
+	header := []string{"ID", "Name", "Date Time", "Level", "Players", "Games", "Rounds", "Name Type", "Mode", "URL"}
 	if !globalNoHeaders {
 		table = append(table, header)
 	}
@@ -162,8 +162,9 @@ func showInfo(table *[][]string, e *entity.Event, t *model.Tournament, r *entity
 		strings.Join(levels, "|"),
 		fmt.Sprintf("%d", len(r.Players)),
 		fmt.Sprintf("%d", len(r.AllGames)),
+		fmt.Sprintf("%d", len(t.Rounds)),
 		t.NameType,
-		t.Mode,
+		t.TournamentMode(),
 		dashIfEmpty(e.URL),
 	})
 }

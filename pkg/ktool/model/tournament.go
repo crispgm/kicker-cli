@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 // Tournament .
 type Tournament struct {
@@ -67,4 +70,44 @@ func (t Tournament) IsDYP() bool {
 // IsMonsterDYP .
 func (t Tournament) IsMonsterDYP() bool {
 	return t.NameType == NameTypeMonsterDYP
+}
+
+// PreliminaryMode .
+func (t Tournament) PreliminaryMode() string {
+	if len(t.Rounds) == 0 {
+		return ""
+	}
+
+	return t.Mode
+}
+
+// EliminationMode .
+func (t Tournament) EliminationMode() string {
+	if len(t.KnockOffs) == 0 {
+		return ""
+	}
+
+	ko := t.KnockOffs[0]
+	if len(ko.LeftLevels) > 0 {
+		return ModeDoubleElimination
+	}
+
+	return ModeElimination
+}
+
+// TournamentMode .
+func (t Tournament) TournamentMode() string {
+	eMode := t.EliminationMode()
+	pMode := t.PreliminaryMode()
+	if eMode == "" && pMode == "" {
+		return t.Mode
+	}
+
+	if eMode == "" {
+		return pMode
+	} else if pMode == "" {
+		return eMode
+	}
+
+	return fmt.Sprintf("%s, %s", pMode, eMode)
 }
