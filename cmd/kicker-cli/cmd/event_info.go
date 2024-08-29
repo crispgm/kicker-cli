@@ -49,7 +49,7 @@ var eventInfoCmd = &cobra.Command{
 			errorMessageAndExit("No event(s) found")
 		}
 		table := initEventInfoHeader()
-		t, r := loadAndShowEventInfo(&table, instance.DataPath(), instance.Conf.Players, e)
+		t, r := loadAndShowEventInfo(&table, instance.DataPath(), instance.Conf.Players, e, instance.Conf.Organization.Timezone)
 		_ = pterm.DefaultTable.WithHasHeader(!globalNoHeaders).WithData(table).WithBoxed(!globalNoBoxes).Render()
 		table = showGames(r.PreliminaryRounds, t.Options)
 		if len(table) > 0 {

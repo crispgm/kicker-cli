@@ -54,12 +54,12 @@ func eventListCommand(cmd *cobra.Command, args []string) {
 	if len(args) > 0 {
 		for _, arg := range args {
 			if e := instance.GetEvent(arg); e != nil {
-				loadAndShowEventInfo(&table, dataPath, instance.Conf.Players, e)
+				loadAndShowEventInfo(&table, dataPath, instance.Conf.Players, e, instance.Conf.Organization.Timezone)
 			}
 		}
 	} else {
 		for _, e := range instance.Conf.Events {
-			loadAndShowEventInfo(&table, dataPath, instance.Conf.Players, &e)
+			loadAndShowEventInfo(&table, dataPath, instance.Conf.Players, &e, instance.Conf.Organization.Timezone)
 		}
 	}
 	if len(table) <= 1 {
@@ -109,13 +109,13 @@ func initEventInfoHeader() [][]string {
 	return table
 }
 
-func loadAndShowEventInfo(table *[][]string, dataPath string, players []entity.Player, e *entity.Event) (*model.Tournament, *entity.Record) {
+func loadAndShowEventInfo(table *[][]string, dataPath string, players []entity.Player, e *entity.Event, tz string) (*model.Tournament, *entity.Record) {
 	t, r, err := loadEventInfo(dataPath, players, e)
 	if err != nil {
 		errorMessageAndExit(err)
 	}
 
-	showEvent(table, e, t, r)
+	showEvent(table, e, t, r, tz)
 	return t, r
 }
 
@@ -133,7 +133,7 @@ func loadEventInfo(dataPath string, players []entity.Player, e *entity.Event) (*
 	return t, trn, nil
 }
 
-func showEvent(table *[][]string, e *entity.Event, t *model.Tournament, r *entity.Record) {
+func showEvent(table *[][]string, e *entity.Event, t *model.Tournament, r *entity.Record, tz string) {
 	if len(eventNameTypes) > 0 && !nameTypeIncluded(t.NameType) {
 		return
 	}
@@ -141,10 +141,10 @@ func showEvent(table *[][]string, e *entity.Event, t *model.Tournament, r *entit
 		return
 	}
 
-	showInfo(table, e, t, r)
+	showInfo(table, e, t, r, tz)
 }
 
-func showInfo(table *[][]string, e *entity.Event, t *model.Tournament, r *entity.Record) {
+func showInfo(table *[][]string, e *entity.Event, t *model.Tournament, r *entity.Record, tz string) {
 	var levels []string
 	if len(e.ITSFLevel) > 0 {
 		levels = append(levels, e.ITSFLevel)
@@ -155,10 +155,11 @@ func showInfo(table *[][]string, e *entity.Event, t *model.Tournament, r *entity
 	if len(e.KickerLevel) > 0 {
 		levels = append(levels, e.KickerLevel)
 	}
+	loc, _ := time.LoadLocation(tz)
 	*table = append(*table, []string{
 		e.ID,
 		e.Name,
-		t.Created.Format("2006-01-02 15:04"),
+		t.Created.In(loc).Format("2006-01-02 15:04"),
 		strings.Join(levels, "|"),
 		fmt.Sprintf("%d", len(r.Players)),
 		fmt.Sprintf("%d", len(r.AllGames)),

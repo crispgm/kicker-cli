@@ -3,6 +3,7 @@ package cmd
 import (
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/pterm/pterm"
 
@@ -14,6 +15,10 @@ func initInstanceAndLoadConf() *app.App {
 	err := instance.LoadConf()
 	if err != nil {
 		errorMessageAndExit("Not a valid kicker workspace")
+	}
+	// migration
+	if instance.Conf.Organization.Timezone == "" {
+		instance.Conf.Organization.Timezone = time.Now().Location().String()
 	}
 
 	return instance

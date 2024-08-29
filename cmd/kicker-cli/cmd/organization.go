@@ -19,13 +19,14 @@ var orgCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		instance := initInstanceAndLoadConf()
 		var table [][]string
-		header := []string{"ID", "Name", "Players", "Events", "Kickertool ID"}
+		header := []string{"ID", "Name", "Timezone", "Players", "Events", "Kickertool ID"}
 		if !globalNoHeaders {
 			table = append(table, header)
 		}
 		table = append(table, []string{
 			instance.Conf.Organization.ID,
 			instance.Conf.Organization.Name,
+			instance.Conf.Organization.Timezone,
 			fmt.Sprintf("%d", len(instance.Conf.Players)),
 			fmt.Sprintf("%d", len(instance.Conf.Events)),
 			dashIfEmpty(instance.Conf.Organization.KickerToolID),
