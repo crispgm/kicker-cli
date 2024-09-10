@@ -147,6 +147,9 @@ func (o *SinglePlayerRank) Output() {
 	// {{{ map to slice
 	var sliceData []entity.Player
 	for _, d := range data {
+		if d.GamesPlayed < o.options.MinimumGamesPlayed || d.EventsPlayed < o.options.MinimumEventsPlayed {
+			continue
+		}
 		if d.GamesPlayed != 0 {
 			d.WinRate = float64(d.Win) / float64(d.GamesPlayed) * 100.0
 			d.QualificationWinRate = float64(d.QualificationWin) / float64(d.QualificationWin+d.QualificationDraw+d.QualificationLoss) * 100.0
@@ -159,10 +162,10 @@ func (o *SinglePlayerRank) Output() {
 	// {{{ sort
 	sort.SliceStable(sliceData, func(i, j int) bool {
 		if o.options.OrderBy == rating.RSysWinRate || o.options.OrderBy == rating.RSysELO {
-			if sliceData[i].GamesPlayed >= o.options.MinimumPlayed && sliceData[j].GamesPlayed < o.options.MinimumPlayed {
+			if sliceData[i].GamesPlayed >= o.options.MinimumGamesPlayed && sliceData[j].GamesPlayed < o.options.MinimumGamesPlayed {
 				return true
 			}
-			if sliceData[i].GamesPlayed < o.options.MinimumPlayed && sliceData[j].GamesPlayed >= o.options.MinimumPlayed {
+			if sliceData[i].GamesPlayed < o.options.MinimumGamesPlayed && sliceData[j].GamesPlayed >= o.options.MinimumGamesPlayed {
 				return false
 			}
 		}

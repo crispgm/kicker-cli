@@ -15,12 +15,13 @@ type Operator interface {
 
 // Option .
 type Option struct {
-	OrderBy       string
-	MinimumPlayed int
-	ShowInactive  bool
-	Head          int
-	Tail          int
-	PlayerName    string
+	OrderBy             string
+	MinimumGamesPlayed  int
+	MinimumEventsPlayed int
+	ShowInactive        bool
+	Head                int
+	Tail                int
+	PlayerName          string
 
 	WithHeader   bool
 	WithBoxes    bool

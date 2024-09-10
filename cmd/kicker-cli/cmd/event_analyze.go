@@ -15,21 +15,23 @@ import (
 )
 
 var (
-	rankGameMode     string
-	rankMinPlayed    int
-	rankHead         int
-	rankTail         int
-	rankShowInactive bool
-	rankSortBy       string
-	rankPlayerName   string
-	rankOutputFormat string
+	rankGameMode        string
+	rankMinEventsPlayed int
+	rankMinGamesPlayed  int
+	rankHead            int
+	rankTail            int
+	rankShowInactive    bool
+	rankSortBy          string
+	rankPlayerName      string
+	rankOutputFormat    string
 )
 
 func init() {
 	analyzeCmd.Flags().StringVarP(&rankGameMode, "mode", "m", "", "rank mode")
 	analyzeCmd.Flags().StringVarP(&rankSortBy, "sort-by", "o", "KRP", "sort by (KRP/ITSF/ATSA/ELO/WR)")
 	analyzeCmd.Flags().BoolVarP(&rankShowInactive, "show-inactive", "i", false, "show inactive players")
-	analyzeCmd.Flags().IntVarP(&rankMinPlayed, "minimum-played", "p", 0, "minimum matches played")
+	analyzeCmd.Flags().IntVarP(&rankMinEventsPlayed, "minimum-events", "e", 0, "minimum tournaments played")
+	analyzeCmd.Flags().IntVarP(&rankMinGamesPlayed, "minimum-games", "g", 0, "minimum games played")
 	analyzeCmd.Flags().IntVarP(&rankHead, "head", "", 0, "display the head part of rank")
 	analyzeCmd.Flags().IntVarP(&rankTail, "tail", "", 0, "display the last part of rank")
 	analyzeCmd.Flags().StringVarP(&rankPlayerName, "player", "", "", "Player name for detail only modes")
@@ -129,12 +131,13 @@ var analyzeCmd = &cobra.Command{
 			})
 		}
 		options := operator.Option{
-			OrderBy:       strings.ToUpper(rankSortBy),
-			MinimumPlayed: rankMinPlayed,
-			Head:          rankHead,
-			Tail:          rankTail,
-			PlayerName:    rankPlayerName,
-			ShowInactive:  rankShowInactive,
+			OrderBy:             strings.ToUpper(rankSortBy),
+			Head:                rankHead,
+			Tail:                rankTail,
+			PlayerName:          rankPlayerName,
+			ShowInactive:        rankShowInactive,
+			MinimumEventsPlayed: rankMinEventsPlayed,
+			MinimumGamesPlayed:  rankMinGamesPlayed,
 
 			OutputFormat: strings.ToLower(rankOutputFormat),
 			WithHeader:   !globalNoHeaders,

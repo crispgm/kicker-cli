@@ -99,10 +99,10 @@ func (o *SinglePlayerRival) Output() {
 	}
 
 	sort.SliceStable(sliceData, func(i, j int) bool {
-		if sliceData[i].Played >= o.options.MinimumPlayed && sliceData[j].Played < o.options.MinimumPlayed {
+		if sliceData[i].Played >= o.options.MinimumGamesPlayed && sliceData[j].Played < o.options.MinimumGamesPlayed {
 			return true
 		}
-		if sliceData[i].Played < o.options.MinimumPlayed && sliceData[j].Played >= o.options.MinimumPlayed {
+		if sliceData[i].Played < o.options.MinimumGamesPlayed && sliceData[j].Played >= o.options.MinimumGamesPlayed {
 			return false
 		}
 
