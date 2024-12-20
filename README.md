@@ -9,7 +9,7 @@
   <img alt="codecov" src="https://codecov.io/gh/crispgm/kicker-cli/graph/badge.svg?token=MMGE8I5YNI" />
 </p>
 
-A Foosball data aggregator, analyzers, and manager based on [Kickertool](https://app.kickertool.de/).
+A Foosball data aggregator, analyzer, and manager based on [Kickertool](https://app.kickertool.de/).
 
 Kickertool is a powerful tournament software that enables everyone to run foosball event.
 `kicker-cli` allows you to maintain data from Kickertool with the support of organization and event management,
