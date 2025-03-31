@@ -168,19 +168,12 @@ func (c *Converter) playerRank(
 			if len(c.record.Players) > 2 { // prevent panic because there is *third* place even if there are only 2 players
 				if len(ko.Third.Plays) > 0 {
 					lastPos := len(c.record.Ranks) - 1
-					runnerUp := c.record.Ranks[lastPos]
-					third := c.extractPlayerFromPlay(players, teams, ko.Third.Plays[0], rating.Win)
-					c.record.Ranks[lastPos] = third
-					// remove third from fourth level
 					fourthPos := lastPos - 1
-					for i, p := range c.record.Ranks[fourthPos] {
-						if len(third) > 0 && p.ID == third[0].ID {
-							ranks := c.record.Ranks[fourthPos]
-							ranks = append(ranks[:i], ranks[i+1:]...)
-							c.record.Ranks[fourthPos] = ranks
-							break
-						}
-					}
+					third := c.extractPlayerFromPlay(players, teams, ko.Third.Plays[0], rating.Win)
+					fourth := c.extractPlayerFromPlay(players, teams, ko.Third.Plays[0], rating.Loss)
+					runnerUp := c.record.Ranks[lastPos]
+					c.record.Ranks[fourthPos] = fourth
+					c.record.Ranks[lastPos] = third
 					c.record.Ranks = append(c.record.Ranks, runnerUp)
 				}
 			}

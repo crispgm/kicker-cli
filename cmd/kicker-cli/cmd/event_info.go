@@ -170,14 +170,15 @@ func showResults(ranks [][]entity.Player, single bool) [][]string {
 		} else {
 			level = append(level, fmt.Sprintf("%d", rank))
 		}
+		rlen := len(r)
 		if single {
-			rank += len(r)
+			rank += rlen
 			for _, p := range r {
 				level = append(level, p.Name)
 			}
 		} else {
-			rank += len(r) / 2
-			for i := 0; i < len(r); i += 2 {
+			rank += rlen / 2
+			for i := 0; i < rlen; i += 2 {
 				p1 := r[i]
 				p2 := r[i+1]
 				level = append(level, fmt.Sprintf("%s/%s", p1.Name, p2.Name))
